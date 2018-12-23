@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    .text{
+      font-size: 10px;
+    }
+  </style>
+  <script src="static/d3.min.js"></script>
+</head>
+<body>
+  <div class="container"></div>
+</body>
+<script>
+  var margin = {top: 20, bottom: 50, left: 60, right: 60};
+  var svgWidth = 1400;
+  var svgHeight = 700;
+
+  var width=svgWidth - margin.left - margin.right;
+  var height=svgHeight - margin.top - margin.bottom;
+
+  var svg = d3.select('.container')
+            .append('svg')
+            .attr('width', svgWidth)
+            .attr('height', svgHeight);
+  // scale
+  var x = d3.scaleTime()
+            .domain([new Date(2016, 0), new Date(2018, 9)])
+            .range([0,width]);
+
+  var y = d3.scaleLinear()
+            .domain([0,1100])
+            .range([height, 0]);
+  var r = d3.scaleLinear()
+            .domain([0,1052])
+            .range([0,20]);
+  var color = d3.scaleQuantize()
+                .domain([0,10])
+                .range(["#184C2F", "#237347", "038C41", "#6C6C6C", "#019BE7", "036EAD", "#023157"]);
+
+  // axises
+  var xAxis = d3.axisBottom(x)
+                .tickFormat(d=>{
+                  if(d-new Date(2016,5,1)===0||d-new Date(2016,5,23)===0) return d3.timeFormat("%m-%d")(d);
+                  if(d.getMonth()===0) return d3.timeFormat("%Y-%m")(d);
+                  else {return d3.timeFormat("%m")(d);} 
+                  })
+                .ticks(d3.timeMonth);
+
+  // show 
+  let newTicks = x.ticks(d3.timeMonth);
+  newTicks.push(new Date(2016,5,23));
+  xAxis.tickValues(newTicks);
+  var yAxis = d3.axisLeft(y);
+  
+  svg.append("g")
+    .attr("transform", `translate(${margin.left},${margin.top+height})`)
+    .call(xAxis)
+    .selectAll("text")	
+    .style("text-anchor", "end")
+    .attr("dx", "-.8em")
+    .attr("dy", ".15em")
+    .attr("transform", function(d) {
+        return "rotate(-55)" 
+        });
+  svg.append("g")
+     .attr("transform", `translate(${margin.left},${margin.top})`)
+     .call(yAxis);
+
+  var bisect = d3.bisector(function(d) { return d[0]; });
+  
+  function parseDate(str){
+    var y = str.substr(0,4),
+        m = str.substr(4,2)-1,
+        d = str.substr(6,2);
+    if(d) return new Date(y,m,d);
+    return new Date(y,m,1);
+  }
+  function getDataByMonth(data,time){
+    return data.map(d=>{
+      return {
+        label: d.label,
+        freq: findFreqByMonth(d.value,time),
+        time: time,
+        color: d.degree
+      }
+    })
+  }
+  function findFreqByMonth(data,time){
+    let index = bisect.left(data,time);
+    let now = data[index];
+    if (index > 0) {
+      let last = data[index-1];
+      let timeScale = d3.scaleTime()
+            .domain([last[0], now[0]])
+            .range([last[1],now[1]]);
+      return timeScale(time);
+    }
+    return now[1];
+  }
+  function position(dot){
+    dot.attr('cx',d=>x(d.time)+margin.left)
+       .attr('cy',d=>{
+         return y(d.freq)+margin.top;
+        })
+       .attr('r',d=>{
+        return r(d.freq);})
+       .style("fill", function(d) { return color(d.color); });
+  }
+  function textPosition(text){
+    text.attr('x',d=>x(d.time)+margin.left)
+       .attr('y',d=>{
+         return y(d.freq)+margin.top;
+        })
+       .text(d=>d.label)
+       .style("fill", function(d) { return color(d.color); });
+  }
+
+  var dataArray=[];
+  d3.csv('static/data/hashtag_bubble.csv').then(function(data) {
+    data.forEach(d => {
+      let tmp={};
+      tmp.label=d.hashtag.trim();
+      tmp.degree=Math.random();
+      tmp.value=[];
+      for(let label in d){
+        if(label!=='hashtag'){
+          tmp.value.push([parseDate(label),d[label]]);
+        }
+      }
+      tmp.value.sort((a,b)=> a[0]-b[0]);
+      dataArray.push(tmp);
+    });
+    console.log(dataArray);
+    // Add a dot per state. Initialize the data at 1950, and set the colors.
+	  var dot = svg.append("g")
+					.attr("class", "dots")
+          .selectAll(".dot")
+          .data(getDataByMonth(dataArray,new Date(2016,0)))
+          .enter().append("circle")
+					.attr("class", "dot");
+    var text = svg.append("g")
+					.attr("class", "text")
+          .selectAll(".text")
+          .data(getDataByMonth(dataArray,new Date(2016,0)))
+          .enter().append("text")
+					.attr("class", "text");
+
+    svg.transition()
+       .duration(90000)
+       .ease(d3.easePolyOut)
+       .tween('time',()=>{
+        return function(t) {
+          var month = d3.interpolateDate(new Date(2016,0),new Date(2018,9))
+          tweenYear(month(t));
+        }
+       })
+
+    function tweenYear(year){
+      dot.data(getDataByMonth(dataArray,year)).call(position);
+      text.data(getDataByMonth(dataArray,year)).call(textPosition);
+    }
+  });
+</script>
+</html>
