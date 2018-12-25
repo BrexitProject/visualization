@@ -6,6 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
   <script src="static/d3.min.js"></script>
+  <script src="https://peterbeshai.com/d3-interpolate-path/d3-interpolate-path.js"></script>
   <style>
     .axisBottom path{
       stroke-width: 3px;
@@ -18,6 +19,7 @@
     .axisBottom text{
       fill: #777777;
       font-weight: bold;
+      font-size: 15px;
     }
   </style>
 </head>
@@ -25,9 +27,9 @@
   <div class="container"></div>
 </body>
 <script>
-  var margin = {top: 80, bottom: 80, left: 140, right: 60};
-  var svgWidth = 1400;
-  var svgHeight = 800;
+  var margin = {top: 80, bottom: 80, left: 180, right: 60};
+  var svgWidth = 2000;
+  var svgHeight = 500;
 
   var width=svgWidth - margin.left - margin.right;
   var height=svgHeight - margin.top - margin.bottom;
@@ -36,8 +38,6 @@
             .append('svg')
             .attr('width', svgWidth)
             .attr('height', svgHeight);
-
-  console.log(Math.random()*11);
 
   // scale
   var x = d3.scaleTime()
@@ -54,7 +54,7 @@
   // axises
   var xAxis = d3.axisBottom(x)
                 .tickFormat(d=>{
-                  if(d-new Date(2016,5,1)===0||d-new Date(2016,5,23)===0) return d3.timeFormat("%m-%d")(d);
+                  if(d-new Date(2016,5,23)===0) return d3.timeFormat("%m-%d")(d);
                   if(d.getMonth()===0) return d3.timeFormat("%Y-%m")(d);
                   else {return d3.timeFormat("%m")(d);} 
                   });
@@ -108,7 +108,6 @@
           tmp.key=word;
           tmp.date=label;
           tmp.value=parseInt(d[label]);
-          if(tmp.value===0) tmp.value=2;
           originData.push(tmp);
         }
       }
@@ -141,21 +140,21 @@
     });
 
     dataArray.sort((a,b)=>parseDate(a.date)-parseDate(b.date));
-    console.log(dataArray);
+    var dataArray2=dataArray.filter((d,i)=>i%1===0);
     var stack = d3.stack()
                   .keys(keys)
                   .order(d3.stackOrderNone)
-                  .offset(d3.stackOffsetWiggle);
+                  // .offset(d3.stackOffsetWiggle);
 
-    var layers = stack(dataArray);
-    var timeLen = dataArray.length;
+    var layers = stack(dataArray2);
+    var timeLen = dataArray2.length;
     var dataTypeNum = layers.length;
     console.log(layers);
 
     var ymin=d3.min(layers, stackMin);
     var ymax=d3.max(layers, stackMax);
 
-    var sepLen = 10; // 每条线的间隔
+    var sepLen = 5; // 每条线的间隔
     
     var textData=[];
     for (let i =0; i<timeLen; i++){
@@ -164,9 +163,9 @@
       let extraSpace = sepLen * (dataTypeNum-1);
       let totalLen = sep+extraSpace;
       if(i===0){
-        let start = - (ymax-ymin) / 2 + 20;
+        let start = - (ymax-ymin) / 2 + 100;
         let now = start;
-        let sepLen0 = ((ymax-ymin-40)-sep) / (dataTypeNum-1);
+        let sepLen0 = ((ymax-ymin-200)-sep) / (dataTypeNum-1);
         for (let j = 0;j<dataTypeNum;j++){
           let ii = index[j];
           let tmp = layers[ii][0][1]-layers[ii][0][0];
@@ -189,6 +188,38 @@
       }
     }
 
+    // for (let i =0; i<timeLen; i++){
+    //   let index = sortIndex(layers,i);
+    //   let sep = seperate(layers,i); // i时间点的竖线宽度
+    //   let extraSpace = sepLen * (dataTypeNum-1);
+    //   let totalLen = sep+extraSpace;
+    //   if(i===0){
+    //     let start = 0;
+    //     let now = start;
+    //     let sepLen0 = 5;
+    //     for (let j = 0;j<dataTypeNum;j++){
+    //       let ii = index[j];
+    //       let tmp = layers[ii][0][1]-layers[ii][0][0];
+    //       layers[ii][0][0]= now;
+    //       layers[ii][0][1]=now+tmp;
+    //       textData.push({"text":layers[ii].key,"y":now,"type":j})
+    //       layers[ii].type=j;
+    //       now = now+ tmp + sepLen0;
+    //     }
+    //   }else{
+    //     let start = 0;
+    //     let now = start;
+    //     for (let j = 0;j<dataTypeNum;j++){
+    //       let ii = index[j];
+    //       let tmp = layers[ii][i][1]-layers[ii][i][0];
+    //       console.log(tmp);
+    //       layers[ii][i][0]= now;
+    //       layers[ii][i][1]=now+tmp;
+    //       now = now + tmp + sepLen;
+    //     }
+    //   }
+    // }
+
     ymin=d3.min(layers, stackMin)*1.1;
     ymax=d3.max(layers, stackMax)*1.1;
     y.domain([ymin,ymax]);
@@ -197,15 +228,43 @@
                 .x(function(d) { return x(parseDate(d.data.date))+margin.left; })
                 .y0(function(d) { return y(d[0])+margin.top; })
                 .y1(function(d) { return y(d[1])+margin.top; })
-                .curve(d3.curveNatural);
+                .curve(d3.curveCardinal.tension(0.2));
 
-    svg.selectAll(".stream")
+    // define the line
+    var cliparea = d3.area()
+                .x(function(d) { return x(parseDate(d.data.date))+margin.left; })
+                .y0(function(d) { return y(d[1])+margin.top; })
+                .y1(function(d) { return height+margin.top; })
+                .curve(d3.curveCatmullRom);
+
+
+    var stream=svg.selectAll(".stream")
       .data(layers)
       .enter().append("path")
-      .attr('class',".stream")
+      .attr('class',"stream")
       .attr("d", area)
-      .style("fill-opacity",0.8)
-      .style("fill", d=> color(d.type));
+      .style("display","none")
+      .style("fill-opacity",0.7)
+      .style("fill", d=> color(d.type))
+      .style('stroke','#444444').style('stroke-width',1.5)
+      .style('stroke-opacity',0.6);
+
+    svg.selectAll(".stream")
+      .attr("opacity", 1)
+      .on("mouseover", function(d, i) {
+        svg.selectAll(".stream").transition()
+        .duration(250)
+        .attr("opacity", function(d, j) {
+          return j != i ? 0.2 : 1;
+      })})
+    .on("mouseout", function(d, i) {
+     svg.selectAll(".stream")
+      .transition()
+      .duration(250)
+      .attr("opacity", 1);
+
+  })
+    
 
     svg.selectAll(".label")
        .data(textData)
@@ -214,43 +273,102 @@
        .attr("x",margin.left-10)
        .attr("y",d=>y(d.y)+margin.top)
        .text(d=>d.text)
-       .style('fill','#666666')
+       .style('text-transform','capitalize')
+       .style('fill','#555555')
        .attr("font-family", "sans-serif")
        .attr("text-anchor", "end")
-       .attr("font-size", 20)
-       .attr('font-weight','bold');
+       .attr("font-size", 25)
+       .attr('font-weight',900);
        
 
+    // svg.selectAll('.colorLabel')
+    //    .data(textData)
+    //    .enter().append('circle')
+    //    .attr('class','colorLabel')
+    //    .attr('cx',(d,i)=>{
+    //      let width= d3.selectAll('.label').filter(function (d, ii) { return ii === i;}).node().getComputedTextLength();
+    //      return margin.left-24-width;})
+    //    .attr('cy',d=>y(d.y)+margin.top-8)
+    //    .attr('r',8)
+    //    .style('fill',d=>color(d.type))
+    //    .style('stroke','#000')
+    //    .style('stroke-width',1);
     svg.selectAll('.colorLabel')
        .data(textData)
-       .enter().append('circle')
+       .enter().append('text')
        .attr('class','colorLabel')
-       .attr('cx',(d,i)=>{
+       .attr('x',(d,i)=>{
          let width= d3.selectAll('.label').filter(function (d, ii) { return ii === i;}).node().getComputedTextLength();
-         return margin.left-20-width;})
-       .attr('cy',d=>y(d.y)+margin.top-6)
-       .attr('r',6)
+         return margin.left-12-width;})
+       .attr('y',d=>y(d.y)+margin.top+2)
        .style('fill',d=>color(d.type))
-       .style('stroke','#000')
-       .style('stroke-width',1);
+       .attr("font-family", "sans-serif")
+       .attr("text-anchor", "end")
+       .attr("font-size", 28)
+       .text('#')
+       .attr('font-weight','bold');
+
+    // svg.selectAll('.colorLabelline')
+    //    .data(textData)
+    //    .enter().append('line')
+    //    .attr('class','colorLabel')
+    //    .attr('x1',(d,i)=>{
+    //      let width= d3.selectAll('.label').filter(function (d, ii) { return ii === i;}).node().getComputedTextLength();
+    //      return margin.left-10-width;})
+    //      .attr('x2',(d,i)=>{
+    //     //  let width= d3.selectAll('.label').filter(function (d, ii) { return ii === i;}).node().getComputedTextLength();
+    //      return margin.left - 10;})
+    //    .attr('y1',d=>y(d.y)+margin.top+5)
+    //    .attr('y2',d=>y(d.y)+margin.top+5)
+    //    .style('fill',d=>color(d.type))
+    //    .style('stroke',d=>color(d.type))
+    //    .style('stroke-width',3);
 
     // Add 'curtain' rectangle to hide entire graph
-      var curtain = svg.append('rect')
-     .attr('x', -1 * width-margin.left)
-     .attr('y', -1 * height-margin.top+4)
-     .attr('height', height)
-     .attr('width', width)
-     .attr('class', 'curtain')
-     .attr('transform', 'rotate(180)')
-     .style('fill', '#ffffff')
+    //   var curtain = svg.append('rect')
+    //  .attr('x', -1 * width-margin.left-2)
+    //  .attr('y', -1 * height-margin.top+4)
+    //  .attr('height', height)
+    //  .attr('width', width)
+    //  .attr('class', 'curtain')
+    //  .attr('transform', 'rotate(180)')
+    //  .style('fill', '#ffffff')
 
-    var t = svg.transition()
-     .delay(100)
-     .duration(8000)
-     .ease(d3.easeLinear);
+    //  var curtain = svg.append('rect')
+    //  .attr('x', margin.left-2)
+    //  .attr('y', margin.top)
+    //  .attr('height', height)
+    //  .attr('width', 5)
+    //  .style('fill', '#ffffff')
 
-     t.select('rect.curtain')
-      .attr('width', 0);
+    const excludeSegment = (a, b) => a.x === b.x && a.x === width+margin.width;
+ var timecount=0;
+    const interval = d3.interval(() => {
+      if(timecount<timeLen){
+        timecount++;
+        var datatmp=layers.map((d,i)=> d.slice(0,timecount))
+        if(timecount===2) stream.style("display","initial");
+        stream
+        .data(datatmp)
+        .transition()
+        .duration(1000)
+        .attrTween('d', (d, i, el) => {
+          const prev = d3.select(el[i]).attr('d');
+          const next = area(d);
+          return d3.interpolatePath(prev, next, excludeSegment);
+        });
+      }
+      else interval.stop();
+  }, 900);
+
+
+    // var t = svg.transition()
+    //  .delay(1000)
+    //  .duration(50000)
+    //  .ease(d3.easeLinear);
+
+    //  t.select('rect.curtain')
+    //   .attr('width', 3);
   });
   
 
