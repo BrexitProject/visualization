@@ -1,376 +1,365 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
   <script src="static/d3.min.js"></script>
-  <script src="https://peterbeshai.com/d3-interpolate-path/d3-interpolate-path.js"></script>
+  <!-- <script src="https://peterbeshai.com/d3-interpolate-path/d3-interpolate-path.js"></script> -->
   <style>
-    .axisBottom path{
-      stroke-width: 3px;
+    .axisBottom path {
+      stroke-width: 2px;
       stroke: #777777;
     }
-    .axisBottom line{
-      stroke-width: 3px;
+
+    .axisBottom line {
+      stroke-width: 2px;
       stroke: #777777;
     }
-    .axisBottom text{
+
+    .axisBottom text {
       fill: #777777;
       font-weight: bold;
-      font-size: 15px;
+      font-size: 12px;
+      transform: "rotate(-50)";
+    }
+
+    .axisLeft path {
+      stroke-width: 2px;
+      stroke: #777777;
+    }
+
+    .axisLeft .tick {
+      display: none;
+    }
+
+    .axisLeft text {
+      display: none;
+    }
+
+    .axis path,
+    .axis line {
+      shape-rendering: crispEdges;
+    }
+
+    .grid line {
+      stroke: #999999;
+      stroke-opacity: 0.7;
+      stroke-dasharray: 6, 6;
+      /* shape-rendering: crispEdges; */
+    }
+
+    .grid path {
+      stroke-width: 0;
     }
   </style>
 </head>
+
 <body>
   <div class="container"></div>
 </body>
 <script>
-  var margin = {top: 80, bottom: 80, left: 180, right: 60};
-  var svgWidth = 2000;
-  var svgHeight = 500;
+  var margin = { top: 80, bottom: 80, left: 80, right: 120 };
+  var svgWidth = 840;
+  var svgHeight = 450;
 
-  var width=svgWidth - margin.left - margin.right;
-  var height=svgHeight - margin.top - margin.bottom;
+  var width = svgWidth - margin.left - margin.right;
+  var height = svgHeight - margin.top - margin.bottom;
 
   var svg = d3.select('.container')
-            .append('svg')
-            .attr('width', svgWidth)
-            .attr('height', svgHeight);
+    .append('svg')
+    .attr('width', svgWidth)
+    .attr('height', svgHeight);
+
+  var g = svg.append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  // extra svg to clip the graph and x axis as they transition in and out
+  var graph = g.append("svg")
+    .attr("width", width + 2)
+    .attr("height", height + margin.top + margin.bottom);
+
 
   // scale
   var x = d3.scaleTime()
-            .domain([new Date(2016, 0), new Date(2018, 9)])
-            .range([0,width]);
+    .domain([new Date(2016, 0), new Date(2018, 9)])
+    .range([0, width + width / 11 * 22]);
 
   var y = d3.scaleLinear()
-            .range([height, 0]);
+    .range([height, 0]);
   var color = d3.scaleOrdinal()
-                .domain(d3.range(0,13,1))
-                .range(['#9e0142','#d53e4f','#f46d43','#fdae61','#fee08b','#ffffbf','#e6f598','#abdda4',
-'#66c2a5','#3288bd','#5e4fa2','#878787','#92c5de'])
+    .domain(d3.range(0, 13, 1))
+    .range(['#9e0142', '#d53e4f', '#f46d43', '#fdae61', '#fee08b', '#ffffbf', '#e6f598', '#abdda4',
+      '#66c2a5', '#3288bd', '#5e4fa2', '#878787', '#92c5de'])
 
+  var xnow = d3.scaleTime()
+    .domain([new Date(2016, 0), new Date(2016, 11)])
+    .range([0, width]);
   // axises
-  var xAxis = d3.axisBottom(x)
-                .tickFormat(d=>{
-                  if(d-new Date(2016,5,23)===0) return d3.timeFormat("%m-%d")(d);
-                  if(d.getMonth()===0) return d3.timeFormat("%Y-%m")(d);
-                  else {return d3.timeFormat("%m")(d);} 
-                  });
-                
+  var xAxis = d3.axisBottom(xnow)
+    // .tickSizeInner(-height + 40)
+    .tickFormat(d => {
+      if (d - new Date(2016, 5, 23) === 0) return d3.timeFormat("%m-%d")(d);
+      if (d.getMonth() === 0) return d3.timeFormat("%Y-%m")(d);
+      else { return d3.timeFormat("%m")(d); }
+    });
 
-  let newTicks = x.ticks(d3.timeMonth);
-  newTicks.push(new Date(2016,5,23));
+  var yAxis = d3.axisLeft(y)
+
+
+
+  let newTicks = xnow.ticks(d3.timeMonth);
+  newTicks.push(new Date(2016, 5, 23));
   xAxis.tickValues(newTicks);
-  svg.append("g")
-    .attr("transform", `translate(${margin.left},${margin.top+height})`)
+
+  graph.append("g")
+    .attr("transform", `translate(0,${height})`)
     .attr("class", "axisBottom")
     .style("font", "12px Helvetica Neue")
     .call(xAxis)
-    .selectAll("text")	
-    .style("text-anchor", "end")
-    .attr("dx", "-.8em")
-    .attr("dy", ".15em")
-    .attr("transform", function(d) {
-        return "rotate(-65)" 
-        });
-  
-  function parseDate(str){
-    var y = str.substr(0,4),
-        m = str.substr(4,2)-1,
-        d = str.substr(6,2);
-    if(d) return new Date(y,m,d);
-    return new Date(y,m);
+    .selectAll("text")
+    .style("text-anchor", "start")
+    .attr("y", 0)
+    .attr("x", 9)
+    .attr("dy", ".35em")
+    .attr("transform", "rotate(50)");
+
+
+
+  //   // gridlines in x axis function
+  //   function make_x_gridlines() {		
+  //       return d3.axisBottom(x)
+  //           .ticks(36)
+  //   }
+  // // add the X gridlines
+  // svg.append("g")			
+  //     .attr("class", "grid")
+  //     .attr("transform", `translate(${margin.left},${margin.top+height})`)
+  //     .call(make_x_gridlines()
+  //         .tickSize(-height)
+  //         .tickFormat("")
+  //     )
+
+  function parseDate(str) {
+    var y = str.substr(0, 4),
+      m = str.substr(4, 2) - 1,
+      d = str.substr(6, 2);
+    if (d) return new Date(y, m, d);
+    return new Date(y, m);
   }
 
-  function sortIndex(array,i){
+  function sortIndex(array, i) {
     let tmp = array.concat();
-    tmp.sort((a,b)=>(a[i][1]-a[i][0]-(b[i][1]-b[i][0])));
-    let index=[];
-    tmp.forEach(d=>{
+    tmp.sort((a, b) => (a[i][1] - a[i][0] - (b[i][1] - b[i][0])));
+    let index = [];
+    tmp.forEach(d => {
       index.push(array.indexOf(d));
     })
     return index;
   }
 
-  d3.csv('static/data/hashtag_stream.csv').then(function(data) {
-    var dataArray=[];
-    var keys=[];
+  d3.csv('static/data/hashtag_stream.csv').then(function (data) {
+    var dataArray = [];
+    var keys = [];
 
-    var originData=[]
+    var originData = []
     data.forEach(d => {
-      let word=d.hashtag.trim();
+      let word = d.hashtag.trim();
       keys.push(word);
-      for(let label in d){
-        if(label!=='hashtag'){
-          let tmp={};
-          tmp.key=word;
-          tmp.date=label;
-          tmp.value=parseInt(d[label]);
+      for (let label in d) {
+        if (label !== 'hashtag') {
+          let tmp = {};
+          tmp.key = word;
+          tmp.date = label;
+          tmp.value = parseInt(d[label]);
           originData.push(tmp);
         }
       }
     });
 
     function stackMax(layer) {
-      return d3.max(layer, function(d) { return d[1]; });
+      return d3.max(layer, function (d) { return d[1]; });
     }
 
     function stackMin(layer) {
-      return d3.min(layer, function(d) { return d[0]; });
+      return d3.min(layer, function (d) { return d[0]; });
     }
 
-    function seperate(layers,index){
+    function seperate(layers, index) {
       let len = layers.length;
-      return layers[len-1][index][1]-layers[0][index][0];
+      return layers[len - 1][index][1] - layers[0][index][0];
     }
 
     var nestData = d3.nest()
-                .key(d=>d.date)
-                .entries(originData);
+      .key(d => d.date)
+      .entries(originData);
 
-    nestData.forEach(d=>{
+    nestData.forEach(d => {
       let tmp = {};
-      tmp.date=d.key;
-      d.values.forEach(dd=>{
-        tmp[dd.key]=dd.value;
+      tmp.date = d.key;
+      d.values.forEach(dd => {
+        tmp[dd.key] = dd.value;
       });
       dataArray.push(tmp);
     });
 
-    dataArray.sort((a,b)=>parseDate(a.date)-parseDate(b.date));
-    var dataArray2=dataArray.filter((d,i)=>i%1===0);
+    dataArray.sort((a, b) => parseDate(a.date) - parseDate(b.date));
+    var dataArray2 = dataArray.filter((d, i) => i % 1 === 0);
     var stack = d3.stack()
-                  .keys(keys)
-                  .order(d3.stackOrderNone)
-                  // .offset(d3.stackOffsetWiggle);
+      .keys(keys)
+      .order(d3.stackOrderNone)
+    // .offset(d3.stackOffsetWiggle);
 
     var layers = stack(dataArray2);
     var timeLen = dataArray2.length;
     var dataTypeNum = layers.length;
-    console.log(layers);
 
-    var ymin=d3.min(layers, stackMin);
-    var ymax=d3.max(layers, stackMax);
+    var ymin = d3.min(layers, stackMin);
+    var ymax = d3.max(layers, stackMax);
 
-    var sepLen = 5; // 每条线的间隔
-    
-    var textData=[];
-    for (let i =0; i<timeLen; i++){
-      let index = sortIndex(layers,i);
-      let sep = seperate(layers,i); // i时间点的竖线宽度
-      let extraSpace = sepLen * (dataTypeNum-1);
-      let totalLen = sep+extraSpace;
-      if(i===0){
-        let start = - (ymax-ymin) / 2 + 100;
-        let now = start;
-        let sepLen0 = ((ymax-ymin-200)-sep) / (dataTypeNum-1);
-        for (let j = 0;j<dataTypeNum;j++){
-          let ii = index[j];
-          let tmp = layers[ii][0][1]-layers[ii][0][0];
-          layers[ii][0][0]= now;
-          layers[ii][0][1]=now+tmp;
-          textData.push({"text":layers[ii].key,"y":now,"type":j})
-          layers[ii].type=j;
-          now = now + tmp + sepLen0;
-        }
-      }else{
+    var sepLen = 25; // 每条线的间隔
+
+    var textData = [];
+    for (let i = 0; i < timeLen; i++) {
+      let index = sortIndex(layers, i);
+      let sep = seperate(layers, i); // i时间点的竖线宽度
+      let extraSpace = sepLen * (dataTypeNum - 1);
+      let totalLen = sep + extraSpace;
+      if (i === 0) {
         let start = - totalLen / 2;
         let now = start;
-        for (let j = 0;j<dataTypeNum;j++){
+        let sepLen0 = ((ymax - ymin - 200) - sep) / (dataTypeNum - 1);
+        for (let j = 0; j < dataTypeNum; j++) {
           let ii = index[j];
-          let tmp = layers[ii][i][1]-layers[ii][i][0];
-          layers[ii][i][0]= now;
-          layers[ii][i][1]=now+tmp;
+          let tmp = layers[ii][0][1] - layers[ii][0][0];
+          layers[ii][0][0] = now;
+          layers[ii][0][1] = now + tmp;
+          textData.push({ "text": layers[ii].key, "y": now, "type": j })
+          layers[ii].type = j;
+          now = now + tmp + sepLen;
+        }
+      } else {
+        let start = - totalLen / 2;
+        let now = start;
+        for (let j = 0; j < dataTypeNum; j++) {
+          let ii = index[j];
+          let tmp = layers[ii][i][1] - layers[ii][i][0];
+          layers[ii][i][0] = now;
+          layers[ii][i][1] = now + tmp;
           now = now + tmp + sepLen;
         }
       }
     }
 
-    // for (let i =0; i<timeLen; i++){
-    //   let index = sortIndex(layers,i);
-    //   let sep = seperate(layers,i); // i时间点的竖线宽度
-    //   let extraSpace = sepLen * (dataTypeNum-1);
-    //   let totalLen = sep+extraSpace;
-    //   if(i===0){
-    //     let start = 0;
-    //     let now = start;
-    //     let sepLen0 = 5;
-    //     for (let j = 0;j<dataTypeNum;j++){
-    //       let ii = index[j];
-    //       let tmp = layers[ii][0][1]-layers[ii][0][0];
-    //       layers[ii][0][0]= now;
-    //       layers[ii][0][1]=now+tmp;
-    //       textData.push({"text":layers[ii].key,"y":now,"type":j})
-    //       layers[ii].type=j;
-    //       now = now+ tmp + sepLen0;
-    //     }
-    //   }else{
-    //     let start = 0;
-    //     let now = start;
-    //     for (let j = 0;j<dataTypeNum;j++){
-    //       let ii = index[j];
-    //       let tmp = layers[ii][i][1]-layers[ii][i][0];
-    //       console.log(tmp);
-    //       layers[ii][i][0]= now;
-    //       layers[ii][i][1]=now+tmp;
-    //       now = now + tmp + sepLen;
-    //     }
-    //   }
-    // }
-
-    ymin=d3.min(layers, stackMin)*1.1;
-    ymax=d3.max(layers, stackMax)*1.1;
-    y.domain([ymin,ymax]);
+    ymin = d3.min(layers, stackMin) * 1.1;
+    ymax = d3.max(layers, stackMax) * 1.1;
+    y.domain([ymin, ymax]);
 
     var area = d3.area()
-                .x(function(d) { return x(parseDate(d.data.date))+margin.left; })
-                .y0(function(d) { return y(d[0])+margin.top; })
-                .y1(function(d) { return y(d[1])+margin.top; })
-                .curve(d3.curveCardinal.tension(0.2));
-
-    // define the line
-    var cliparea = d3.area()
-                .x(function(d) { return x(parseDate(d.data.date))+margin.left; })
-                .y0(function(d) { return y(d[1])+margin.top; })
-                .y1(function(d) { return height+margin.top; })
-                .curve(d3.curveCatmullRom);
+      .x(function (d) { return x(parseDate(d.data.date)); })
+      .y0(function (d) { return y(d[0]) })
+      .y1(function (d) { return y(d[1]) })
+      .curve(d3.curveCardinal);
 
 
-    var stream=svg.selectAll(".stream")
+    var stream = graph.selectAll(".stream")
       .data(layers)
       .enter().append("path")
-      .attr('class',"stream")
+      .attr('class', "stream")
+      // .attr('clip-path','url(#myClip)')
       .attr("d", area)
-      .style("display","none")
-      .style("fill-opacity",0.7)
-      .style("fill", d=> color(d.type))
-      .style('stroke','#444444').style('stroke-width',1.5)
-      .style('stroke-opacity',0.6);
+      .style("fill-opacity", 0.8)
+      .style("fill", d => color(d.type))
+      .style('stroke', '#ffffff').style('stroke-width', 1)
+      .style('stroke-opacity', 0.8);
 
-    svg.selectAll(".stream")
-      .attr("opacity", 1)
-      .on("mouseover", function(d, i) {
+    stream.attr("opacity", 1)
+      .on("mouseover", function (d, i) {
         svg.selectAll(".stream").transition()
-        .duration(250)
-        .attr("opacity", function(d, j) {
-          return j != i ? 0.2 : 1;
-      })})
-    .on("mouseout", function(d, i) {
-     svg.selectAll(".stream")
-      .transition()
-      .duration(250)
-      .attr("opacity", 1);
+          .duration(250)
+          .attr("opacity", function (d, j) {
+            return j != i ? 0.2 : 1;
+          })
+      })
+      .on("mouseout", function (d, i) {
+        svg.selectAll(".stream")
+          .transition()
+          .duration(250)
+          .attr("opacity", 1);
+      })
 
-  })
-    
 
     svg.selectAll(".label")
-       .data(textData)
-       .enter().append('text')
-       .attr('class','label')
-       .attr("x",margin.left-10)
-       .attr("y",d=>y(d.y)+margin.top)
-       .text(d=>d.text)
-       .style('text-transform','capitalize')
-       .style('fill','#555555')
-       .attr("font-family", "sans-serif")
-       .attr("text-anchor", "end")
-       .attr("font-size", 25)
-       .attr('font-weight',900);
-       
+      .data(textData)
+      .enter().append('text')
+      .attr('class', 'label')
+      .attr("x", width + margin.left + 30)
+      .attr("y", (d,i) => 25*i + margin.top + 5)
+      .text(d => d.text)
+      .style('text-transform', 'capitalize')
+      .style('fill', '#555555')
+      .attr("font-family", "sans-serif")
+      .attr("text-anchor", "start")
+      .attr("font-size", 16)
+      .attr('font-weight', 900);
 
-    // svg.selectAll('.colorLabel')
-    //    .data(textData)
-    //    .enter().append('circle')
-    //    .attr('class','colorLabel')
-    //    .attr('cx',(d,i)=>{
-    //      let width= d3.selectAll('.label').filter(function (d, ii) { return ii === i;}).node().getComputedTextLength();
-    //      return margin.left-24-width;})
-    //    .attr('cy',d=>y(d.y)+margin.top-8)
-    //    .attr('r',8)
-    //    .style('fill',d=>color(d.type))
-    //    .style('stroke','#000')
-    //    .style('stroke-width',1);
+
     svg.selectAll('.colorLabel')
        .data(textData)
-       .enter().append('text')
+       .enter().append('circle')
        .attr('class','colorLabel')
-       .attr('x',(d,i)=>{
-         let width= d3.selectAll('.label').filter(function (d, ii) { return ii === i;}).node().getComputedTextLength();
-         return margin.left-12-width;})
-       .attr('y',d=>y(d.y)+margin.top+2)
+       .attr('cx',width+margin.left+20)
+       .attr('cy',(d,i) => 25*i + margin.top)
+       .attr('r',6)
+       .style("fill-opacity", 0.8)
        .style('fill',d=>color(d.type))
-       .attr("font-family", "sans-serif")
-       .attr("text-anchor", "end")
-       .attr("font-size", 28)
-       .text('#')
-       .attr('font-weight','bold');
 
-    // svg.selectAll('.colorLabelline')
-    //    .data(textData)
-    //    .enter().append('line')
-    //    .attr('class','colorLabel')
-    //    .attr('x1',(d,i)=>{
-    //      let width= d3.selectAll('.label').filter(function (d, ii) { return ii === i;}).node().getComputedTextLength();
-    //      return margin.left-10-width;})
-    //      .attr('x2',(d,i)=>{
-    //     //  let width= d3.selectAll('.label').filter(function (d, ii) { return ii === i;}).node().getComputedTextLength();
-    //      return margin.left - 10;})
-    //    .attr('y1',d=>y(d.y)+margin.top+5)
-    //    .attr('y2',d=>y(d.y)+margin.top+5)
-    //    .style('fill',d=>color(d.type))
-    //    .style('stroke',d=>color(d.type))
-    //    .style('stroke-width',3);
+    var timecount = 0;
+    var tmplayers = layers[0].filter((d) => d.data.date !== '20160623')
+    const interval = d3.interval((t) => {
+      let xTicks = xAxis.tickValues();
 
-    // Add 'curtain' rectangle to hide entire graph
-    //   var curtain = svg.append('rect')
-    //  .attr('x', -1 * width-margin.left-2)
-    //  .attr('y', -1 * height-margin.top+4)
-    //  .attr('height', height)
-    //  .attr('width', width)
-    //  .attr('class', 'curtain')
-    //  .attr('transform', 'rotate(180)')
-    //  .style('fill', '#ffffff')
+      var xseperate = x(parseDate(tmplayers[timecount + 1].data.date)) - x(new Date(2016, 0));
+      xnow.domain([parseDate(tmplayers[timecount + 1].data.date), parseDate(tmplayers[timecount + 12].data.date)]);
+      xTicks.push(parseDate(tmplayers[timecount + 12].data.date));
 
-    //  var curtain = svg.append('rect')
-    //  .attr('x', margin.left-2)
-    //  .attr('y', margin.top)
-    //  .attr('height', height)
-    //  .attr('width', 5)
-    //  .style('fill', '#ffffff')
-
-    const excludeSegment = (a, b) => a.x === b.x && a.x === width+margin.width;
- var timecount=0;
-    const interval = d3.interval(() => {
-      if(timecount<timeLen){
-        timecount++;
-        var datatmp=layers.map((d,i)=> d.slice(0,timecount))
-        if(timecount===2) stream.style("display","initial");
-        stream
-        .data(datatmp)
-        .transition()
-        .duration(1000)
-        .attrTween('d', (d, i, el) => {
-          const prev = d3.select(el[i]).attr('d');
-          const next = area(d);
-          return d3.interpolatePath(prev, next, excludeSegment);
-        });
+      if (tmplayers[timecount].data.date === '20160601') {
+        let tmp = xTicks.filter(d => d.getTime() !== new Date(2016, 5, 23).getTime());
+        xTicks = tmp;
       }
-      else interval.stop();
-  }, 900);
+      xTicks.shift();
+      xAxis.tickValues(xTicks);
+      var labelText = graph.select('.axisBottom').transition().duration(500).ease(d3.easeLinear).call(xAxis);
+      labelText.selectAll('text')
+        .style("text-anchor", "start")
+        .attr("y", 0)
+        .attr("x", 9)
+        .attr("dy", ".55em")
+        .attr("transform", "rotate(50)");
 
+      stream.transition()
+        .duration(500)
+        .ease(d3.easeLinear)
+        .attr('transform', 'translate(' + (-xseperate) + ',0)');
 
-    // var t = svg.transition()
-    //  .delay(1000)
-    //  .duration(50000)
-    //  .ease(d3.easeLinear);
+      timecount++;
+      if (timecount === 22) {
+        graph.transition().delay(400).duration(100).attr('width', width + 20);
+        interval.stop();
+      }
+    }, 500);
 
-    //  t.select('rect.curtain')
-    //   .attr('width', 3);
+    svg.append("g")
+      .attr("transform", `translate(${margin.left},${margin.top})`)
+      .attr("class", "axisLeft")
+      .style("font", "12px Helvetica Neue")
+      .call(yAxis)
+
   });
-  
+
 
 </script>
+
 </html>
