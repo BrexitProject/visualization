@@ -105,24 +105,19 @@ var line = d3.line()
 var path = svg.append("g")
   	.append('path')
   	.attr('class', 'line1')
-  	.attr('d', line(getdata(1,0)))
+  	.attr('d', line(getdata(7,0)))
   	.attr("stroke","blue")
   	.attr("stroke-width",2)
   	.attr("fill","none");
 
-var index =0;
-transition = d3.interval((t) => {
-      index++;
-      if(index>7) {
-        transition.stop();
-        return;}
-			path
-			.transition()
-			.duration(3000)
-			.ease(d3.easeLinear)
-			//.attr("stroke","red");
-      .attr('d', line(getdata(index,0)));
-		},3000);
+    var totalLength = path.node().getTotalLength();
+
+path
+  .attr("stroke-dasharray", totalLength + " " + totalLength)
+  .attr("stroke-dashoffset", totalLength)
+  .transition()
+    .duration(2000)
+    .attr("stroke-dashoffset", 0);
 
 var path2 = svg.append("g")
   	.append('path')
