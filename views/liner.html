@@ -1,0 +1,200 @@
+<!DOCTYPE>
+<html>
+ 
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<head>
+<title>Economy & Immigration</title>
+</head>
+
+<style>
+	.axis path,
+	.axis line{
+		fill:none;
+		stroke:black;
+		shape-rendering:crispEdges;
+	}
+</style>
+ 
+ 
+<body>
+<div class="container"></div>
+<button onclick="transition();">更改源数据</button>
+<script src="static/d3.min.js"></script>  
+<script>
+
+function parseDate(str){
+    var m = str.substr(0,2)-1,
+        d = str.substr(2,2);
+    //console.log(m);
+    if(d) return new Date(2016,m,d);
+  }
+
+
+
+var date=[];    
+var dataArray=[];
+  d3.csv('static/data/liner.csv').then(function(data) {
+    data.forEach(d => {
+      let tmp={};
+      tmp.label=d.name.trim();
+      tmp.value=[];
+      for(let label in d){
+        if(label!=='name'){
+          tmp.value.push([parseDate(label),d[label]]);
+        }
+      }
+      dataArray.push(tmp);
+    });
+    for(var i = 0; i<7; i++){
+    	date.push(dataArray[0].value[i][0]);
+    	//console.log(dataArray[0].value[i][0]);
+    }
+    console.log(dataArray[0].value);
+
+
+function getdata(i,flag)
+{
+	var datanow=[];
+	for(var j=0; j<i; j++)
+	{
+		datanow.push([dataArray[flag].value[j][0],dataArray[flag].value[j][1]]);
+	}
+	console.log("3######");
+	return datanow;
+}
+
+
+
+//getdata(2);
+console.log(getdata(4,0));
+
+var margin = {top: 20, bottom: 50, left: 60, right: 60};
+var svgWidth = 1400;
+var svgHeight = 700;
+var width=svgWidth - margin.left - margin.right;
+var height=svgHeight - margin.top - margin.bottom;
+
+var svg = d3.select('.container')
+            .append('svg')
+            .attr('width', svgWidth)
+            .attr('height', svgHeight);
+
+var x = d3.scaleTime()
+            .domain([new Date(2016, 3, 30), new Date(2016, 6, 24)])
+            .range([0,width]);
+
+var y = d3.scaleLinear()
+            .domain([0,30])
+            .range([height, 0]);
+
+var yAxis = d3.axisLeft(y);
+
+var xAxis = d3.axisBottom(x).tickValues(date).tickFormat(d=>{
+                  return d3.timeFormat("%m-%d")(d);
+                  });
+
+var line = d3.line()
+  .x(function(d) { return x(d[0]);})
+  .y(function(d) { return y(parseFloat(d[1]));})
+  .curve(d3.curveCardinal);
+
+//console.log(line(dataArray[0].value[1]));                
+
+
+var path = svg.append("g")
+  	.append('path')
+  	.attr('class', 'line1')
+  	.attr('d', line(getdata(1,0)))
+  	.attr("stroke","blue")
+  	.attr("stroke-width",2)
+  	.attr("fill","none");
+	
+transition = function()
+{
+	console.log("$#####");
+		for(var i = 2; i<7; i++)
+		{
+			path
+			.transition()
+			.duration(3000)
+			.ease(d3.easeLinear)
+			//.attr("stroke","red");
+			.attr('d', line(getdata(i,0)));
+		}
+	    
+}
+
+var path2 = svg.append("g")
+  	.append('path')
+  	.attr('d', line(dataArray[1].value))
+  	.attr("stroke","red")
+  	.attr("stroke-width",2)
+  	.attr("fill","none");
+
+svg.append("g")
+    .attr("transform", `translate(${margin.left},${margin.top+height})`)
+    .call(xAxis);
+    
+
+svg.append("g")
+     .attr("transform", `translate(${margin.left},${margin.top})`)
+     .call(yAxis)
+     .append('text')
+  	 .text('%')
+  	 .attr("stroke","black")
+  	 .attr("stroke-width",0.6)
+  	 .attr("dx", "1.5em")
+  	 .attr("dy", "1em");
+
+svg.selectAll('circle')
+		.data(dataArray[1].value)
+        .enter()
+        .append('g')
+        .append('circle')
+        .attr('cx', function(d) {  return x(d[0]);})
+        .attr('cy', function(d) {  return y(parseFloat(d[1]));})
+        .attr('r', 3.5)
+        .attr('fill', 'red')
+
+svg.selectAll('circle1')
+		.data(dataArray[0].value)
+        .enter()
+        .append('g')
+        .append('circle')
+        .attr('cx', function(d) {  return x(d[0]);})
+        .attr('cy', function(d) {  return y(parseFloat(d[1]));})
+        .attr('r', 3.5)
+        .attr('fill', 'blue');
+
+svg.selectAll("text1")
+  .data(dataArray[1].value)
+  .enter()
+  .append("text")
+  .text(function(d) {return d[1];})
+  .attr('x', function(d) { console.log(x(d[0])); return x(d[0])-12;})
+  .attr('y', function(d) { console.log(d[1]); return y(parseFloat(d[1]))-10;})
+  .attr("font-family", "sans-serif")
+  .attr("font-size", "11px")
+  .attr("fill", "red");
+
+  svg.selectAll("text2")
+  .data(dataArray[0].value)
+  .enter()
+  .append("text")
+  .text(function(d) {return d[1];})
+  .attr('x', function(d) { console.log(x(d[0])); return x(d[0])-12;})
+  .attr('y', function(d) { console.log(d[1]); return y(parseFloat(d[1]))-10;})
+  .attr("font-family", "sans-serif")
+  .attr("font-size", "11px")
+  .attr("fill", "blue");
+
+
+
+
+
+ });   
+ 
+
+</script>
+</body>
+</html>
