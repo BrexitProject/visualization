@@ -18,7 +18,7 @@
  
 <body>
 <div class="container"></div>
-<button onclick="transition();">更改源数据</button>
+<button onclick="transition">更改源数据</button>
 <script src="static/d3.min.js"></script>  
 <script>
 
@@ -54,12 +54,13 @@ var dataArray=[];
 
 function getdata(i,flag)
 {
+  console.log(i);
 	var datanow=[];
 	for(var j=0; j<i; j++)
 	{
 		datanow.push([dataArray[flag].value[j][0],dataArray[flag].value[j][1]]);
 	}
-	console.log("3######");
+	console.log(datanow);
 	return datanow;
 }
 
@@ -108,21 +109,20 @@ var path = svg.append("g")
   	.attr("stroke","blue")
   	.attr("stroke-width",2)
   	.attr("fill","none");
-	
-transition = function()
-{
-	console.log("$#####");
-		for(var i = 2; i<7; i++)
-		{
+
+var index =0;
+transition = d3.interval((t) => {
+      index++;
+      if(index>7) {
+        transition.stop();
+        return;}
 			path
 			.transition()
 			.duration(3000)
 			.ease(d3.easeLinear)
 			//.attr("stroke","red");
-			.attr('d', line(getdata(i,0)));
-		}
-	    
-}
+      .attr('d', line(getdata(index,0)));
+		},3000);
 
 var path2 = svg.append("g")
   	.append('path')
