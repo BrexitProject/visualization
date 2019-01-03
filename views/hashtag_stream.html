@@ -45,14 +45,20 @@
     }
 
     .grid line {
-      stroke: #999999;
+      stroke: #444444;
       stroke-opacity: 0.7;
-      stroke-dasharray: 6, 6;
+      stroke-width: 2px;
+      stroke-dasharray: 8, 6;
       /* shape-rendering: crispEdges; */
     }
 
     .grid path {
       stroke-width: 0;
+    }
+
+    .streamsvg{
+      -webkit-filter: drop-shadow(6px 6px 2px rgba(0,0,0,0.5));      
+      filter: drop-shadow(6px 6px 5px rgba(0,0,0,0.6));
     }
   </style>
 </head>
@@ -62,23 +68,76 @@
 </body>
 <script>
   var margin = { top: 80, bottom: 80, left: 80, right: 120 };
-  var svgWidth = 840;
-  var svgHeight = 450;
+  var svgWidth = 1040;
+  var svgHeight = 550;
 
   var width = svgWidth - margin.left - margin.right;
   var height = svgHeight - margin.top - margin.bottom;
 
   var svg = d3.select('.container')
     .append('svg')
+    .attr('class', 'streamsvg')
     .attr('width', svgWidth)
     .attr('height', svgHeight);
 
+  var svg2 = d3.select('.container')
+    .append('svg')
+    .attr('transform',"translate(" + 0+ "," + (-svgHeight) + ")")
+    .attr('width', svgWidth)
+    .attr('height', svgHeight);
+
+  // filters go in defs element
+var defs = svg.append("defs");
+
+// create filter with id #drop-shadow
+// height=130% so that the shadow is not clipped
+var filter = defs.append("filter")
+    .attr("id", "drop-shadow")
+    .attr("height", "120%");
+
+// SourceAlpha refers to opacity of graphic that this filter will be applied to
+// convolve that with a Gaussian with standard deviation 3 and store result
+// in blur
+filter.append("feDropShadow")
+    .attr("dx", "12")
+    .attr("dy", '12')
+    .attr("stdDeviation", "3")
+    .attr('flood-color','#333333');
+
+// // translate output of Gaussian blur to the right and downwards with 2px
+// // store result in offsetBlur
+// filter.append("feOffset")
+//     .attr("in", "blur")
+//     .attr("dx", 2)
+//     .attr("dy", 2)
+//     .attr("result", "offsetBlur");
+
+// // overlay original SourceGraphic over translated blurred opacity by using
+// // feMerge filter. Order of specifying inputs is important!
+// var feMerge = filter.append("feMerge");
+
+// feMerge.append("feMergeNode")
+//     .attr("in", "offsetBlur")
+// feMerge.append("feMergeNode")
+//     .attr("in", "SourceGraphic");
+
   var g = svg.append("g")
+    .attr('class', 'streamsvg')
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  var g2 = svg2.append("g")
+    .attr('class', 'streamsvg')
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   // extra svg to clip the graph and x axis as they transition in and out
   var graph = g.append("svg")
-    .attr("width", width + 2)
+    .attr('class', 'streamsvg')
+    .attr("width", width+2)
+    .attr("height", height + margin.top + margin.bottom);
+
+  var graph2 = g2.append("svg")
+    .attr('class', 'streamsvg')
+    .attr("width", width+2)
     .attr("height", height + margin.top + margin.bottom);
 
 
@@ -90,9 +149,8 @@
   var y = d3.scaleLinear()
     .range([height, 0]);
   var color = d3.scaleOrdinal()
-    .domain(d3.range(0, 13, 1))
-    .range(['#9e0142', '#d53e4f', '#f46d43', '#fdae61', '#fee08b', '#ffffbf', '#e6f598', '#abdda4',
-      '#66c2a5', '#3288bd', '#5e4fa2', '#878787', '#92c5de'])
+    .domain(d3.range(0, 4, 1))
+    .range(['#a3a1a1', '#28AF63', '#0165bf', '#FFD700'])
 
   var xnow = d3.scaleTime()
     .domain([new Date(2016, 0), new Date(2016, 11)])
@@ -106,15 +164,13 @@
       else { return d3.timeFormat("%m")(d); }
     });
 
-  var yAxis = d3.axisLeft(y)
-
-
+  var yAxis = d3.axisLeft(y);
 
   let newTicks = xnow.ticks(d3.timeMonth);
   newTicks.push(new Date(2016, 5, 23));
   xAxis.tickValues(newTicks);
 
-  graph.append("g")
+  graph2.append("g")
     .attr("transform", `translate(0,${height})`)
     .attr("class", "axisBottom")
     .style("font", "12px Helvetica Neue")
@@ -125,22 +181,6 @@
     .attr("x", 9)
     .attr("dy", ".35em")
     .attr("transform", "rotate(50)");
-
-
-
-  //   // gridlines in x axis function
-  //   function make_x_gridlines() {		
-  //       return d3.axisBottom(x)
-  //           .ticks(36)
-  //   }
-  // // add the X gridlines
-  // svg.append("g")			
-  //     .attr("class", "grid")
-  //     .attr("transform", `translate(${margin.left},${margin.top+height})`)
-  //     .call(make_x_gridlines()
-  //         .tickSize(-height)
-  //         .tickFormat("")
-  //     )
 
   function parseDate(str) {
     var y = str.substr(0, 4),
@@ -210,7 +250,6 @@
     var stack = d3.stack()
       .keys(keys)
       .order(d3.stackOrderNone)
-    // .offset(d3.stackOffsetWiggle);
 
     var layers = stack(dataArray2);
     var timeLen = dataArray2.length;
@@ -263,16 +302,18 @@
       .y1(function (d) { return y(d[1]) })
       .curve(d3.curveCardinal);
 
-
     var stream = graph.selectAll(".stream")
       .data(layers)
       .enter().append("path")
       .attr('class', "stream")
+      .attr('class', 'streamsvg')
+      // .style("filter", "url(#drop-shadow)")
+      // .attr('filter','url(#f4)')
       // .attr('clip-path','url(#myClip)')
       .attr("d", area)
       .style("fill-opacity", 0.8)
       .style("fill", d => color(d.type))
-      .style('stroke', '#ffffff').style('stroke-width', 1)
+      .style('stroke', '#fefefe').style('stroke-width', 1)
       .style('stroke-opacity', 0.8);
 
     stream.attr("opacity", 1)
@@ -291,7 +332,7 @@
       })
 
 
-    svg.selectAll(".label")
+    svg2.selectAll(".label")
       .data(textData)
       .enter().append('text')
       .attr('class', 'label')
@@ -306,7 +347,7 @@
       .attr('font-weight', 900);
 
 
-    svg.selectAll('.colorLabel')
+    svg2.selectAll('.colorLabel')
        .data(textData)
        .enter().append('circle')
        .attr('class','colorLabel')
@@ -315,23 +356,43 @@
        .attr('r',6)
        .style("fill-opacity", 0.8)
        .style('fill',d=>color(d.type))
+       .style('stroke','#444444')
+       .style('stroke-width',1)
 
     var timecount = 0;
     var tmplayers = layers[0].filter((d) => d.data.date !== '20160623')
+
+
+
+  // gridlines in x axis function
+  function make_x_gridlines() {		
+      return d3.axisBottom(xnow)
+          .tickValues([new Date(2016,5,23)])
+  }
+  // add the X gridlines
+  var grid = graph2.append("g")			
+      .attr("class", "grid")
+      .attr("transform", `translate(0,${height})`)
+      .call(make_x_gridlines()
+          .tickSize(-height)
+          .tickFormat("")
+      )
+
     const interval = d3.interval((t) => {
       let xTicks = xAxis.tickValues();
-
-      var xseperate = x(parseDate(tmplayers[timecount + 1].data.date)) - x(new Date(2016, 0));
+      console.log(tmplayers[timecount + 1].data.date);
+      var xseperate = xnow(parseDate(tmplayers[timecount + 1].data.date)) - xnow(new Date(2016, 0));
       xnow.domain([parseDate(tmplayers[timecount + 1].data.date), parseDate(tmplayers[timecount + 12].data.date)]);
       xTicks.push(parseDate(tmplayers[timecount + 12].data.date));
 
-      if (tmplayers[timecount].data.date === '20160601') {
-        let tmp = xTicks.filter(d => d.getTime() !== new Date(2016, 5, 23).getTime());
-        xTicks = tmp;
-      }
+      console.log(xseperate);
+
       xTicks.shift();
       xAxis.tickValues(xTicks);
-      var labelText = graph.select('.axisBottom').transition().duration(500).ease(d3.easeLinear).call(xAxis);
+      var labelText = graph2.select('.axisBottom').transition().duration(1000).ease(d3.easeLinear).call(xAxis);
+      graph2.select('.grid').transition().duration(1000).ease(d3.easeLinear).call(d3.axisBottom(xnow)
+      .tickValues([new Date(2016,5,23)]).tickSize(-height)
+          .tickFormat(""));
       labelText.selectAll('text')
         .style("text-anchor", "start")
         .attr("y", 0)
@@ -340,18 +401,18 @@
         .attr("transform", "rotate(50)");
 
       stream.transition()
-        .duration(500)
+        .duration(1000)
         .ease(d3.easeLinear)
         .attr('transform', 'translate(' + (-xseperate) + ',0)');
 
       timecount++;
       if (timecount === 22) {
-        graph.transition().delay(400).duration(100).attr('width', width + 20);
+        graph.transition().delay(900).duration(100).attr('width', width + 20);
         interval.stop();
       }
-    }, 500);
+    }, 1000);
 
-    svg.append("g")
+    svg2.append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`)
       .attr("class", "axisLeft")
       .style("font", "12px Helvetica Neue")
