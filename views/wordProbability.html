@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>wordProbability</title>
+  <style>
+    .container{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .chart{
+      width: 800px;
+      height: 700px;
+    }
+    .axis {
+        font-size: 14px;
+    }
+    .axis line{
+        stroke: grey;
+        stroke-width: 2px
+    }
+  </style>
+  <script src="static/d3.min.js"></script>
+  <script src="static/d3.layout.cloud.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class='chart'>
+        <svg class='wordCloud' width='100%' height='100%'/>
+    </div>
+  </div>
+</body>
+<script>
+let margin = {top: 20, bottom: 20, left: 20, right: 20};
+let svgWidth = 800;
+let svgHeight = 700;
+
+let width=svgWidth - margin.left - margin.right;
+let height=svgHeight - margin.top - margin.bottom;
+let xScale = d3.scaleLinear()
+           .range([2,35]);
+let color = d3.scaleOrdinal().domain(['leave', 'remain']).range(['rgb(216, 75, 42)', 'rgb(31, 119, 180)'])
+// 经济: economic 具体： concrete   政治：political 抽象：abstract
+function sort(data){
+    let EC = [],EA = [], PC=[], PA=[];
+    data.map(d=>{
+        switch(d.category){
+            case 'EC':
+                EC.push(d);
+                break;
+            case 'EA':
+                EA.push(d);
+                break;
+            case 'PC':
+                PC.push(d)
+                break;
+            case 'PA':
+                PA.push(d);
+                break;
+            default:
+        }
+    });
+    return {
+        EA: EA,
+        EC: EC,
+        PC: PC,
+        PA: PA
+    }
+}
+function locate(d){
+    let transform;
+    switch(d){
+            case 'EC':
+                transform = `translate(${width/4},${3*height/4})`;
+                break;
+            case 'EA':
+                transform = `translate(${width/4},${height/4})`;
+                break;
+            case 'PC':
+                transform = `translate(${3*width/4},${3*height/4})`;
+                break;
+            case 'PA':
+                transform = `translate(${3*width/4},${height/4})`;
+                break;
+            default:
+        }
+    return transform;
+}
+function wordCloud(category, word){
+    d3.layout.cloud().size([width /2 , height / 2])
+          .timeInterval(20)
+          .words(word)
+          .fontSize(function(d) { return xScale(+d.probability); })
+          .text(function(d) { return d.word; })
+          .rotate(function() { return 0; })
+          .font("Impact")
+          .on("end", draw)
+          .start();
+    function draw(words) {
+      svg.append("g")
+            .attr("class", category)
+            .attr("transform", locate(category))
+             .selectAll("text")
+              .data(words)
+                .enter().append("text")
+              .style("font-size", function(d) { return xScale(d.probability) + "px"; })
+              .style("font-family", "Impact")
+              .style("fill", (d)=>color(d.group))
+              .attr("text-anchor", "middle")
+              .attr("transform", function(d) {
+                return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+              })
+              .text(function(d) { return d.word; });
+    }
+    d3.layout.cloud().stop();
+}
+let svg = d3.select('.wordCloud')
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+let axis = svg.append("g")
+             .attr("class",'axis')
+        axis.append('line')
+            .attr('x1', 0)
+            .attr('y1', height / 2)
+            .attr('x2', width)
+            .attr('y2', height / 2)
+        axis.append('line')
+            .attr('x1', width / 2)
+            .attr('y1', 0)
+            .attr('x2', width / 2)
+            .attr('y2', height)
+
+        axis.append('text')
+              .attr("x", 0)
+              .attr("y", height / 2 - 5)
+              .text('economic')
+        axis.append('text')
+              .attr("x", width - 50)
+              .attr("y", height / 2 - 5)
+              .text('politics')
+        axis.append('text')
+              .attr("x", width / 2)
+              .attr("y", 0)
+              .text('abstract')
+        axis.append('text')
+              .attr("x", width / 2)
+              .attr("y", height)
+              .text('specific')
+d3.csv('static/data/word_probability.csv').then(function(data) {
+    xScale.domain([d3.min(data, function(d) {
+              return d.probability;
+            }),1
+           ])
+    let words = sort(data);
+    Object.keys(words).map( d=>{
+        // svg.append("g")
+        //     .attr("class", 'EC')
+        //     .attr("transform", locate('EC'));
+        wordCloud(d, words[d]);
+    });
+});
+</script>
+</html>
