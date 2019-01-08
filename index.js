@@ -19,4 +19,5 @@ app.get('/wordProbability', function(req, res) {
 });
 
 app.use('/static',express.static(__dirname+'/public'));
+
 app.listen(3000);
