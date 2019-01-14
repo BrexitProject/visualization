@@ -147,10 +147,11 @@ var b1 = bar1.selectAll("rect").data(data).enter()
                 .attr("height", function () {
                     return 20;
                 })
-                .attr("fill","red");
+                .attr("fill","#cf142b");
 
 b1.transition()
-    .duration(5000)
+    .duration(1000)
+    .delay((d, i) => i * 1000)
     .attr("width", function (d) {
                     return x(d.out)-width/2;
                 });
@@ -170,7 +171,7 @@ var text1 = svg.append("g")
   .attr('opacity',0);
 
 text1.transition()
-     .delay(5000)
+     .delay((d, i) =>1000+ i * 1000)
      .attr("opacity",1);
 
 bar2 = svg.append("g")
@@ -193,10 +194,11 @@ var b2 = bar2.selectAll("rect").data(data).enter()
                 .attr("height", function () {
                     return 20;
                 })
-                .attr("fill","blue");
+                .attr("fill","#0038c3");
 
 b2.transition()
-    .duration(5000)
+    .duration(1000)
+    .delay((d, i) => i * 1000)
     .attr("width", function (d) {
                   console.log(d.in);
                     return width/2-x(d.in);
@@ -218,7 +220,7 @@ var text2 = svg.append("g")
   .attr('opacity',0);
 
 text2.transition()
-     .delay(5000)
+     .delay((d, i) =>1000+ i * 1000)
      .attr("opacity",1);
 
 d3.select("svg").append("rect")
@@ -226,7 +228,7 @@ d3.select("svg").append("rect")
             .attr("y",30)
             .attr("width","18")
             .attr("height",18)
-            .attr("fill","blue");
+            .attr("fill","#0038c3");
 
 d3.select("svg").append("text")
             .attr("class","mark")
@@ -234,14 +236,14 @@ d3.select("svg").append("text")
             .attr("y",50)
             .text("IN")
             .attr("font-size",30)
-            .attr("fill","blue");
+            .attr("fill","#0038c3");
 
 d3.select("svg").append("rect")
             .attr("x",720)
             .attr("y",30)
             .attr("width","18")
             .attr("height",18)
-            .attr("fill","red");
+            .attr("fill","#cf142b");
 
 d3.select("svg").append("text")
             .attr("class","mark")
@@ -249,7 +251,7 @@ d3.select("svg").append("text")
             .attr("y",50)
             .text("OUT")
             .attr("font-size",30)
-            .attr("fill","red");
+            .attr("fill","#cf142b");
 
 
 
