@@ -32,7 +32,7 @@
     .axisLeft text {
       fill: #777777;
       font-weight: bold;
-      font-size: 12px;
+      font-size: 15px;
       transform: "rotate(-50)";
     }
 
@@ -130,7 +130,7 @@ svg.append("g")
 
 bar1 = svg.append("g")
                 .attr("class","bar1")
-                .attr("transform",`translate(${width/2+margin.left+112},${margin.top+73})`);
+                .attr("transform",`translate(${width/2+margin.left+112},${margin.top+90})`);
 
 var b1 = bar1.selectAll("rect").data(data).enter()
                 .append("rect")
@@ -145,37 +145,38 @@ var b1 = bar1.selectAll("rect").data(data).enter()
                     return 0;
                 })
                 .attr("height", function () {
-                    return 20;
+                    return 40;
                 })
-                .attr("fill","red");
+                .attr("fill","#cf142b");
 
 b1.transition()
-    .duration(5000)
+    .duration(1000)
+    .delay((d, i) => i * 1000)
     .attr("width", function (d) {
                     return x(d.out)-width/2;
                 });
 
 var text1 = svg.append("g")
-.attr("transform", `translate(${width/2+margin.left+112},${margin.top+73})`)
+.attr("transform", `translate(${width/2+margin.left+112},${margin.top+100})`)
 .selectAll("text1")
   .data(data)
   .enter()
   .append("text")
   .text(function(d) {return d.out;})
-  .attr('x', function(d) { return x(d.out)-width/2+3;})
+  .attr('x', function(d) { return x(d.out)-width/2+5;})
   .attr('y', function(d) { return y(d.name)+15})
   .attr("font-family", "sans-serif")
-  .attr("font-size", "13px")
+  .attr("font-size", "15px")
   .attr("fill", "#777777")
   .attr('opacity',0);
 
 text1.transition()
-     .delay(5000)
+     .delay((d, i) =>1000+ i * 1000)
      .attr("opacity",1);
 
 bar2 = svg.append("g")
                 .attr("class","bar2")
-                .attr("transform",`translate(${width/2+margin.left+112},${margin.top+73})`);
+                .attr("transform",`translate(${width/2+margin.left+112},${margin.top+90})`);
 
 var b2 = bar2.selectAll("rect").data(data).enter()
                 .append("rect")
@@ -191,34 +192,35 @@ var b2 = bar2.selectAll("rect").data(data).enter()
                     return 0;
                 })
                 .attr("height", function () {
-                    return 20;
+                    return 40;
                 })
-                .attr("fill","blue");
+                .attr("fill","#0038c3");
 
 b2.transition()
-    .duration(5000)
+    .duration(1000)
+    .delay((d, i) => i * 1000)
     .attr("width", function (d) {
                   console.log(d.in);
                     return width/2-x(d.in);
                 });
 
 var text2 = svg.append("g")
-.attr("transform", `translate(${margin.left+112},${margin.top+73})`)
+.attr("transform", `translate(${margin.left+112},${margin.top+100})`)
 .selectAll("text2")
   .data(data)
   .enter()
   .append("text")
   .text(function(d) {return d.in;})
-  .attr('x', function(d) { return x(d.in)-36;})
+  .attr('x', function(d) { return x(d.in)-42;})
   .attr('y', function(d) { return y(d.name)+15})
   .attr("font-family", "sans-serif")
-  .attr("font-size", "13px")
+  .attr("font-size", "15px")
   .attr("fill", "#777777")
   .attr('fill-opacity',0.9)
   .attr('opacity',0);
 
 text2.transition()
-     .delay(5000)
+     .delay((d, i) =>1000+ i * 1000)
      .attr("opacity",1);
 
 d3.select("svg").append("rect")
@@ -226,7 +228,7 @@ d3.select("svg").append("rect")
             .attr("y",30)
             .attr("width","18")
             .attr("height",18)
-            .attr("fill","blue");
+            .attr("fill","#0038c3");
 
 d3.select("svg").append("text")
             .attr("class","mark")
@@ -234,14 +236,14 @@ d3.select("svg").append("text")
             .attr("y",50)
             .text("IN")
             .attr("font-size",30)
-            .attr("fill","blue");
+            .attr("fill","#0038c3");
 
 d3.select("svg").append("rect")
             .attr("x",720)
             .attr("y",30)
             .attr("width","18")
             .attr("height",18)
-            .attr("fill","red");
+            .attr("fill","#cf142b");
 
 d3.select("svg").append("text")
             .attr("class","mark")
@@ -249,7 +251,7 @@ d3.select("svg").append("text")
             .attr("y",50)
             .text("OUT")
             .attr("font-size",30)
-            .attr("fill","red");
+            .attr("fill","#cf142b");
 
 
 
