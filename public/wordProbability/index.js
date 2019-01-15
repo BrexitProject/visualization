@@ -11,43 +11,29 @@ let color = d3.scaleOrdinal().domain(['leave', 'remain']).range(['rgb(216, 75, 4
 let svg = d3.select('.wordCloud')
             .append("g")
             .attr("transform", `translate(${margin.left},${margin.top})`);
-let axis = svg.append("g")
-             .attr("class",'axis')
-        axis.append('line')
-            .attr('x1', 0)
-            .attr('y1', height / 2)
-            .attr('x2', width)
-            .attr('y2', height / 2)
-        axis.append('line')
-            .attr('x1', width / 2)
-            .attr('y1', 0)
-            .attr('x2', width / 2)
-            .attr('y2', height)
+let scale = d3.scaleOrdinal()
+              .domain(['EC','EA','PC','PA'])
+              .range([`translate(${width/4},${3*height/4})`,`translate(${width/4},${height/4})`,`translate(${3*width/4},${3*height/4})`,`translate(${3*width/4},${height/4})`])
 
-        axis.append('text')
-              .attr("x", 0)
-              .attr("y", height / 2 - 5)
-              .text('economic')
-        axis.append('text')
-              .attr("x", width - 50)
-              .attr("y", height / 2 - 5)
-              .text('politics')
-        axis.append('text')
-              .attr("x", width / 2)
-              .attr("y", 0)
-              .text('abstract')
-        axis.append('text')
-              .attr("x", width / 2)
-              .attr("y", height)
-              .text('specific')
-
+drawAxis();
+let wordData = [];
 d3.csv('static/data/word_probability.csv').then(function(data) {
     xScale.domain([d3.min(data, function(d) {
               return d.probability;
             }),1
            ])
+    //分成四块词云送进函数
     let words = sort(data);
     Object.keys(words).map( d=>{
-        wordCloud(d, words[d]);
+        wordData = wordData.concat(wordCloud(words[d].data));
     });
+    //得到计算结果后分步骤画
+    Object.keys(words).forEach( category => {
+        Object.keys(words[category].category).forEach(kind => {
+            console.log(category,kind,words[category].category[kind]);
+            setTimeout(drawWord(words[category].category[kind]),500);
+            // drawWord(words[category].category[kind]);
+        });
+   
+   });
 });
