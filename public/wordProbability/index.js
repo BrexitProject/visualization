@@ -17,6 +17,7 @@ let scale = d3.scaleOrdinal()
 
 drawAxis();
 let wordData = [];
+let count = 0;
 d3.csv('static/data/word_probability.csv').then(function(data) {
     xScale.domain([d3.min(data, function(d) {
               return d.probability;
@@ -30,10 +31,15 @@ d3.csv('static/data/word_probability.csv').then(function(data) {
     //得到计算结果后分步骤画
     Object.keys(words).forEach( category => {
         Object.keys(words[category].category).forEach(kind => {
-            console.log(category,kind,words[category].category[kind]);
-            setTimeout(drawWord(words[category].category[kind]),500);
+            // console.log(category,kind,words[category].category[kind]);
+            setTimeout(function(){
+                drawWord(words[category].category[kind]);
+            },3000*count++);
+            // setTimeout(drawWord(words[category].category[kind]),1000*count++);
             // drawWord(words[category].category[kind]);
         });
-   
    });
+   setTimeout(function(){
+        d3.selectAll("text").attr("opacity",1);
+    },3000*count++);
 });
