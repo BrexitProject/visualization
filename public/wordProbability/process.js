@@ -14,6 +14,10 @@ function wordCloud(word){
     return data;
 }
 function drawWord(word){
+    d3.selectAll("text").attr("opacity",0.7);
+    let direction = d3.scaleOrdinal()
+                     .domain([0,1,2,3])
+                     .range(["translate(999,999)","translate(-999,999)","translate(-999,-999)","translate(999,-999)"])
     var cloud = svg.append('g')
     .attr('class','word')
     .selectAll("text")
@@ -49,14 +53,15 @@ cloud.attr('class',function(d){return d.category + " " + d.kind})
           return tooltip.style("visibility", "hidden");
           })
       .text(function(d) { return d.word; });
-cloud.attr("transform", function(d) {
-      return "translate(999,999)";
+cloud.attr("transform", function(d,i) {
+    //   return "translate(999,999)";
+    return direction(i%4);
       })
       .transition()
       .duration(function(d,i){
         return 1000+i*20
       })
-      .attr("transform", function(d) {
+     .attr("transform", function(d) {
         return scale(d.category)+"translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
       })
 }
