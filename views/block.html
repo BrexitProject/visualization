@@ -1,0 +1,261 @@
+<!DOCTYPE>
+<html>
+ 
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<head>
+<title>Devoluion与其他话题比较</title>
+</head>
+
+<style>
+    .axisTop path {
+      stroke-width: 2px;
+      stroke: #777777;
+    }
+
+    .axisTop line {
+      stroke-width: 2px;
+      stroke: #777777;
+    }
+
+    .axisTop text {
+      fill: #777777;
+      font-weight: bold;
+      font-size: 12px;
+      transform: "rotate(-50)";
+    }
+
+    .axisLeft path {
+      stroke-width: 2px;
+      stroke: #777777;
+    }
+
+    .axisLeft text {
+      fill: #777777;
+      font-weight: bold;
+      font-size: 15px;
+      transform: "rotate(-50)";
+    }
+
+    .axis3 text{
+      font-size: 0px;
+    }
+
+    .axis3 path {
+      stroke-width: 2px;
+      stroke: #777777;
+    }
+
+    .axis3 line{
+      stroke-width: 0px;
+    }
+
+    .axis path,
+    .axis line {
+      shape-rendering: crispEdges;
+    }
+
+</style>
+
+<body>
+<div class="container"></div>
+<script src="static/d3.min.js"></script>  
+<script>
+
+
+var margin = {top: 20, bottom: 180, left: 50, right: 60};
+var svgWidth = 1200;
+var svgHeight = 700;
+var width=svgWidth - margin.left - margin.right;
+var height=svgHeight - margin.top - margin.bottom;
+
+var svg = d3.select('.container')
+            .append('svg')
+            .attr('width', svgWidth)
+            .attr('height', svgHeight);
+
+var data=[];
+var text=[];
+d3.csv('static/data/block.csv').then(function(data1) {
+    data1.forEach(d => {
+      let tmp={};
+      tmp.name=d.name.trim();
+      text.push(tmp.name);
+      for(let label in d){
+        if(label=='in'){
+          tmp.in=d[label];
+        }
+        if(label=='out'){
+          tmp.out=d[label];
+        }
+      }
+      //console.log(tmp);
+      data.push(tmp);
+    })
+    console.log(data);
+    console.log(text);
+
+var x = d3.scaleLinear()
+            .domain([-37,37])
+            .range([0, width]);
+
+var y = d3.scaleBand()
+            .domain(data.map(function(d,i){return d.name;}))
+            .range([0, height]);
+
+var xAxis = d3.axisTop(x).tickValues([-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30]).tickFormat(function(d){
+  if(d<0)
+    return -d;
+  else
+    return d;
+});
+
+var yAxis = d3.axisLeft(y);
+
+var yAxis2 = d3.axisLeft(y).tickSize(0);
+
+svg.append("g")
+  .attr("class","axisTop")
+    .attr("transform", `translate(${margin.left+112},${margin.top+70})`)
+    .call(xAxis);
+
+svg.append("g")
+  .attr("class","axisLeft")
+    .attr("transform", `translate(${margin.left+112},${margin.top+70})`)
+    .call(yAxis);
+
+svg.append("g")
+  .attr("class","axis3")
+    .attr("transform", `translate(${margin.left+width/2+112},${margin.top+70})`)
+    .call(yAxis2);
+
+bar1 = svg.append("g")
+                .attr("class","bar1")
+                .attr("transform",`translate(${width/2+margin.left+112},${margin.top+90})`);
+
+var b1 = bar1.selectAll("rect").data(data).enter()
+                .append("rect")
+                .attr("x", function (d) {
+                    return 0;
+                })
+                .attr("y", function (d) {
+                    return y(d.name);
+                })
+                .attr("width", function (d) {
+                  //console.log(x(parseFloat(d.out)))
+                    return 0;
+                })
+                .attr("height", function () {
+                    return 40;
+                })
+                .attr("fill","#cf142b");
+
+b1.transition()
+    .duration(1000)
+    .delay((d, i) => i * 1000)
+    .attr("width", function (d) {
+                    return x(d.out)-width/2;
+                });
+
+var text1 = svg.append("g")
+.attr("transform", `translate(${width/2+margin.left+112},${margin.top+100})`)
+.selectAll("text1")
+  .data(data)
+  .enter()
+  .append("text")
+  .text(function(d) {return d.out;})
+  .attr('x', function(d) { return x(d.out)-width/2+5;})
+  .attr('y', function(d) { return y(d.name)+15})
+  .attr("font-family", "sans-serif")
+  .attr("font-size", "15px")
+  .attr("fill", "#777777")
+  .attr('opacity',0);
+
+text1.transition()
+     .delay((d, i) =>1000+ i * 1000)
+     .attr("opacity",1);
+
+bar2 = svg.append("g")
+                .attr("class","bar2")
+                .attr("transform",`translate(${width/2+margin.left+112},${margin.top+90})`);
+
+var b2 = bar2.selectAll("rect").data(data).enter()
+                .append("rect")
+                .attr("transform",'scale(-1, 1)')
+                .attr("x", function (d) {
+                    return 0;
+                })
+                .attr("y", function (d) {
+                    return y(d.name);
+                })
+                .attr("width", function (d) {
+                  console.log(d.in);
+                    return 0;
+                })
+                .attr("height", function () {
+                    return 40;
+                })
+                .attr("fill","#0038c3");
+
+b2.transition()
+    .duration(1000)
+    .delay((d, i) => i * 1000)
+    .attr("width", function (d) {
+                  console.log(d.in);
+                    return width/2-x(d.in);
+                });
+
+var text2 = svg.append("g")
+.attr("transform", `translate(${margin.left+112},${margin.top+100})`)
+.selectAll("text2")
+  .data(data)
+  .enter()
+  .append("text")
+  .text(function(d) {return d.in;})
+  .attr('x', function(d) { return x(d.in)-42;})
+  .attr('y', function(d) { return y(d.name)+15})
+  .attr("font-family", "sans-serif")
+  .attr("font-size", "15px")
+  .attr("fill", "#777777")
+  .attr('fill-opacity',0.9)
+  .attr('opacity',0);
+
+text2.transition()
+     .delay((d, i) =>1000+ i * 1000)
+     .attr("opacity",1);
+
+d3.select("svg").append("rect")
+            .attr("x",670)
+            .attr("y",30)
+            .attr("width","18")
+            .attr("height",18)
+            .attr("fill","#0038c3");
+
+d3.select("svg").append("text")
+            .attr("class","mark")
+            .attr("x",630)
+            .attr("y",50)
+            .text("IN")
+            .attr("font-size",30)
+            .attr("fill","#0038c3");
+
+d3.select("svg").append("rect")
+            .attr("x",720)
+            .attr("y",30)
+            .attr("width","18")
+            .attr("height",18)
+            .attr("fill","#cf142b");
+
+d3.select("svg").append("text")
+            .attr("class","mark")
+            .attr("x",750)
+            .attr("y",50)
+            .text("OUT")
+            .attr("font-size",30)
+            .attr("fill","#cf142b");
+
+
+
+})
+</script>
+</body>
+</html>

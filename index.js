@@ -14,5 +14,18 @@ app.get('/liner', function(req, res) {
   res.sendFile(path.join(__dirname + '/views/liner.html'));
 });
 
+app.get('/block', function(req, res) {
+  res.sendFile(path.join(__dirname + '/views/block.html'));
+});
+
+app.get('/wordProbability', function(req, res) {
+  res.sendFile(path.join(__dirname + '/views/wordProbability.html'));
+});
+
 app.use('/static',express.static(__dirname+'/public'));
+
+app.get('/GoogleTrends', function(req, res) {
+  res.sendFile(path.join(__dirname + '/views/GoogleTrends.html'));
+});
+
 app.listen(3000);
