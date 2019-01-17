@@ -18,7 +18,7 @@ function drawWord(word){
     let direction = d3.scaleOrdinal()
                      .domain([0,1,2,3])
                      .range(["translate(999,999)","translate(-999,999)","translate(-999,-999)","translate(999,-999)"])
-    var cloud = svg.append('g')
+    let cloud = svg.append('g')
     .attr('class','word')
     .selectAll("text")
     .data(word)
@@ -54,7 +54,6 @@ cloud.attr('class',function(d){return d.category + " " + d.kind})
           })
       .text(function(d) { return d.word; });
 cloud.attr("transform", function(d,i) {
-    //   return "translate(999,999)";
     return direction(i%4);
       })
       .transition()
@@ -65,36 +64,137 @@ cloud.attr("transform", function(d,i) {
         return scale(d.category)+"translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
       })
 }
-function drawAxis(){
+function drawHorAxis(){
     let axis = svg.append("g")
              .attr("class",'axis')
         axis.append('line')
             .attr('x1', 0)
             .attr('y1', height / 2)
+            .attr('x2', 0)
+            .attr('y2', height / 2)
+            .transition()
+            .duration(600)
             .attr('x2', width)
             .attr('y2', height / 2)
-        axis.append('line')
-            .attr('x1', width / 2)
-            .attr('y1', 0)
-            .attr('x2', width / 2)
-            .attr('y2', height)
 
         axis.append('text')
-              .attr("x", 0)
-              .attr("y", height / 2 - 5)
-              .text('economic')
+            .transition()
+            .duration(200)
+            .attr("x", 0)
+            .attr("y", height / 2 - 5)
+            .text('economic')
         axis.append('text')
+            .transition()
+            .duration(200)
               .attr("x", width - 50)
               .attr("y", height / 2 - 5)
               .text('politics')
-        axis.append('text')
-              .attr("x", width / 2)
-              .attr("y", 0)
-              .text('abstract')
-        axis.append('text')
-              .attr("x", width / 2)
-              .attr("y", height)
-              .text('specific')
+}
+function drawLevAxis () {
+    let axis = svg.append("g")
+    .attr("class",'axis')
+    axis.append('line')
+    .attr('x1', width / 2)
+    .attr('y1', 50)
+    .attr('y2', 50)
+    .transition()
+    .duration(600)
+    .attr('x2', width / 2)
+    .attr('y2', height-30)
+
+axis.append('image')
+    .attr('xlink:href', 'static/wordProbability/images/cold.svg')
+    .attr("x", width / 2 - 20)
+    .attr("y", 0)
+    .attr('width', 40)
+    .attr('height', 40)
+axis.append('image')
+    .attr('xlink:href', 'static/wordProbability/images/angry.svg')
+    .attr("x", width / 2 -20)
+    .attr("y", height-25)
+    .attr('width', 40)
+    .attr('height', 40)
+}
+function drawTwoGroup(data){
+    let group = svg.append('g')
+                    .attr('class','group')
+                    .selectAll("text")
+                    .data(data)
+                    .enter()
+                    .append("text")
+    
+        group.transition()
+            .duration(600)
+            .style("font-size", function(d) { 
+                return xScale(d.probability) + "px"; 
+              })
+              .style("font-family", "Impact")
+              .style("fill", (d)=>color(d.group))
+              .attr("text-anchor", "middle")
+            .attr("transform", function(d) {
+                return d.group==='leave'?`translate(${width/4+rd(-50,50)},${height/2+rd(-80,80)})`:`translate(${width/4*3+rd(-50,50)},${height/2+rd(-80,80)})`;
+            })
+            .text(function(d) { return d.word; });
+}
+function drawSigWord(data){
+    let max = data[0];
+    let min = data[0];
+    data.map(d=>{
+        if(d.probability > max.probability)
+            max = d;
+        if(d.probability < min.probability)
+            min = d;
+    })
+let sigWord = svg.append('g')
+                 .attr('class','single')
+                 .selectAll("text")
+                 .data([max,min])
+                 .enter()
+                 .append("text")
+                  .style("font-family", "Impact")
+                  .style("fill", (d)=>color(d.group))
+                  .attr("text-anchor", "middle")
+                 .text(function(d) { return d.word; });
+sigWord.attr("transform", `translate(0,${height / 2})`)
+      .transition()
+      .ease(d3.easeCubic)
+      .duration(function(d,i){
+        return 1000+i*1000
+      })
+      .attr("transform", `translate(${width / 2},${height / 2})`)
+      .style("font-size", "50px")
+      .transition()
+      .ease(d3.easeCubic)
+      .duration(function(d,i){
+        return 1000+i*1000
+      })
+      .style("font-size", function(d) { 
+        return xScale(d.probability) + "px"; 
+      })
+     .attr("transform", function(d) {
+        return scale(d.category)+"translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+      })
+
+}
+function rd(n,m){
+    var c = m-n+1;  
+    return Math.floor(Math.random() * c + n);
+}
+function removeSig() {
+    d3.selectAll(".single")
+        .transition()
+        .duration(function(d,i){
+            return 1000+i*1000
+        })
+        .attr("transform",`translate(${width},${height / 2})`)
+}
+function removeGroup(){
+    d3.selectAll(".group")
+    .transition()
+    .duration(function(d,i){
+        return 1000+i*1000
+    })
+    .attr("transform",`translate(${width},${height / 2})`)
 }
 function sort(data){
     let EC = [],EA = [], PC=[], PA=[];
@@ -140,5 +240,18 @@ function sort(data){
             data:PA,
             category:PAcategory
         }
+    }
+}
+function divide (data) {
+    let leave=[], remain=[];
+    data.map(d=>{
+        if (d.group==='leave')
+            leave.push(d);
+        else
+            remain.push(d);
+    })
+    return {
+       levea: leave,
+       remain: remain 
     }
 }

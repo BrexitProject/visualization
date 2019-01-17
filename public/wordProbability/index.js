@@ -15,31 +15,46 @@ let scale = d3.scaleOrdinal()
               .domain(['EC','EA','PC','PA'])
               .range([`translate(${width/4},${3*height/4})`,`translate(${width/4},${height/4})`,`translate(${3*width/4},${3*height/4})`,`translate(${3*width/4},${height/4})`])
 
-drawAxis();
 let wordData = [];
 let count = 0;
+let second = 1000;
 d3.csv('static/data/word_probability.csv').then(function(data) {
     xScale.domain([d3.min(data, function(d) {
               return d.probability;
             }),1
            ])
     //分成四块词云送进函数
+    // let group = divide(data);
     let words = sort(data);
     Object.keys(words).map( d=>{
         wordData = wordData.concat(wordCloud(words[d].data));
     });
-    //得到计算结果后分步骤画
-    Object.keys(words).forEach( category => {
-        Object.keys(words[category].category).forEach(kind => {
-            // console.log(category,kind,words[category].category[kind]);
-            setTimeout(function(){
-                drawWord(words[category].category[kind]);
-            },3000*count++);
-            // setTimeout(drawWord(words[category].category[kind]),1000*count++);
-            // drawWord(words[category].category[kind]);
-        });
-   });
-   setTimeout(function(){
-        d3.selectAll("text").attr("opacity",1);
-    },3000*count++);
+    document.onkeydown=function(e){
+        var keyNum=window.event ? e.keyCode :e.which;
+        //键盘监听 q w  回车
+        //1.画字 坐标轴
+        if(keyNum==81){
+            drawSigWord(data);
+            setTimeout(function(){removeSig()},5*second);
+            setTimeout(function(){drawTwoGroup(data)},7*second);
+            setTimeout(function(){removeGroup()},9*second);
+            setTimeout(function(){drawHorAxis()},11*second);
+            setTimeout(function(){drawLevAxis()},15*second);
+        }
+        if(keyNum==87){
+            //得到计算结果后分步骤画
+            Object.keys(words).forEach( category => {
+                Object.keys(words[category].category).forEach(kind => {
+                    // console.log(category,kind,words[category].category[kind]);
+                    setTimeout(function(){
+                        drawWord(words[category].category[kind]);
+                    },second*3*count++);
+                });
+            });
+        }
+        if(keyNum==13){
+            d3.selectAll("text").attr("opacity",1);
+         }
+
+    }
 });
