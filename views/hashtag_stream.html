@@ -9,18 +9,21 @@
   <script src="static/d3.min.js"></script>
   <!-- <script src="https://peterbeshai.com/d3-interpolate-path/d3-interpolate-path.js"></script> -->
   <style>
+    body{
+      background-color: #ffffff;
+    }
     .axisBottom path {
       stroke-width: 2px;
-      stroke: #777777;
+      stroke: #333333;
     }
 
     .axisBottom line {
       stroke-width: 2px;
-      stroke: #777777;
+      stroke: #333333;
     }
 
     .axisBottom text {
-      fill: #777777;
+      fill: #333333;
       font-weight: bold;
       font-size: 14px;
       transform: "rotate(-30)";
@@ -28,7 +31,7 @@
 
     .axisLeft path {
       stroke-width: 2px;
-      stroke: #777777;
+      stroke: #333333;
     }
 
     .axisLeft .tick {
@@ -45,7 +48,7 @@
     }
 
     .grid line {
-      stroke: #444444;
+      stroke: #333333;
       stroke-opacity: 0.7;
       stroke-width: 2px;
       stroke-dasharray: 8, 6;
@@ -65,10 +68,10 @@
       /* text-shadow: 4px 4px 4px #999999; */
     }
 
-    .streamsvg{
+    /* .streamsvg{
       -webkit-filter: drop-shadow(6px 6px 2px rgba(0,0,0,0.5));      
       filter: drop-shadow(6px 6px 5px rgba(0,0,0,0.6));
-    }
+    } */
   </style>
 </head>
 
@@ -155,7 +158,7 @@ filter.append("feDropShadow")
     .range([height, 0]);
   var color = d3.scaleOrdinal()
     .domain(d3.range(0, 4, 1))
-    .range(['#a3a1a1', '#28AF63', '#0165bf', '#FFD700'])
+    .range(['#a3a1a1', '#1235ef', '#d9534f', '#FFD700'])
 
   var xnow = d3.scaleTime()
     .domain([new Date(2016, 0), new Date(2016, 11)])
@@ -343,7 +346,7 @@ filter.append("feDropShadow")
       .attr("y", (d,i) => 25*i + margin.top + 5)
       .text(d => d.text)
       .style('text-transform', 'capitalize')
-      .style('fill', '#555555')
+      .style('fill', '#333333')
       .attr("font-family", "sans-serif")
       .attr("text-anchor", "start")
       .attr("font-size", 16)
@@ -359,7 +362,7 @@ filter.append("feDropShadow")
        .attr('r',6)
        .style("fill-opacity", 0.8)
        .style('fill',d=>color(d.type))
-       .style('stroke','#444444')
+       .style('stroke','#333333')
        .style('stroke-width',1)
 
     var timecount = 0;
