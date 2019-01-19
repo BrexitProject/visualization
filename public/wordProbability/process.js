@@ -5,7 +5,7 @@ function wordCloud(word){
         //   .timeInterval(20)
           .words(word)
           .fontSize(function(d) { return xScale(+d.probability); })
-          .text(function(d) { return d.word; })
+          .text(function(d) { return d.meaning; })
           .rotate(function() { return 0; })
           .font("Impact")
           .on("end", (words)=>{data = words})
@@ -52,7 +52,7 @@ cloud.attr('class',function(d){return d.category + " " + d.kind})
           .style("font-size", ()=>{ return xScale(d.probability) + "px"});
           return tooltip.style("visibility", "hidden");
           })
-      .text(function(d) { return d.word; });
+      .text(function(d) { return d.meaning; });
 cloud.attr("transform", function(d,i) {
     return direction(i%4);
       })
@@ -134,7 +134,7 @@ function drawTwoGroup(data){
             .attr("transform", function(d) {
                 return d.group==='leave'?`translate(${width/4+rd(-50,50)},${height/2+rd(-80,80)})`:`translate(${width/4*3+rd(-50,50)},${height/2+rd(-80,80)})`;
             })
-            .text(function(d) { return d.word; });
+            .text(function(d) { return d.meaning; });
 }
 function drawSigWord(data){
     let max = data[0];
@@ -154,7 +154,7 @@ let sigWord = svg.append('g')
                   .style("font-family", "Impact")
                   .style("fill", (d)=>color(d.group))
                   .attr("text-anchor", "middle")
-                 .text(function(d) { return d.word; });
+                 .text(function(d) { return d.meaning; });
 sigWord.attr("transform", `translate(0,${height / 2})`)
       .transition()
       .ease(d3.easeCubic)
