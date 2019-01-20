@@ -17,6 +17,7 @@ let scale = d3.scaleOrdinal()
 
 let wordData = [];
 let count = 0;
+let totalTime = 0;
 let second = 1000;
 d3.csv('static/data/word_probability.csv').then(function(data) {
     xScale.domain([d3.min(data, function(d) {
@@ -35,26 +36,29 @@ d3.csv('static/data/word_probability.csv').then(function(data) {
         //1.画字 坐标轴
         if(keyNum==81){
             drawSigWord(data);
-            setTimeout(function(){removeSig()},5*second);
-            setTimeout(function(){drawTwoGroup(data)},7*second);
-            setTimeout(function(){removeGroup()},9*second);
-            setTimeout(function(){drawHorAxis()},11*second);
-            setTimeout(function(){drawLevAxis()},15*second);
-        }
-        if(keyNum==87){
+            setTimeout(function(){removeSig();},totalTime + 5*second);
+            totalTime+= 5*second
+            setTimeout(function(){drawTwoGroup(data);},totalTime + 2*second);
+            totalTime+= 2*second
+            setTimeout(function(){removeGroup();},totalTime + 3*second);
+            totalTime+= 3*second
+            setTimeout(function(){drawHorAxis();},totalTime + 2*second);
+            totalTime+= 2*second
+            setTimeout(function(){drawLevAxis();},totalTime + 2*second);
+            totalTime+= 2*second
             //得到计算结果后分步骤画
             Object.keys(words).forEach( category => {
                 Object.keys(words[category].category).forEach(kind => {
                     // console.log(category,kind,words[category].category[kind]);
                     setTimeout(function(){
                         drawWord(words[category].category[kind]);
-                    },second*3*count++);
+                    },totalTime + second*3);
+                    totalTime+= 3*second
                 });
             });
-        }
-        if(keyNum==13){
-            d3.selectAll("text").attr("opacity",1);
-         }
 
+            setTimeout(function(){d3.selectAll("text").attr("opacity",1);},totalTime + 2*second);
+            totalTime+= 2*second
+        }
     }
 });
