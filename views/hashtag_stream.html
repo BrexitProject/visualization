@@ -12,21 +12,30 @@
     body{
       background-color: #ffffff;
     }
+    .axisYear text{
+      font-size: 80px;
+      stroke: #a0a0a0;
+      stroke-width: 5px;
+      fill: #a0a0a0;
+    }
     .axisBottom path {
+      display: none;
       stroke-width: 2px;
-      stroke: #333333;
+      stroke: #313113;
     }
 
     .axisBottom line {
-      stroke-width: 2px;
-      stroke: #333333;
+      /* display: none; */
+      stroke-width: 1px;
+      stroke: #d0d0d0;
+      stroke-dasharray: 3, 1;
     }
 
     .axisBottom text {
-      fill: #333333;
+      fill: #a0a0a0;
       font-weight: bold;
-      font-size: 14px;
-      transform: "rotate(-30)";
+      font-size: 16px;
+      transform: "rotate(270)";
     }
 
     .axisLeft path {
@@ -48,10 +57,10 @@
     }
 
     .grid line {
-      stroke: #333333;
-      stroke-opacity: 0.7;
-      stroke-width: 2px;
-      stroke-dasharray: 8, 6;
+      stroke: #565656;
+      stroke-opacity: 0.6;
+      stroke-width: 1px;
+      /* stroke-dasharray: 8, 6; */
       /* shape-rendering: crispEdges; */
     }
 
@@ -60,10 +69,11 @@
     }
 
     .grid text{
+      writing-mode: vertical-lr;
       font-size: 20px;
       font-weight: bold;
       font-family:"Hanzipen SC", "Hiragino Sans GB", "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei";
-      fill: #E8073D;
+      fill: #565656;
       stroke: none;
       /* text-shadow: 4px 4px 4px #999999; */
     }
@@ -79,9 +89,19 @@
   <div class="container"></div>
 </body>
 <script>
+  let locale = d3.timeFormatLocale({
+  dateTime: "%a %b %e %X %Y",
+  date: "%Y/%-m/%-d",
+  time: "%H:%M:%S",
+  periods: ["上午", "下午"],
+  days: ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"],
+  shortDays: ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"],
+  months: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
+  shortMonths: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+  });
   var margin = { top: 80, bottom: 80, left: 80, right: 120 };
-  var svgWidth = 1040;
-  var svgHeight = 550;
+  var svgWidth = 1000;
+  var svgHeight = 600;
 
   var width = svgWidth - margin.left - margin.right;
   var height = svgHeight - margin.top - margin.bottom;
@@ -91,62 +111,24 @@
     .attr('width', svgWidth)
     .attr('height', svgHeight);
 
-    var svg = d3.select('.container')
+  var svg = d3.select('.container')
     .append('svg')
     .attr('transform',"translate(" + 1.5+ "," + (-svgHeight) + ")")
     .attr('class', 'streamsvg')
     .attr('width', svgWidth)
     .attr('height', svgHeight);
 
-  // filters go in defs element
-var defs = svg.append("defs");
-
-// create filter with id #drop-shadow
-// height=130% so that the shadow is not clipped
-var filter = defs.append("filter")
-    .attr("id", "drop-shadow")
-    .attr("height", "120%");
-
-// SourceAlpha refers to opacity of graphic that this filter will be applied to
-// convolve that with a Gaussian with standard deviation 3 and store result
-// in blur
-filter.append("feDropShadow")
-    .attr("dx", "12")
-    .attr("dy", '12')
-    .attr("stdDeviation", "3")
-    .attr('flood-color','#333333');
-
-// // translate output of Gaussian blur to the right and downwards with 2px
-// // store result in offsetBlur
-// filter.append("feOffset")
-//     .attr("in", "blur")
-//     .attr("dx", 2)
-//     .attr("dy", 2)
-//     .attr("result", "offsetBlur");
-
-// // overlay original SourceGraphic over translated blurred opacity by using
-// // feMerge filter. Order of specifying inputs is important!
-// var feMerge = filter.append("feMerge");
-
-// feMerge.append("feMergeNode")
-//     .attr("in", "offsetBlur")
-// feMerge.append("feMergeNode")
-//     .attr("in", "SourceGraphic");
-
   var g = svg.append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-  var g2 = svg2.append("g")
-    .attr("transform", "translate(" + margin.left + ",0)");
+    .attr("transform", "translate(" + margin.left + ","+margin.top+")");
 
   // extra svg to clip the graph and x axis as they transition in and out
   var graph = g.append("svg")
     .attr("width", width+2)
     .attr("height", height + margin.top + margin.bottom);
 
-  var graph2 = g2.append("svg")
-    .attr("width", width+2)
-    .attr("height", height + margin.top + margin.bottom);
+  // var graph = g2.append("svg")
+  //   .attr("width", width+2)
+  //   .attr("height", height + margin.top + margin.bottom);
 
 
   // scale
@@ -158,7 +140,7 @@ filter.append("feDropShadow")
     .range([height, 0]);
   var color = d3.scaleOrdinal()
     .domain(d3.range(0, 4, 1))
-    .range(['#a3a1a1', '#1235ef', '#d9534f', '#FFD700'])
+    .range([ '#1B6AA5','#bab8bd', '#cc5856', '#FFCC66'])
 
   var xnow = d3.scaleTime()
     .domain([new Date(2016, 0), new Date(2016, 11)])
@@ -166,30 +148,45 @@ filter.append("feDropShadow")
   // axises
   var xAxis = d3.axisBottom(x)
     // .tickSizeInner(-height + 40)
-    .tickFormat(d => {
-      if (d - new Date(2016, 5, 23) === 0) return;
-      if (d.getMonth() === 0) return d3.timeFormat("%Y-%m")(d);
-      else { return d3.timeFormat("%m")(d); }
-    })
+    .tickFormat(locale.format('%b月')
+      // d => {
+      // if (d - new Date(2016, 5, 23) === 0) return;
+      // // if (d.getMonth() === 0) 
+      // return d3.timeFormat("%m月")(d);
+      // else { return d3.timeFormat("%m")(d); }
+    // }
+    )
+    .tickSize(-height)
     .ticks(d3.timeMonth);
 
-  var yAxis = d3.axisLeft(y);
+  // var yAxis = d3.axisLeft(y);
 
   // let newTicks = xnow.ticks(d3.timeMonth);
   // // newTicks.push(new Date(2016, 5, 23));
   // xAxis.tickValues(newTicks);
 
-  graph2.append("g")
-    .attr("transform", `translate(0,${height+margin.top})`)
+  graph.append("g")
+    .attr("transform", `translate(0,${height})`)
     .attr("class", "axisBottom")
     .style("font", "12px Helvetica Neue")
     .call(xAxis)
     .selectAll("text")
-    .style("text-anchor", "start")
+    .style("text-anchor", "end")
     .attr("y", 0)
     .attr("x", 9)
     .attr("dy", "1em")
-    .attr("transform", "rotate(30)");
+    .attr("transform", "rotate(270) translate(18, 2)");
+  graph.append("g")
+    .attr("class", "axisYear")
+    // .attr("transform", `translate(0,${margin.top})`) 
+    .append("text")
+    .text('2016')
+    // .style("font", "12px Helvetica Neue")
+    .style("text-anchor", "end")
+    .attr("y", 0)
+    .attr("x", 9)
+    .attr("dy", "1em")
+    .attr("transform", "translate(180, 0)");
 
   function parseDate(str) {
     var y = str.substr(0, 4),
@@ -258,7 +255,8 @@ filter.append("feDropShadow")
     var dataArray2 = dataArray.filter((d, i) => i % 1 === 0);
     var stack = d3.stack()
       .keys(keys)
-      .order(d3.stackOrderNone)
+      .order(d3.stackOrderInsideOut)
+      .offset(d3.stackOffsetSilhouette)
 
     var layers = stack(dataArray2);
     var timeLen = dataArray2.length;
@@ -281,27 +279,27 @@ filter.append("feDropShadow")
         let sepLen0 = ((ymax - ymin - 200) - sep) / (dataTypeNum - 1);
         for (let j = 0; j < dataTypeNum; j++) {
           let ii = index[j];
-          let tmp = layers[ii][0][1] - layers[ii][0][0];
-          layers[ii][0][0] = now;
-          layers[ii][0][1] = now + tmp;
+          // let tmp = layers[ii][0][1] - layers[ii][0][0];
+          // layers[ii][0][0] = now;
+          // layers[ii][0][1] = now + tmp;
           textData.push({ "text": layers[ii].key, "y": now, "type": j })
           layers[ii].type = j;
-          now = now + tmp + sepLen;
+          // now = now + tmp + sepLen;
         }
       } else {
-        let start = - totalLen / 2;
-        let now = start;
-        for (let j = 0; j < dataTypeNum; j++) {
-          let ii = index[j];
-          let tmp = layers[ii][i][1] - layers[ii][i][0];
-          layers[ii][i][0] = now;
-          layers[ii][i][1] = now + tmp;
-          now = now + tmp + sepLen;
-        }
+        // let start = - totalLen / 2;
+        // let now = start;
+        // for (let j = 0; j < dataTypeNum; j++) {
+        //   let ii = index[j];
+        //   let tmp = layers[ii][i][1] - layers[ii][i][0];
+        //   layers[ii][i][0] = now;
+        //   layers[ii][i][1] = now + tmp;
+        //   now = now + tmp + sepLen;
+        // }
       }
     }
 
-    ymin = d3.min(layers, stackMin) * 1.1;
+    ymin = d3.min(layers, stackMin) * 1.4;
     ymax = d3.max(layers, stackMax) * 1.1;
     y.domain([ymin, ymax]);
 
@@ -309,7 +307,7 @@ filter.append("feDropShadow")
       .x(function (d) { return x(parseDate(d.data.date)); })
       .y0(function (d) { return y(d[0]) })
       .y1(function (d) { return y(d[1]) })
-      .curve(d3.curveCardinal.tension(0.2));
+      .curve(d3.curveNatural);
 
     var stream = graph.selectAll(".stream")
       .data(layers)
@@ -320,10 +318,10 @@ filter.append("feDropShadow")
       // .attr('filter','url(#f4)')
       // .attr('clip-path','url(#myClip)')
       .attr("d", area)
-      .style("fill-opacity", 0.8)
+      .style("fill-opacity", 0.78)
       .style("fill", d => color(d.type))
-      .style('stroke', '#fefefe').style('stroke-width', 1)
-      .style('stroke-opacity', 0.8);
+      // .style('stroke', '#fefefe').style('stroke-width', 1)
+      // .style('stroke-opacity', 0.8);
 
     stream.attr("opacity", 1)
       .on("mouseover", function (d, i) {
@@ -374,17 +372,18 @@ filter.append("feDropShadow")
             .tickValues([new Date(2016,5,23)])
     }
     // add the X gridlines
-    var grid = graph2.append("g")			
+    var grid = graph.append("g")			
       .attr("class", "grid")
-      .attr("transform", `translate(0,${height+margin.top})`)
+      .attr("transform", `translate(0,${height-80})`)
       .call(make_x_gridlines()
-          .tickSize(-height)
-          .tickFormat(()=>{return '6.23 公投日'})
+          .tickSize(-height+80)
+          .tickFormat(()=>{return '公投日'})
       )
 
-    graph2.select('.grid')
+    graph.select('.grid')
           .selectAll('text')
-          .attr('dy',-height-10);
+          .attr('dy',-40)
+          .attr('transform','translate(0,85)');
     var xseperate =0;
     const interval = d3.interval((t) => {
       // let xTicks = xAxis.tickValues();
@@ -394,16 +393,16 @@ filter.append("feDropShadow")
 
       // xTicks.shift();
       // xAxis.tickValues(xTicks);
-      var labelText = graph2.select('.axisBottom').transition().duration(1000).ease(d3.easeLinear).attr('transform', `translate( ${-xseperate},${height+margin.top})`);
-      graph2.select('.grid').transition().duration(1000).ease(d3.easeLinear).attr('transform', `translate( ${-xseperate},${height+margin.top})`);
+      var labelText = graph.select('.axisBottom').transition().duration(1000).ease(d3.easeLinear).attr('transform', `translate( ${-xseperate},${height})`);
+      graph.select('.grid').transition().duration(1000).ease(d3.easeLinear).attr('transform', `translate( ${-xseperate},${height-80})`);
       // .tickValues([new Date(2016,5,23)]).tickSize(-height)
       //     .tickFormat(()=>{return '6.23 公投日'}));
       labelText.selectAll('text')
-        .style("text-anchor", "start")
+        .style("text-anchor", "end")
         .attr("y", 0)
         .attr("x", 9)
         .attr("dy", "1em")
-        .attr("transform", "rotate(30)");
+        .attr("transform", "rotate(270) translate(18, 2)");
 
       stream.transition()
         .duration(1000)
@@ -411,17 +410,23 @@ filter.append("feDropShadow")
         .attr('transform', 'translate(' + (-xseperate) + ',0)');
 
       timecount++;
+      if(timecount===11){
+        graph.select('.axisYear text').transition().text('2017');
+      }
+      if(timecount===23){
+        graph.select('.axisYear text').transition().text('2018');
+      }
       if (timecount === 24) {
-        graph2.transition().delay(900).duration(100).attr('width', width + 20);
+        graph.transition().delay(900).duration(100).attr('width', width + 20);
         interval.stop();
       }
     }, 1000);
 
-    svg2.append("g")
-      .attr("transform", `translate(${margin.left},${margin.top})`)
-      .attr("class", "axisLeft")
-      .style("font", "12px Helvetica Neue")
-      .call(yAxis)
+    // svg2.append("g")
+    //   .attr("transform", `translate(${margin.left},${margin.top})`)
+    //   .attr("class", "axisLeft")
+    //   .style("font", "12px Helvetica Neue")
+    //   .call(yAxis)
 
   });
 
