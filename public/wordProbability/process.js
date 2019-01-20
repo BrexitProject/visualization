@@ -201,7 +201,7 @@ function sort(data){
     let ECcategory = {'外国移民':[],'接地气':[],'拿回权力':[]},
         EAcategory = {'行业':[],'经济高上大':[],'担忧':[]},
         PCcategory = {'政治现实':[],'负面用词':[],'政客官僚':[],'不消极':[]},
-        PAcategory = {'理念':[],'担忧':[]}
+        PAcategory = {'理念':[]}
     data.map(d=>{
         switch(d.category){
             case 'EC':
