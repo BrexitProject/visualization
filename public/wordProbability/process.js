@@ -1,20 +1,21 @@
 let tooltip = d3.select(".tooltip");
-function wordCloud(word){
-    let data;
-    d3.layout.cloud().size([width /2 , height / 2])
+function wordCloud(word,range){
+    let result;
+    d3.layout.cloud().size(range)
         //   .timeInterval(20)
           .words(word)
           .fontSize(function(d) { return xScale(+d.probability); })
           .text(function(d) { return d.meaning; })
           .rotate(function() { return 0; })
-          .font("Impact")
-          .on("end", (words)=>{data = words})
+        //   .font("Impact")
+        //   .spiral("archimedean") // "archimedean" or "rectangular"
+          .on("end", (d)=>{result = d})
           .start();
     d3.layout.cloud().stop();
-    return data;
+    return result;
 }
-function drawWord(word){
-    d3.selectAll("text").attr("opacity",0.7);
+function drawWord(word,flag){
+    d3.selectAll(".word").attr("opacity",0.3);
     let direction = d3.scaleOrdinal()
                      .domain([0,1,2,3])
                      .range(["translate(999,999)","translate(-999,999)","translate(-999,-999)","translate(999,-999)"])
@@ -25,6 +26,7 @@ function drawWord(word){
     .enter()
     .append("text")
 cloud.attr('class',function(d){return d.category + " " + d.kind})
+      .attr('id',(d)=>d.word)
       .style("font-size", function(d) { 
         return xScale(d.probability) + "px"; 
       })
@@ -61,8 +63,22 @@ cloud.attr("transform", function(d,i) {
         return 1000+i*20
       })
      .attr("transform", function(d) {
-        return scale(d.category)+"translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+        return  flag?flag+"translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")":scale(d.category)+"translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
       })
+}
+function drawCircle(circles){
+    let circle = svg.append('g')
+    .attr('class','circle')
+    .selectAll("circle")
+    .data(circles)
+    .enter()
+    .append("circle")
+    circle.attr('transform',function(d){return scale(d.category)})
+    .attr("cx",function(d){return d.x})
+    .attr("cy",function(d){return d.y})
+    .attr("r",function(d){return circleScale(d.probability)})
+    .attr("fill",function(d){return color(d.group)})
+    .attr("opacity",0.5)
 }
 function drawHorAxis(){
     let axis = svg.append("g")
@@ -82,13 +98,13 @@ function drawHorAxis(){
             .duration(200)
             .attr("x", 0)
             .attr("y", height / 2 - 5)
-            .text('economic')
+            .text('生计')
         axis.append('text')
             .transition()
             .duration(200)
-              .attr("x", width - 50)
+              .attr("x", width - 25)
               .attr("y", height / 2 - 5)
-              .text('politics')
+              .text('信念')
 }
 function drawLevAxis () {
     let axis = svg.append("g")
@@ -115,93 +131,40 @@ axis.append('image')
     .attr('width', 40)
     .attr('height', 40)
 }
-function drawTwoGroup(data){
-    let group = svg.append('g')
-                    .attr('class','group')
-                    .selectAll("text")
-                    .data(data)
-                    .enter()
-                    .append("text")
-    
-        group.transition()
-            .duration(600)
-            .style("font-size", function(d) { 
-                return xScale(d.probability) + "px"; 
-              })
-              .style("font-family", "Impact")
-              .style("fill", (d)=>color(d.group))
-              .attr("text-anchor", "middle")
-            .attr("transform", function(d) {
-                return d.group==='leave'?`translate(${width/4+rd(-50,50)},${height/2+rd(-80,80)})`:`translate(${width/4*3+rd(-50,50)},${height/2+rd(-80,80)})`;
-            })
-            .text(function(d) { return d.meaning; });
-}
-function drawSigWord(data){
-    let max = data[0];
-    let min = data[0];
-    data.map(d=>{
-        if(d.probability > max.probability)
-            max = d;
-        if(d.probability < min.probability)
-            min = d;
-    })
-let sigWord = svg.append('g')
-                 .attr('class','single')
-                 .selectAll("text")
-                 .data([max,min])
-                 .enter()
-                 .append("text")
-                  .style("font-family", "Impact")
-                  .style("fill", (d)=>color(d.group))
-                  .attr("text-anchor", "middle")
-                 .text(function(d) { return d.meaning; });
-sigWord.attr("transform", `translate(0,${height / 2})`)
-      .transition()
-      .ease(d3.easeCubic)
-      .duration(function(d,i){
-        return 1000+i*1000
-      })
-      .attr("transform", `translate(${width / 2},${height / 2})`)
-      .style("font-size", "50px")
-      .transition()
-      .ease(d3.easeCubic)
-      .duration(function(d,i){
-        return 1000+i*1000
-      })
-      .style("font-size", function(d) { 
-        return xScale(d.probability) + "px"; 
-      })
-     .attr("transform", function(d) {
-        return scale(d.category)+"translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-      })
-
+function drawSigWord(d){
+let sigWord = d3.select('#'+d.word)
+                .transition()
+                .ease(d3.easeCubic)
+                .duration(200)
+                // .attr("opacity",0.7)
+                .style("font-size",xScale(d.probability) * 3 + "px");
 }
 function rd(n,m){
     var c = m-n+1;  
     return Math.floor(Math.random() * c + n);
 }
-function removeSig() {
-    d3.selectAll(".single")
-        .transition()
-        .duration(function(d,i){
-            return 1000+i*1000
-        })
-        .attr("transform",`translate(${width},${height / 2})`)
+function removeSig(d) {
+    d3.select('#'+d.word)
+                .transition()
+                .ease(d3.easeCubic)
+                .duration(200)
+                // .attr("opacity",1)
+                .style("font-size",xScale(d.probability) + "px");
 }
 function removeGroup(){
-    d3.selectAll(".group")
+    d3.selectAll(".word")
     .transition()
     .duration(function(d,i){
         return 1000+i*1000
     })
-    .attr("transform",`translate(${width},${height / 2})`)
+    .remove()
 }
 function sort(data){
-    let EC = [],EA = [], PC=[], PA=[];
+    let EC = [],EA = [], PC=[], PA=[],EP=[];
     let ECcategory = {'外国移民':[],'接地气':[],'拿回权力':[]},
         EAcategory = {'行业':[],'经济高上大':[],'担忧':[]},
         PCcategory = {'政治现实':[],'负面用词':[],'政客官僚':[],'不消极':[]},
-        PAcategory = {'理念':[],'担忧':[]}
+        PAcategory = {'理念':[]}
     data.map(d=>{
         switch(d.category){
             case 'EC':
@@ -219,6 +182,9 @@ function sort(data){
             case 'PA':
                 PA.push(d);
                 PAcategory[d.kind].push(d);
+                break;
+            case 'EP':
+                EP.push(d);
                 break;
             default:
         }
@@ -239,6 +205,10 @@ function sort(data){
         PA: {
             data:PA,
             category:PAcategory
+        },
+        EP:{
+            data:EP,
+            category:[]
         }
     }
 }
@@ -255,3 +225,8 @@ function divide (data) {
        remain: remain 
     }
 }
+function deepClone(obj){
+    let _obj = JSON.stringify(obj),
+        objClone = JSON.parse(_obj);
+    return objClone
+} 

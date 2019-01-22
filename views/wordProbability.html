@@ -39,15 +39,19 @@
       font-size: 25px;
 
     }
+    .circle{
+      stroke: #666;
+      stroke-width: 1.5px;
+    }
   </style>
   <script src="static/d3.min.js"></script>
   <script src="static/FileSaver.js"></script>
   <script src="static/d3.layout.cloud.js"></script>
 </head>
 <body>
-  <div class="container" id='text'>
-    <!-- <button onclick='text();'>text<button/> -->
-    <div class='chart' id='text2'>
+  <div class="container">
+    <div class='chart' >
+        <!-- <button id="b1" type="button" onclick="myFunction()">下载svg</button> -->
         <svg id='svg' class='wordCloud' width='100%' height='100%'>
         </svg>
           <div class='tooltip'>
@@ -58,68 +62,8 @@
 <script src="static/wordProbability/process.js"></script>
 <script src="static/wordProbability/index.js"></script>
 <script>
-function text() {
-let canvas = document.createElement("canvas");
-    canvas.width = 760;
-    canvas.height = 660;
-    context = canvas.getContext("2d");
-let data = [],
-    stream = canvas.captureStream(),
-    recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
-    // recorder.width='1280px';
-    recorder.ondataavailable = function(event) {
-    if (event.data && event.data.size) {
-      data.push(event.data);
-    }
-  };
-  function drawFrame(){
-      return new Promise((resolve, reject) => {
-        let svg = document.querySelector('svg');
-        var img = new Image(),
-          serialized = new XMLSerializer().serializeToString(svg);
-          // img.src = "data:image/svg+xml;charset=utf-8,"+serialized;
-          // let div = document.getElementById('text');
-          // div.insertBefore(img,document.getElementById('text2'))
-          // resolve(img);
-          url = URL.createObjectURL(new Blob([serialized], {type: "image/svg+xml"}));
-
-      img.onload = function(){
-        // cb(null, img);
-        resolve(img);
-      };
-
-      img.src = url;
-    });
-}
-  recorder.onstop = () => {
-    var url = URL.createObjectURL(new Blob(data, { type: "video/webm" }));
-    d3.select("canvas, svg").remove();
-    d3.select(".chart")
-      .append("video")
-      .attr("src", url)
-      .attr("controls", true)
-      .attr("autoplay", true);
-  };
-  var promises = [];
-
-d3.range(500).forEach(function(frame){
-  promises.push(drawFrame());
-});
-
-Promise.all(promises).then(function(frames){
-  recorder.start();
-  drawFrame();
-
-  function drawFrame() {
-    if (frames.length) {
-      context.drawImage(frames.shift(), 0, 0, 800, 700);
-      requestAnimationFrame(drawFrame);
-    } else {
-      recorder.stop();
-    }
-  }
-});
-
-};
+// function myFunction() {
+//   exportSVG(document.getElementById('svg'));
+// }
 </script>
 </html>

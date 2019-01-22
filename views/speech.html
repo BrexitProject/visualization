@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>speech</title>
+  <style>
+    .container{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+  </style>
+    <script src="static/d3.min.js"></script>
+  <script src="static/speech/speech.js"></script>
+  <script src="static/speech/js2wordcloud.js"></script>
+</head>
+<body>
+  <div class="container">
+        <div class='chart' id='hilter' style="height: 500px; width: 500px;">
+        </div>
+        <div class='chart' id='churchill' style="height: 500px; width: 500px;">
+        </div>
+  </div>
+</body>
+<script>
+    d3.csv('static/data/churchill.csv').then(function(data) {
+        // console.log(data);
+        let words = [];
+        for (var i = 0; i < 300; i++) {
+            words.push([data[i].word, parseInt(data[i].fre)])
+        }
+        var option = {
+            tooltip: {
+                show: true,
+                formatter: function(item) {
+                    return item[0] + ': 跑得比较快' + item[1] + 'km/h<br>' + '词云图'
+                }
+            },
+            fontSizeFactor: 1 / 1,
+            list: words,
+            color: 'rgb(0, 152, 216)',
+            // maxFontSize:100,
+            // minFontSize:11,
+            id:"churchill",
+            imageShape: './static/speech/images/churchill.png',
+            ellipticity: 1
+        }
+        var wc = new Js2WordCloud(document.getElementById('churchill'))
+        wc.setOption(option);
+        d3.select('#churchill').select('svg').append('image')
+                        .attr('xlink:href', 'static/speech/images/churchill.png')
+                        .attr("x", 0)
+                        .attr("y", 0)
+                        .attr('width',500)
+                        .attr('height',500)
+    });
+    d3.csv('static/data/hilter.csv').then(function(data) {
+        let words = [];
+        for (var i = 0; i < 300; i++) {
+            words.push([data[i].word, parseInt(data[i].fre)])
+        }
+        var option = {
+            tooltip: {
+                show: true,
+                formatter: function(item) {
+                    return item[0] + ': 跑得比较快' + item[1] + 'km/h<br>' + '词云图'
+                }
+            },
+            fontSizeFactor: 1 / 1,
+            list: words,
+            color: 'rgb(205, 23, 30)',
+            // maxFontSize:100,
+            // minFontSize:11,
+            id:"hilter",
+            imageShape: './static/speech/images/hilter.png',
+            ellipticity: 1
+        }
+        var wc = new Js2WordCloud(document.getElementById('hilter'))
+        wc.setOption(option);
+        d3.select('#hilter').select('svg').append('image')
+                        .attr('xlink:href', 'static/speech/images/hilter.png')
+                        .attr("x", 0)
+                        .attr("y", 0)
+                        .attr('width',500)
+                        .attr('height',500)
+    });
+</script>
+</html>
