@@ -638,7 +638,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        shape: 'circle',
 	        ellipticity: 0.65,
 
-	        classes: null,
+					classes: null,
+					id:null,
 
 	        hover: null,
 	        click: null
@@ -1057,7 +1058,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          fillTextOffsetY: fillTextOffsetY,
 	          fillTextWidth: fw,
 	          fillTextHeight: fh,
-	          fontSize: fontSize
+						fontSize: fontSize
 	        };
 	      };
 
@@ -1111,7 +1112,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          h: (bounds[2] - bounds[0] + 1) * g
 					};
 					let mu = info.mu;
-					d3.select('svg')
+					d3.select(`#${settings.id}`).select('svg')
 						.append("text")
 						.attr('transform',`translate(${(gx + info.gw / 2) * g * mu},${(gy + info.gh / 2) * g * mu})rotate(${-rotateDeg*180/Math.PI})scale(${1 / mu}, ${1 / mu})`)
 						.attr('fill',color)
