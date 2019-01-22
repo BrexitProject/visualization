@@ -34,7 +34,7 @@
     .axisBottom text {
       fill: #a0a0a0;
       font-weight: bold;
-      font-size: 16px;
+      font-size: 18px;
       transform: "rotate(270)";
     }
 
@@ -77,11 +77,6 @@
       stroke: none;
       /* text-shadow: 4px 4px 4px #999999; */
     }
-
-    /* .streamsvg{
-      -webkit-filter: drop-shadow(6px 6px 2px rgba(0,0,0,0.5));      
-      filter: drop-shadow(6px 6px 5px rgba(0,0,0,0.6));
-    } */
   </style>
 </head>
 
@@ -148,13 +143,14 @@
   // axises
   var xAxis = d3.axisBottom(x)
     // .tickSizeInner(-height + 40)
-    .tickFormat(locale.format('%b月')
-      // d => {
-      // if (d - new Date(2016, 5, 23) === 0) return;
-      // // if (d.getMonth() === 0) 
+    .tickFormat(
+      // locale.format('%b月')
+      d => {
+      if (d - new Date(2016, 5, 23) === 0) return;
+      // if (d.getMonth() === 0) 
       // return d3.timeFormat("%m月")(d);
-      // else { return d3.timeFormat("%m")(d); }
-    // }
+      else { return d3.timeFormat("%m")(d); }
+    }
     )
     .tickSize(-height)
     .ticks(d3.timeMonth);
@@ -265,7 +261,7 @@
     var ymin = d3.min(layers, stackMin);
     var ymax = d3.max(layers, stackMax);
 
-    var sepLen = 25; // 每条线的间隔
+    var sepLen = 50; // 每条线的间隔
 
     var textData = [];
     for (let i = 0; i < timeLen; i++) {
@@ -299,15 +295,15 @@
       }
     }
 
-    ymin = d3.min(layers, stackMin) * 1.4;
-    ymax = d3.max(layers, stackMax) * 1.1;
+    ymin = d3.min(layers, stackMin) * 1.6;
+    ymax = d3.max(layers, stackMax) * 1.3;
     y.domain([ymin, ymax]);
 
     var area = d3.area()
       .x(function (d) { return x(parseDate(d.data.date)); })
       .y0(function (d) { return y(d[0]) })
       .y1(function (d) { return y(d[1]) })
-      .curve(d3.curveNatural);
+      .curve(d3.curveCardinal.tension(0.1));
 
     var stream = graph.selectAll(".stream")
       .data(layers)
@@ -372,18 +368,18 @@
             .tickValues([new Date(2016,5,23)])
     }
     // add the X gridlines
-    var grid = graph.append("g")			
-      .attr("class", "grid")
-      .attr("transform", `translate(0,${height-80})`)
-      .call(make_x_gridlines()
-          .tickSize(-height+80)
-          .tickFormat(()=>{return '公投日'})
-      )
+    // var grid = graph.append("g")			
+    //   .attr("class", "grid")
+    //   .attr("transform", `translate(0,${height-80})`)
+    //   .call(make_x_gridlines()
+    //       .tickSize(-height+80)
+    //       .tickFormat(()=>{return '公投日'})
+    //   )
 
-    graph.select('.grid')
-          .selectAll('text')
-          .attr('dy',-40)
-          .attr('transform','translate(0,85)');
+    // graph.select('.grid')
+    //       .selectAll('text')
+    //       .attr('dy',-40)
+    //       .attr('transform','translate(0,85)');
     var xseperate =0;
     const interval = d3.interval((t) => {
       // let xTicks = xAxis.tickValues();
