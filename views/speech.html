@@ -12,9 +12,9 @@
         align-items: center;
     }
   </style>
-    <script src="static/d3.min.js"></script>
-  <script src="static/speech/speech.js"></script>
-  <script src="static/speech/js2wordcloud.js"></script>
+    <script src="public/d3.min.js"></script>
+  <script src="public/speech/speech.js"></script>
+  <script src="public/speech/js2wordcloud.js"></script>
 </head>
 <body>
   <div class="container">
@@ -25,7 +25,7 @@
   </div>
 </body>
 <script>
-    d3.csv('static/data/churchill.csv').then(function(data) {
+    d3.csv('public/data/churchill.csv').then(function(data) {
         // console.log(data);
         let words = [];
         for (var i = 0; i < 300; i++) {
@@ -44,19 +44,19 @@
             // maxFontSize:100,
             // minFontSize:11,
             id:"churchill",
-            imageShape: './static/speech/images/churchill.png',
+            imageShape: './public/speech/images/churchill.png',
             ellipticity: 1
         }
         var wc = new Js2WordCloud(document.getElementById('churchill'))
         wc.setOption(option);
         d3.select('#churchill').select('svg').append('image')
-                        .attr('xlink:href', 'static/speech/images/churchill.png')
+                        .attr('xlink:href', 'public/speech/images/churchill.png')
                         .attr("x", 0)
                         .attr("y", 0)
                         .attr('width',500)
                         .attr('height',500)
     });
-    d3.csv('static/data/hilter.csv').then(function(data) {
+    d3.csv('public/data/hilter.csv').then(function(data) {
         let words = [];
         for (var i = 0; i < 300; i++) {
             words.push([data[i].word, parseInt(data[i].fre)])
@@ -74,13 +74,13 @@
             // maxFontSize:100,
             // minFontSize:11,
             id:"hilter",
-            imageShape: './static/speech/images/hilter.png',
+            imageShape: './public/speech/images/hilter.png',
             ellipticity: 1
         }
         var wc = new Js2WordCloud(document.getElementById('hilter'))
         wc.setOption(option);
         d3.select('#hilter').select('svg').append('image')
-                        .attr('xlink:href', 'static/speech/images/hilter.png')
+                        .attr('xlink:href', 'public/speech/images/hilter.png')
                         .attr("x", 0)
                         .attr("y", 0)
                         .attr('width',500)

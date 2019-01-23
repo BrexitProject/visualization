@@ -49,8 +49,8 @@
       fill-opacity: 0.9;
     }
   </style>
-  <script src="static/d3.min.js"></script>
-  <script src="static/labeler.js"></script>
+  <script src="public/d3.min.js"></script>
+  <script src="public/labeler.js"></script>
 </head>
 <body>
   <div class="container">
@@ -70,8 +70,8 @@
             .attr('height', svgHeight);
   // scale
   var x = d3.scaleLinear()
-            .domain([0,100,1000,5000,10000,50000,100000,120000])
-            .range([0,(width-30)/6,(width-30)/3,(width-30)/2,(width-30)*2/3,(width-30)*5/6,width-30,width]);
+            .domain([0,50,100,500,1000,5000,10000,50000,100000,120000])
+            .range([0,(width-30)/8,(width-30)/4,(width-30)*3/8,(width-30)/2,(width-30)*5/8,(width-30)*3/4,(width-30)*7/8,width-30,width]);
 
   var y = d3.scaleLinear()
             .domain([0,10,50,100,500,1000,1200])
@@ -86,7 +86,7 @@
   // axises
   var xAxis = d3.axisBottom(x)
                 .tickSize(-height)
-                .tickValues([0,100,1000,5000,10000,50000,100000]);
+                .tickValues([0,50,100,500,1000,5000,10000,50000,100000]);
 
   var yAxis = d3.axisLeft(y)
                 .tickSize(-width)
@@ -172,15 +172,12 @@
        .style("fill", function(d) { return color(d.trend); })
        .style("stroke",function(d) { return color(d.trend); })
        .style("display",function(d) {
-        if(d.freq<5&&d.forward<20){
-            return 'none';}
-          else if(d.freq===0&&d.forward<100){
-            return 'none';
-          }});
+        if(d.freq<3&&d.forward<10){
+            return 'none';}});
   }
 
   var dataArray=[];
-  d3.csv('static/data/hashtag_bubble.csv').then(function(data) {
+  d3.csv('public/data/hashtag_bubble.csv').then(function(data) {
     console.log(data);
     data.forEach(d => {
       let tmp={};
@@ -217,11 +214,8 @@
           .style("text-anchor", "middle")
           .style("fill", function(d) { return "#242424"; })
           .style("display",function(d) {
-            if(d.freq<5&&d.forward<20){
-            return 'none';}
-          else if(d.freq===0&&d.forward<100){
-            return 'none';
-          }});
+            if(d.freq<3&&d.forward<10){
+            return 'none';}});
 
     var monthText = svg.append('g')
                    .append('text')
@@ -230,7 +224,7 @@
                    .attr('class','monthText');
 
     svg.transition()
-       .duration(100000)
+       .duration(150000)
        .ease(d3.easeLinear)
        .tween('time',()=>{
         return function(t) {
@@ -270,11 +264,8 @@
         .style("text-anchor", "middle")
         .style("fill", function(d) { return "#242424"; })
         .style("display",function(d) {
-          if(d.freq<5&&d.forward<20){
-            return 'none';}
-          else if(d.freq===0&&d.forward<100){
-            return 'none';
-          }});
+          if(d.freq<3&&d.forward<10){
+            return 'none';}});
     }
   });
 </script>
