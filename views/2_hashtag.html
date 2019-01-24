@@ -70,11 +70,11 @@
             .attr('height', svgHeight);
   // scale
   var x = d3.scaleLinear()
-            .domain([0,50,100,200,1000,2000,5000,10000,50000,100000,150000,160000])
+            .domain([0,50,100,200,500,1000,2000,5000,10000,100000,150000,160000])
             .range([0,(width-30)/10,(width-30)*2/10,(width-30)*3/10,(width-30)*4/10,(width-30)*5/10,(width-30)*6/10,(width-30)*7/10,(width-30)*8/10,(width-30)*9/10,width-30,width]);
 
   var y = d3.scaleLinear()
-            .domain([0,5,10,20,50,100,500,1000,1200])
+            .domain([0,5,10,20,50,100,200,1000,1200])
             .range([height,(height-30)*6/7+30,(height-30)*5/7+30,(height-30)*4/7+30,(height-30)*3/7+30,(height-30)*2/7+30,(height-30)/7+30, 30,0]);
   var r = d3.scaleLinear()
             .domain([0,0.5,1])
@@ -86,11 +86,11 @@
   // axises
   var xAxis = d3.axisBottom(x)
                 .tickSize(-height)
-                .tickValues([0,50,100,200,1000,2000,5000,10000,50000,100000,150000]);
+                .tickValues([0,50,100,200,500,1000,2000,5000,10000,100000,150000]);
 
   var yAxis = d3.axisLeft(y)
                 .tickSize(-width)
-                .tickValues([0,5,10,20,50,100,500,1000]); 
+                .tickValues([0,5,10,20,50,100,200,1000]); 
   svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top+height})`)
     .call(xAxis)
