@@ -70,12 +70,12 @@
             .attr('height', svgHeight);
   // scale
   var x = d3.scaleLinear()
-            .domain([0,50,100,500,1000,5000,10000,50000,100000,120000])
-            .range([0,(width-30)/8,(width-30)/4,(width-30)*3/8,(width-30)/2,(width-30)*5/8,(width-30)*3/4,(width-30)*7/8,width-30,width]);
+            .domain([0,50,100,200,1000,2000,5000,10000,50000,100000,150000,160000])
+            .range([0,(width-30)/10,(width-30)*2/10,(width-30)*3/10,(width-30)*4/10,(width-30)*5/10,(width-30)*6/10,(width-30)*7/10,(width-30)*8/10,(width-30)*9/10,width-30,width]);
 
   var y = d3.scaleLinear()
-            .domain([0,10,50,100,500,1000,1200])
-            .range([height,(height-30)*4/5+30,(height-30)*3/5+30,(height-30)*2/5+30,(height-30)/5+30, 30,0]);
+            .domain([0,5,10,20,50,100,500,1000,1200])
+            .range([height,(height-30)*6/7+30,(height-30)*5/7+30,(height-30)*4/7+30,(height-30)*3/7+30,(height-30)*2/7+30,(height-30)/7+30, 30,0]);
   var r = d3.scaleLinear()
             .domain([0,0.5,1])
             .range([25,10,25]);
@@ -86,11 +86,11 @@
   // axises
   var xAxis = d3.axisBottom(x)
                 .tickSize(-height)
-                .tickValues([0,50,100,500,1000,5000,10000,50000,100000]);
+                .tickValues([0,50,100,200,1000,2000,5000,10000,50000,100000,150000]);
 
   var yAxis = d3.axisLeft(y)
                 .tickSize(-width)
-                .tickValues([0,10,50,100,500,1000]); 
+                .tickValues([0,5,10,20,50,100,500,1000]); 
   svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top+height})`)
     .call(xAxis)
@@ -172,7 +172,7 @@
        .style("fill", function(d) { return color(d.trend); })
        .style("stroke",function(d) { return color(d.trend); })
        .style("display",function(d) {
-        if(d.freq<3&&d.forward<10){
+        if(d.freq<2&&d.forward<20){
             return 'none';}});
   }
 
@@ -197,12 +197,12 @@
 	  var dot = svg.append("g")
 					.attr("class", "dots")
           .selectAll(".dot")
-          .data(getDataByMonth(dataArray,new Date(2016,0)))
+          .data(getDataByMonth(dataArray,new Date(2015,11)))
           .enter().append("circle")
 					.attr("class", "dot");
     var text = svg.append("g")
           .selectAll(".text")
-          .data(getDataByMonth(dataArray,new Date(2016,0)))
+          .data(getDataByMonth(dataArray,new Date(2015,11)))
           .enter().append("text")
           .attr("class", "textLabel")
           .attr("x", function(d) {
@@ -214,7 +214,7 @@
           .style("text-anchor", "middle")
           .style("fill", function(d) { return "#242424"; })
           .style("display",function(d) {
-            if(d.freq<3&&d.forward<10){
+            if(d.freq<2&&d.forward<20){
             return 'none';}});
 
     var monthText = svg.append('g')
@@ -228,7 +228,7 @@
        .ease(d3.easeLinear)
        .tween('time',()=>{
         return function(t) {
-          var month = d3.interpolateDate(new Date(2016,0),new Date(2018,11))
+          var month = d3.interpolateDate(new Date(2015,11),new Date(2018,11))
           tweenYear(month(t));
         }
        })
@@ -236,7 +236,10 @@
     function tweenYear(year){
       dot.data(getDataByMonth(dataArray,year)).call(position);
       textPosition(getDataByMonth(dataArray,year));
-      monthText.text(year.getFullYear()+'/'+(year.getMonth()+1));
+      if(year<=new Date(2018,11)){
+        year.setMonth(year.getMonth() + 1);
+        monthText.text(year.getFullYear()+'/'+(year.getMonth()+1));
+      }
     }
 
     function textPosition(textData){
@@ -264,7 +267,7 @@
         .style("text-anchor", "middle")
         .style("fill", function(d) { return "#242424"; })
         .style("display",function(d) {
-          if(d.freq<3&&d.forward<10){
+          if(d.freq<2&&d.forward<20){
             return 'none';}});
     }
   });
