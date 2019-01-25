@@ -15,7 +15,7 @@ function wordCloud(word,range){
     return result;
 }
 function drawWord(word,flag){
-    d3.selectAll(".word").attr("opacity",0.3);
+    d3.selectAll(".word").attr("opacity",0);
     let direction = d3.scaleOrdinal()
                      .domain([0,1,2,3])
                      .range(["translate(999,999)","translate(-999,999)","translate(-999,-999)","translate(999,-999)"])
@@ -73,12 +73,17 @@ function drawCircle(circles){
     .data(circles)
     .enter()
     .append("circle")
-    circle.attr('transform',function(d){return scale(d.category)})
+    // circle.attr('transform',function(d){ return scale(d.category)})
+    circle.transition()
+    .duration(function(d,i){
+      return 1000+i*30
+    })
+    .attr('transform',function(d){ let a = d.group==='leave'?`translate(0,${height/4})`:`translate(0,${height/4*3})`; return scale(d.kind)+a})
     .attr("cx",function(d){return d.x})
     .attr("cy",function(d){return d.y})
     .attr("r",function(d){return circleScale(d.probability)})
     .attr("fill",function(d){return color(d.group)})
-    .attr("opacity",0.5)
+    .attr("opacity",1)
 }
 function drawHorAxis(){
     let axis = svg.append("g")
@@ -131,13 +136,44 @@ axis.append('image')
     .attr('width', 40)
     .attr('height', 40)
 }
+//版本二添加的函数
+function drawLev(){
+    let axis = svg.append("g")
+                  .attr("class",'axis')
+                axis.append('image')
+                    .attr('xlink:href', 'static/wordProbability/images/cold.svg')
+                    .attr("x", 0)
+                    .attr("y", height/4)
+                    .attr('width', 30)
+                    .attr('height', 30)
+                axis.append('image')
+                    .attr('xlink:href', 'static/wordProbability/images/angry.svg')
+                    .attr("x", 0)
+                    .attr("y", height/4*3)
+                    .attr('width', 30)
+                    .attr('height', 30)
+}
+function category(data){
+    let category = {'移民':{'leave':[],'remain':[]},
+                    '安全':{'leave':[],'remain':[]},
+                    '财政':{'leave':[],'remain':[]},
+                    '法规':{'leave':[],'remain':[]},
+                    '政治':{'leave':[],'remain':[]},
+                    '官僚':{'leave':[],'remain':[]},
+                    '担忧':{'leave':[],'remain':[]}}
+    data.map(d=>{
+        category[d.kind][d.group].push(d);
+    });
+    return category;
+}
+//
 function drawSigWord(d){
 let sigWord = d3.select('#'+d.word)
                 .transition()
                 .ease(d3.easeCubic)
                 .duration(200)
                 // .attr("opacity",0.7)
-                .style("font-size",xScale(d.probability) * 3 + "px");
+                .style("font-size","90px");
 }
 function rd(n,m){
     var c = m-n+1;  

@@ -35,11 +35,11 @@ d3.csv('static/data/word_probability.csv').then(function(data) {
        wordCloud(words[d].data,[width / 2,height /2]);
     });
     let totalWord = wordCloud(b,[width,height]);
-    document.onkeydown=function(e){
-        var keyNum=window.event ? e.keyCode :e.which;
+    // document.onkeydown=function(e){
+        // var keyNum=window.event ? e.keyCode :e.which;
         //键盘监听 q w  回车
         //1.画字 坐标轴
-        if(keyNum==81){
+        // if(keyNum==81){
             drawWord(totalWord,"translate("+[width/2,height/2]+")");
             setTimeout(function(){drawSigWord(max);},totalTime + 5*second);
             totalTime+= 5*second
@@ -84,6 +84,6 @@ d3.csv('static/data/word_probability.csv').then(function(data) {
             totalTime+= 4*second;
             setTimeout(function(){drawWord(words['EP'].data);},totalTime + 4*second);
             totalTime+= 4*second;
-        }
-    }
+        // }
+    // }
 });
