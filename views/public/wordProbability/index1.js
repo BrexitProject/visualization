@@ -19,7 +19,7 @@ let scale = d3.scaleOrdinal()
                     .range([`translate(${width/14+10},0)`,`translate(${width/7+width/14},0)`,`translate(${width/7*2+width/14},0)`,`translate(${width/7*3+width/14},0)`,`translate(${width/7*4+width/14},0)`,`translate(${width/7*5+width/14},0)`,`translate(${width/7*6+width/14},0)`])
 let totalTime = 0;
 let second = 1000;
-d3.csv('static/data/word_probability1.csv').then(function(data) {
+d3.csv('public/data/word_probability1.csv').then(function(data) {
     let max = data[0];
     let min = data[0];
     data.map(d=>{
