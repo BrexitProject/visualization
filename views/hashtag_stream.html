@@ -254,7 +254,7 @@
     var stack = d3.stack()
       .keys(keys)
       .order(d3.stackOrderInsideOut)
-      .offset(d3.stackOffsetNone)
+    .offset(d3.stackOffsetSilhouette);
 
     var layers = stack(dataArray2);
     var timeLen = dataArray2.length;
