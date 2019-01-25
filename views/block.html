@@ -58,7 +58,7 @@
 
 <body>
 <div class="container"></div>
-<script src="static/d3.min.js"></script>  
+<script src="public/d3.min.js"></script>  
 <script>
 
 
@@ -75,7 +75,7 @@ var svg = d3.select('.container')
 
 var data=[];
 var text=[];
-d3.csv('static/data/block.csv').then(function(data1) {
+d3.csv('public/data/block.csv').then(function(data1) {
     data1.forEach(d => {
       let tmp={};
       tmp.name=d.name.trim();

@@ -38,7 +38,7 @@
 
 <body>
 <div class="container"></div>
-<script src="static/d3.min.js"></script>  
+<script src="public/d3.min.js"></script>  
 <script>
 
 function parseDate(str){
@@ -53,7 +53,7 @@ function parseDate(str){
 var date=[];    
 var dataArray=[];
 var text=[];
-  d3.csv('static/data/liner.csv').then(function(data) {
+  d3.csv('public/data/liner.csv').then(function(data) {
     data.forEach(d => {
       let tmp={};
       tmp.label=d.name.trim();

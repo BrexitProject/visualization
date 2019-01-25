@@ -6,11 +6,51 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
   <style>
-    .text{
-      font-size: 10px;
+    .textLabel{
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'Georgia'
+    }
+    circle{
+      fill-opacity: 0.6;
+      stroke-width: 2px;
+      stroke-opacity: 0.8;
+    }
+    .axis path {
+      display: none;
+      stroke-width: 2px;
+      stroke: #313113;
+    }
+
+    .axis line {
+      /* display: none; */
+      stroke-width: 1px;
+      stroke: #d0d0d0;
+      stroke-dasharray: 4, 2;
+    }
+
+    .axis text {
+      fill: #9090a0;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .xLabel{
+      font-size: 50px;
+      fill:#9090a0;
+      font-weight: 700;
+    }
+
+    .monthText{
+      font-family: 'Helvetica Neue';
+      font-size: 160px;
+      fill:#909099;
+      font-weight: 700;
+      fill-opacity: 0.9;
     }
   </style>
-  <script src="static/d3.min.js"></script>
+  <script src="public/d3.min.js"></script>
+  <script src="public/labeler.js"></script>
 </head>
 <body>
   <div class="container">
@@ -18,8 +58,8 @@
 </body>
 <script>
   var margin = {top: 20, bottom: 50, left: 60, right: 60};
-  var svgWidth = 1400;
-  var svgHeight = 700;
+  var svgWidth = 1200;
+  var svgHeight = 650;
 
   var width=svgWidth - margin.left - margin.right;
   var height=svgHeight - margin.top - margin.bottom;
@@ -29,48 +69,54 @@
             .attr('width', svgWidth)
             .attr('height', svgHeight);
   // scale
-  var x = d3.scaleTime()
-            .domain([new Date(2016, 0), new Date(2018, 9)])
-            .range([0,width]);
+  var x = d3.scaleLinear()
+            .domain([0,50,100,200,500,1000,2000,5000,10000,100000,150000,160000])
+            .range([0,(width-30)/10,(width-30)*2/10,(width-30)*3/10,(width-30)*4/10,(width-30)*5/10,(width-30)*6/10,(width-30)*7/10,(width-30)*8/10,(width-30)*9/10,width-30,width]);
 
   var y = d3.scaleLinear()
-            .domain([0,1100])
-            .range([height, 0]);
+            .domain([0,5,10,20,50,100,200,1000,1200])
+            .range([height,(height-30)*6/7+30,(height-30)*5/7+30,(height-30)*4/7+30,(height-30)*3/7+30,(height-30)*2/7+30,(height-30)/7+30, 30,0]);
   var r = d3.scaleLinear()
-            .domain([0,1052])
-            .range([0,20]);
+            .domain([0,0.5,1])
+            .range([25,10,25]);
   var color = d3.scaleQuantize()
-                .domain([0,10])
-                .range(["#184C2F", "#237347", "038C41", "#6C6C6C", "#019BE7", "036EAD", "#023157"]);
+                .domain([0,1])
+                .range(["#1B6AA5", "#8A949B","#E8110F" ]);
 
   // axises
   var xAxis = d3.axisBottom(x)
-                .tickFormat(d=>{
-                  if(d-new Date(2016,5,1)===0||d-new Date(2016,5,23)===0) return d3.timeFormat("%m-%d")(d);
-                  if(d.getMonth()===0) return d3.timeFormat("%Y-%m")(d);
-                  else {return d3.timeFormat("%m")(d);} 
-                  })
-                .ticks(d3.timeMonth);
+                .tickSize(-height)
+                .tickValues([0,50,100,200,500,1000,2000,5000,10000,100000,150000]);
 
-  // show 
-  let newTicks = x.ticks(d3.timeMonth);
-  newTicks.push(new Date(2016,5,23));
-  xAxis.tickValues(newTicks);
-  var yAxis = d3.axisLeft(y);
-  
+  var yAxis = d3.axisLeft(y)
+                .tickSize(-width)
+                .tickValues([0,5,10,20,50,100,200,1000]); 
   svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top+height})`)
     .call(xAxis)
-    .selectAll("text")	
-    .style("text-anchor", "end")
-    .attr("dx", "-.8em")
-    .attr("dy", ".15em")
-    .attr("transform", function(d) {
-        return "rotate(-55)" 
-        });
+    .attr('class','axis')
+    .selectAll("text")
+    .attr('dy',16)
+    .style("text-anchor", "middle");
+  svg.append("text")             
+      .attr("transform",
+            "translate(" + (width-140) + " ," + 
+                           (height + margin.top-10) + ")")
+      .style("text-anchor", "start")
+      .text("Retweet")
+      .attr('class','xLabel');
   svg.append("g")
      .attr("transform", `translate(${margin.left},${margin.top})`)
+     .attr('class','axis')
      .call(yAxis);
+  svg.append('g')
+      .attr("transform",`translate(${margin.left+42},${margin.top+8})`)
+      .append("text")             
+      .attr("transform",
+            "rotate(270)")
+      .style("text-anchor", "end")
+      .text("Tweet")
+      .attr('class','xLabel');
 
   var bisect = d3.bisector(function(d) { return d[0]; });
   
@@ -86,8 +132,9 @@
       return {
         label: d.label,
         freq: findFreqByMonth(d.value,time),
+        forward: findForwardByMonth(d.value,time),
         time: time,
-        color: d.degree
+        trend: d.trend
       }
     })
   }
@@ -96,41 +143,50 @@
     let now = data[index];
     if (index > 0) {
       let last = data[index-1];
-      let timeScale = d3.scaleTime()
+      let timeScale = d3.scaleLinear()
             .domain([last[0], now[0]])
             .range([last[1],now[1]]);
       return timeScale(time);
     }
     return now[1];
   }
+  function findForwardByMonth(data,time){
+    let index = bisect.left(data,time);
+    let now = data[index];
+    if (index > 0) {
+      let last = data[index-1];
+      let timeScale = d3.scaleLinear()
+            .domain([last[0], now[0]])
+            .range([last[2],now[2]]);
+      return timeScale(time);
+    }
+    return now[2];
+  }
   function position(dot){
-    dot.attr('cx',d=>x(d.time)+margin.left)
+    dot.attr('cx',d=>x(d.forward)+margin.left)
        .attr('cy',d=>{
          return y(d.freq)+margin.top;
         })
        .attr('r',d=>{
-        return r(d.freq);})
-       .style("fill", function(d) { return color(d.color); });
-  }
-  function textPosition(text){
-    text.attr('x',d=>x(d.time)+margin.left)
-       .attr('y',d=>{
-         return y(d.freq)+margin.top;
-        })
-       .text(d=>d.label)
-       .style("fill", function(d) { return color(d.color); });
+        return r(d.trend);})
+       .style("fill", function(d) { return color(d.trend); })
+       .style("stroke",function(d) { return color(d.trend); })
+       .style("display",function(d) {
+        if(d.freq<2&&d.forward<20){
+            return 'none';}});
   }
 
   var dataArray=[];
-  d3.csv('static/data/hashtag_bubble.csv').then(function(data) {
+  d3.csv('public/data/hashtag_bubble.csv').then(function(data) {
+    console.log(data);
     data.forEach(d => {
       let tmp={};
       tmp.label=d.hashtag.trim();
-      tmp.degree=Math.random();
+      tmp.trend=d.trend.trim();
       tmp.value=[];
       for(let label in d){
-        if(label!=='hashtag'){
-          tmp.value.push([parseDate(label),d[label]]);
+        if(label!=='hashtag'&&label!=='trend'&&label.substr(0,2)!=='re'){
+          tmp.value.push([parseDate(label),parseInt(d[label]),parseInt(d['re'+label])]);
         }
       }
       tmp.value.sort((a,b)=> a[0]-b[0]);
@@ -141,29 +197,78 @@
 	  var dot = svg.append("g")
 					.attr("class", "dots")
           .selectAll(".dot")
-          .data(getDataByMonth(dataArray,new Date(2016,0)))
+          .data(getDataByMonth(dataArray,new Date(2015,11)))
           .enter().append("circle")
 					.attr("class", "dot");
     var text = svg.append("g")
-					.attr("class", "text")
           .selectAll(".text")
-          .data(getDataByMonth(dataArray,new Date(2016,0)))
+          .data(getDataByMonth(dataArray,new Date(2015,11)))
           .enter().append("text")
-					.attr("class", "text");
+          .attr("class", "textLabel")
+          .attr("x", function(d) {
+            return d.x;
+          }).attr("y", function(d) {
+            return d.y;
+          })
+          .text(d=>d.label)
+          .style("text-anchor", "middle")
+          .style("fill", function(d) { return "#242424"; })
+          .style("display",function(d) {
+            if(d.freq<2&&d.forward<20){
+            return 'none';}});
+
+    var monthText = svg.append('g')
+                   .append('text')
+                   .attr('x',margin.left+60)
+                   .attr('y',margin.top+160)
+                   .attr('class','monthText');
 
     svg.transition()
-       .duration(90000)
-       .ease(d3.easePolyOut)
+       .duration(150000)
+       .ease(d3.easeLinear)
        .tween('time',()=>{
         return function(t) {
-          var month = d3.interpolateDate(new Date(2016,0),new Date(2018,9))
+          var month = d3.interpolateDate(new Date(2015,11),new Date(2018,11))
           tweenYear(month(t));
         }
        })
 
     function tweenYear(year){
       dot.data(getDataByMonth(dataArray,year)).call(position);
-      text.data(getDataByMonth(dataArray,year)).call(textPosition);
+      textPosition(getDataByMonth(dataArray,year));
+      if(year<=new Date(2018,11)){
+        year.setMonth(year.getMonth() + 1);
+        monthText.text(year.getFullYear()+'/'+(year.getMonth()+1));
+      }
+    }
+
+    function textPosition(textData){
+      text.data(textData).each(function(d) {
+        d.width = this.getBBox().width;
+        d.x = x(d.forward)+margin.left;
+        d.y = y(d.freq)+margin.top;
+        d.r = r(d.trend);
+        d.height = this.getBBox().height;
+      })
+
+      var labels = d3.labeler()
+               .label(textData)
+               .anchor(textData)
+               .width(width)
+            .height(height)
+            .start(0);;
+
+      text.attr("x", function(d) {
+          return d.x;
+        }).attr("y", function(d) {
+          return d.y;
+        })
+        .text(d=>d.label)
+        .style("text-anchor", "middle")
+        .style("fill", function(d) { return "#242424"; })
+        .style("display",function(d) {
+          if(d.freq<2&&d.forward<20){
+            return 'none';}});
     }
   });
 </script>

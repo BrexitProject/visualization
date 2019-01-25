@@ -1,6 +1,7 @@
 var express = require('express');
 var app = express();
 var path = require('path');
+var fs = require('fs');
 
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname + '/views/index.html'));
@@ -8,6 +9,10 @@ app.get('/', function(req, res) {
 
 app.get('/bubble', function(req, res) {
   res.sendFile(path.join(__dirname + '/views/2_hashtag.html'));
+});
+
+app.get('/hashtag', function(req, res) {
+  res.sendFile(path.join(__dirname + '/views/hashtag.html'));
 });
 
 app.get('/stream', function(req, res) {
@@ -26,7 +31,7 @@ app.get('/wordProbability', function(req, res) {
   res.sendFile(path.join(__dirname + '/views/wordProbability.html'));
 });
 
-app.use('/static',express.static(__dirname+'/public'));
+app.use('/public',express.static(__dirname+'/views/public'));
 
 app.get('/GoogleTrends', function(req, res) {
   res.sendFile(path.join(__dirname + '/views/GoogleTrends.html'));

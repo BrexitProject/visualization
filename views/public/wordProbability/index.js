@@ -18,7 +18,7 @@ let circleScale = d3.scaleLinear()
                     .range([2,10]);
 let totalTime = 0;
 let second = 1000;
-d3.csv('static/data/word_probability.csv').then(function(data) {
+d3.csv('public/data/word_probability.csv').then(function(data) {
     let max = data[0];
     let min = data[0];
     data.map(d=>{

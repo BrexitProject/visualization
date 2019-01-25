@@ -223,18 +223,6 @@
       }
     });
 
-    function stackMax(layer) {
-      return d3.max(layer, function (d) { return d[1]; });
-    }
-
-    function stackMin(layer) {
-      return d3.min(layer, function (d) { return d[0]; });
-    }
-
-    function seperate(layers, index) {
-      let len = layers.length;
-      return layers[len - 1][index][1] - layers[0][index][0];
-    }
 
     var nestData = d3.nest()
       .key(d => d.date)
@@ -250,11 +238,7 @@
     });
 
     dataArray.sort((a, b) => parseDate(a.date) - parseDate(b.date));
-    var dataArray2 = dataArray.filter((d, i) => i % 1 === 0);
-    var stack = d3.stack()
-      .keys(keys)
-      .order(d3.stackOrderInsideOut)
-    .offset(d3.stackOffsetSilhouette);
+    console.log(dataArray);
 
     var layers = stack(dataArray2);
     var timeLen = dataArray2.length;
