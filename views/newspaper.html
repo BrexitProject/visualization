@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>newpaper</title>
+  <style>
+    .container{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .chart{
+      width:900px;
+      height: 700px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap:wrap
+    }
+    .wordcloud{
+      height: 268px;
+      /* background-color: blanchedalmond; */
+    }
+    .tree{
+      width:500px;
+      height: 500px;
+      background-color: blueviolet;
+    }
+    .we{
+      fill:black
+    }
+    .people{
+      fill:black
+    }
+    .country{
+      fill:black
+    }
+    .want{
+      fill:black
+    }
+    .control{
+      fill:black
+    }
+    .great{
+      fill:black
+    }
+  </style>
+  <script src="public/d3.min.js"></script>
+  <script src="public/speech/js2wordcloud.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class='chart' >
+      <div id='dailystar' class='wordcloud' style='width: 400px'></div>
+      <!-- <div id='dailymail' class='wordcloud' style='width: 200px'></div> -->
+      <div id='theeconomist' class='wordcloud' style='width: 400px'></div>
+      <!-- <div id='express' class='wordcloud' style='width: 200px'></div> -->
+      <div id='ft' class='wordcloud' style='width: 400px'></div>
+      <!-- <div id='inews' class='wordcloud' style='width: 200px'></div> -->
+      <!-- <div id='theguardian' class='wordcloud' style='width: 400px'></div> -->
+      <div id='thesun' class='wordcloud' style='width: 400px'></div>
+    </div>
+    <!-- <div class='tree'>
+    </div> -->
+  </div>
+</body>
+<script>
+let categorys =  ['dailymail','dailystar','economist','express','ft','inews','theguardian','thesun'];
+let color = d3.scaleOrdinal().domain(categorys).range(['#cb181d', '#fb6a4a','#fcae91','#fee5d9','#bdd7e7','#6baed6','rgb(0, 152, 216)','#08519c'])
+let promises = categorys.map(function (id) {
+  return  new Promise(function (resolve, reject) {
+      d3.csv(`public/data/newspaper/new_${(id)}.csv`).then(function(data) {
+        resolve({data:data,category:id});
+      });
+    })
+});
+Promise.all(promises).then(function (results) {
+  console.log(results);
+  ['theeconomist','thesun','dailystar','ft'].map( (d,q)=>{
+    let words = [];
+      for (var i = 0; i < 200; i++) {
+          words.push([results[q].data[i].word, parseInt(results[q].data[i].fre)])
+      }
+  var option = {
+            tooltip: {
+                show: true,
+                formatter: function(item) {
+                    return item[0] + ': 跑得比较快' + item[1] + 'km/h<br>' + '词云图'
+                }
+            },
+            fontSizeFactor: 1 / 1,
+            list: words,
+            color: color(d),
+            maxFontSize:30,
+            // minFontSize:1,
+            id:d,
+            imageShape: './public/newspaper/images/'+d+'.jpg',
+            ellipticity: 1
+        }
+        var wc = new Js2WordCloud(document.getElementById(d))
+        wc.setOption(option);
+        d3.select('#'+d).select('svg').append('image')
+                        .attr('xlink:href', 'public/newspaper/images/'+d+'.png')
+                        // .attr('x',0)
+                        // .attr('y',0)
+                        .attr("x", 116)
+                        .attr("y", 110)
+                        // .attr('width',500)
+                        // .attr('height',500)
+  });
+ 
+
+});
+// }
+</script>
+</html>

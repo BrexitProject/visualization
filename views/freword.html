@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>freword</title>
+  <style>
+    .container{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+  </style>
+    <script src="public/d3.min.js"></script>
+</head>
+<body>
+  <div class="container">
+        <div class='chart' style="height: 600px; width: 800px;">
+        </div>
+        <div class='chart' style="height: 500px; width: 500px;">
+        </div>
+  </div>
+</body>
+<script>
+ d3.csv('public/data/newspaper/words.csv').then(function(data) {
+     console.log(data);
+ });
+</script>
+</html>

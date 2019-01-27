@@ -43,7 +43,7 @@ d3.csv('public/data/word_probability1.csv').then(function(data) {
     //     drawWord(words[d]['remain'],scale(d)+`translate(0,${height/4*3})`);
     //  });
     //
-    // drawWord(totalWord,"translate("+[width/2,height/2]+")");
+    drawWord(totalWord,"translate("+[width/2,height/2]+")");
     // setTimeout(function(){drawSigWord(max);},totalTime + 5*second);
     // totalTime+= 5*second
     // setTimeout(function(){removeSig(max);},totalTime + 2*second);
@@ -56,46 +56,46 @@ d3.csv('public/data/word_probability1.csv').then(function(data) {
     // totalTime+= 2*second
 
     //
-    setTimeout(function(){drawLev();},totalTime + 2*second);
-    totalTime+= 2*second
-    setTimeout(function(){drawWord(words['移民']['leave'],scale('移民')+`translate(0,${height/4})`);},totalTime + 2*second);
-    totalTime+= 2*second
-    setTimeout(function(){drawCircle(words['移民']['leave']);},totalTime + 2*second);
-    totalTime+= 2*second
-    setTimeout(function(){drawWord(words['安全']['remain'],scale('安全')+`translate(0,${height/4*3})`);},totalTime + 2*second);
-    totalTime+= 2*second
-    setTimeout(function(){drawCircle(words['安全']['remain']);},totalTime + 2*second);
-    totalTime+= 2*second
-    setTimeout(function(){drawWord(words['财政']['leave'],scale('财政')+`translate(0,${height/4})`);},totalTime + 2*second);
-    totalTime+= 2*second
-    setTimeout(function(){drawCircle(words['财政']['leave']);},totalTime + 2*second);
-    totalTime+= 2*second
-    setTimeout(function(){drawWord(words['财政']['remain'],scale('财政')+`translate(0,${height/4*3})`);},totalTime + 2*second);
-    totalTime+= 2*second
-    setTimeout(function(){drawCircle(words['财政']['remain']);},totalTime + 2*second);
-    totalTime+= 2*second
-    setTimeout(function(){drawWord(words['法规']['leave'],scale('法规')+`translate(0,${height/4})`);},totalTime + 2*second);
-    totalTime+= 2*second
-    setTimeout(function(){drawCircle(words['法规']['leave']);},totalTime + 2*second);
-    totalTime+= 2*second
-    setTimeout(function(){drawWord(words['政治']['leave'],scale('政治')+`translate(0,${height/4})`);},totalTime + 2*second);
-    totalTime+= 2*second
-    setTimeout(function(){drawCircle(words['政治']['leave']);},totalTime + 2*second);
-    totalTime+= 2*second
-    setTimeout(function(){drawWord(words['政治']['remain'],scale('政治')+`translate(0,${height/4*3})`);},totalTime + 2*second);
-    totalTime+= 2*second
-    setTimeout(function(){drawCircle(words['政治']['remain']);},totalTime + 2*second);
-    totalTime+= 2*second
-    setTimeout(function(){drawWord(words['官僚']['leave'],scale('官僚')+`translate(0,${height/4})`);},totalTime + 2*second);
-    totalTime+= 2*second
-    setTimeout(function(){drawCircle(words['官僚']['leave']);},totalTime + 2*second);
-    totalTime+= 2*second
-    setTimeout(function(){drawWord(words['官僚']['remain'],scale('官僚')+`translate(0,${height/4*3})`);},totalTime + 2*second);
-    totalTime+= 2*second
-    setTimeout(function(){drawCircle(words['官僚']['remain']);},totalTime + 2*second);
-    totalTime+= 2*second
-    setTimeout(function(){drawWord(words['担忧']['remain'],scale('担忧')+`translate(0,${height/4*3})`);},totalTime + 2*second);
-    totalTime+= 2*second
-    setTimeout(function(){ d3.selectAll(".word").attr("opacity",0);drawCircle(words['担忧']['remain']);},totalTime + 2*second);
-    totalTime+= 2*second
+    // setTimeout(function(){drawLev();},totalTime + 2*second);
+    // totalTime+= 2*second
+    // setTimeout(function(){drawWord(words['移民']['leave'],scale('移民')+`translate(0,${height/4})`);},totalTime + 2*second);
+    // totalTime+= 2*second
+    // setTimeout(function(){drawCircle(words['移民']['leave']);},totalTime + 2*second);
+    // totalTime+= 2*second
+    // setTimeout(function(){drawWord(words['安全']['remain'],scale('安全')+`translate(0,${height/4*3})`);},totalTime + 2*second);
+    // totalTime+= 2*second
+    // setTimeout(function(){drawCircle(words['安全']['remain']);},totalTime + 2*second);
+    // totalTime+= 2*second
+    // setTimeout(function(){drawWord(words['财政']['leave'],scale('财政')+`translate(0,${height/4})`);},totalTime + 2*second);
+    // totalTime+= 2*second
+    // setTimeout(function(){drawCircle(words['财政']['leave']);},totalTime + 2*second);
+    // totalTime+= 2*second
+    // setTimeout(function(){drawWord(words['财政']['remain'],scale('财政')+`translate(0,${height/4*3})`);},totalTime + 2*second);
+    // totalTime+= 2*second
+    // setTimeout(function(){drawCircle(words['财政']['remain']);},totalTime + 2*second);
+    // totalTime+= 2*second
+    // setTimeout(function(){drawWord(words['法规']['leave'],scale('法规')+`translate(0,${height/4})`);},totalTime + 2*second);
+    // totalTime+= 2*second
+    // setTimeout(function(){drawCircle(words['法规']['leave']);},totalTime + 2*second);
+    // totalTime+= 2*second
+    // setTimeout(function(){drawWord(words['政治']['leave'],scale('政治')+`translate(0,${height/4})`);},totalTime + 2*second);
+    // totalTime+= 2*second
+    // setTimeout(function(){drawCircle(words['政治']['leave']);},totalTime + 2*second);
+    // totalTime+= 2*second
+    // setTimeout(function(){drawWord(words['政治']['remain'],scale('政治')+`translate(0,${height/4*3})`);},totalTime + 2*second);
+    // totalTime+= 2*second
+    // setTimeout(function(){drawCircle(words['政治']['remain']);},totalTime + 2*second);
+    // totalTime+= 2*second
+    // setTimeout(function(){drawWord(words['官僚']['leave'],scale('官僚')+`translate(0,${height/4})`);},totalTime + 2*second);
+    // totalTime+= 2*second
+    // setTimeout(function(){drawCircle(words['官僚']['leave']);},totalTime + 2*second);
+    // totalTime+= 2*second
+    // setTimeout(function(){drawWord(words['官僚']['remain'],scale('官僚')+`translate(0,${height/4*3})`);},totalTime + 2*second);
+    // totalTime+= 2*second
+    // setTimeout(function(){drawCircle(words['官僚']['remain']);},totalTime + 2*second);
+    // totalTime+= 2*second
+    // setTimeout(function(){drawWord(words['担忧']['remain'],scale('担忧')+`translate(0,${height/4*3})`);},totalTime + 2*second);
+    // totalTime+= 2*second
+    // setTimeout(function(){ d3.selectAll(".word").attr("opacity",0);drawCircle(words['担忧']['remain']);},totalTime + 2*second);
+    // totalTime+= 2*second
 });

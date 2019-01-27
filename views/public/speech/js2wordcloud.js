@@ -1116,6 +1116,7 @@ return /******/ (function(modules) { // webpackBootstrap
 						.append("text")
 						.attr('transform',`translate(${(gx + info.gw / 2) * g * mu},${(gy + info.gh / 2) * g * mu})rotate(${-rotateDeg*180/Math.PI})scale(${1 / mu}, ${1 / mu})`)
 						.attr('fill',color)
+						.attr('class',word)
 						.attr('x',info.fillTextOffsetX * mu)
 						.attr('y', (info.fillTextOffsetY + fontSize * 0.5) * mu)
 						.attr("alignment-baseline", "middle")
