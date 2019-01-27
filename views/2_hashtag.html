@@ -106,7 +106,7 @@
             "translate(" + (width-140) + " ," + 
                            (height + margin.top-10) + ")")
       .style("text-anchor", "start")
-      .text("Retweet")
+      .text("Tweet")
       .attr('class','xLabel');
   svg.append("g")
      .attr("transform", `translate(${margin.left},${margin.top})`)
@@ -118,7 +118,7 @@
       .attr("transform",
             "rotate(270)")
       .style("text-anchor", "end")
-      .text("Tweet")
+      .text("Retweet")
       .attr('class','xLabel');
 
   var bisect = d3.bisector(function(d) { return d[0]; });
