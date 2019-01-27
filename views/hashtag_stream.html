@@ -137,7 +137,7 @@
     .range([height, 0]);
   var color = d3.scaleOrdinal()
     .domain(d3.range(0, 4, 1))
-    .range([ '#1B6AA5','#bab8bd', '#cc5856', '#FFCC66'])
+    .range([ '#bab8bd','#cc5856','#1B6AA5',  '#FFCC66'])
 
   var xnow = d3.scaleTime()
     .domain([new Date(2016, 0), new Date(2016, 11)])
@@ -204,7 +204,7 @@
     return index;
   }
 
-  d3.csv('public/data/hashtag_stream.csv').then(function (data) {
+  d3.csv('public/data/stream.csv').then(function (data) {
     var dataArray = [];
     var keys = [];
 
@@ -253,8 +253,8 @@
     var dataArray2 = dataArray.filter((d, i) => i % 1 === 0);
     var stack = d3.stack()
       .keys(keys)
-      .order(d3.stackOrderInsideOut)
-    .offset(d3.stackOffsetSilhouette);
+      .order(d3.stackOrderNone )
+    .offset(d3.stackOffsetSilhouette );
 
     var layers = stack(dataArray2);
     var timeLen = dataArray2.length;
@@ -305,7 +305,7 @@
       .x(function (d) { return x(parseDate(d.data.date)); })
       .y0(function (d) { return y(d[0]) })
       .y1(function (d) { return y(d[1]) })
-      .curve(d3.curveCardinal.tension(0.1));
+      .curve(d3.curveBasis);
 
     var stream = graph.selectAll(".stream")
       .data(layers)
@@ -370,18 +370,18 @@
             .tickValues([new Date(2016,5,23)])
     }
     // add the X gridlines
-    // var grid = graph.append("g")			
-    //   .attr("class", "grid")
-    //   .attr("transform", `translate(0,${height-80})`)
-    //   .call(make_x_gridlines()
-    //       .tickSize(-height+80)
-    //       .tickFormat(()=>{return '公投日'})
-    //   )
+    var grid = graph.append("g")			
+      .attr("class", "grid")
+      .attr("transform", `translate(0,${height-80})`)
+      .call(make_x_gridlines()
+          .tickSize(-height+80)
+          .tickFormat(()=>{return '公投日'})
+      )
 
-    // graph.select('.grid')
-    //       .selectAll('text')
-    //       .attr('dy',-40)
-    //       .attr('transform','translate(0,85)');
+    graph.select('.grid')
+          .selectAll('text')
+          .attr('dy',-40)
+          .attr('transform','translate(0,85)');
     var xseperate =0;
     const interval = d3.interval((t) => {
       // let xTicks = xAxis.tickValues();

@@ -120,10 +120,10 @@
   var yscale = d3.scaleLinear()
                  .range([height,0]);
 
-  var color = d3.scaleSequential(d3.interpolateBlues)
-    .domain([-1,4])
+  var color = d3.scaleOrdinal()
+    .domain([0,3])
     // .range(d3.interpolateBlues)
-    // .range([ '#1B6AA5','#bab8bd', '#cc5856', '#FFCC66'])
+    .range([ '#1B6AA5','#bab8bd', '#cc5856', '#FFCC66'])
 
   var xAxis = d3.axisBottom(xscale)
                 .ticks(d3.timeMonth)
@@ -167,8 +167,12 @@
                      .domain(nestData.map(d=>d.key))
                      .range([0,n])
     xscale.domain(nestData[0].values.map((d)=>d.date));
-    yscale.domain([0,maxY]);
+    yscale.domain([0,maxY*1.1]);
 
+    var line = d3.line()
+                 .x(d=>{console.log(d);return xscale(d.date);})
+                 .y(d=>yscale(d.value))
+                 .curve(d3.curveCardinal.tension(0.3))
     svg.append('g')
      .attr('transform',`translate(${margin.left},${margin.top+height})`)
      .attr('class','axisBottom')
@@ -181,33 +185,20 @@
 
     var g = svg.append('g')
        .attr('transform',`translate(${margin.left},${margin.top})`)
-    var rect = g.selectAll('.bar')
+    var linepath = g.selectAll('.line')
        .data(nestData)
        .enter()
-       .append("g")
-       .attr("fill", (d, i) => color(i))
-       .selectAll("rect")
-       .data(d => {
-         return d.values;
-       })
-       .enter()
-       .append("rect")
-       .attr("x", (d, i) => {
-         return xscale(d.date);
-       })
-       .attr("y", d=>yscale(d.value))
-       .attr("width", xscale.bandwidth())
-       .attr("height", 0);
+       .append('path')
+       .attr('fill','none')
+       .attr("stroke", (d,i)=>color(i))
+      .attr("stroke-width", 1.5)
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+       .attr('d',d=>{
+         console.log(d);
+         return line(d.values);
+       });
 
-    rect.transition()
-        .duration(500)
-        .delay((d, i) => i * 20)
-        .attr("x", (d, i) => {
-         return xscale(d.date)+xscale.bandwidth() / n*keyScale(d.key);
-        })
-        .attr("y", d=>yscale(d.value))
-        .attr("width", xscale.bandwidth() / n)
-        .attr("height", d=>height-yscale(d.value));
 
     // legend
     svg.selectAll(".label")

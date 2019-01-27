@@ -57,7 +57,7 @@
   </div>
 </body>
 <script>
-  var margin = {top: 20, bottom: 50, left: 60, right: 60};
+  var margin = {top: 20, bottom: 50, left: 80, right: 60};
   var svgWidth = 1200;
   var svgHeight = 650;
 
@@ -69,13 +69,14 @@
             .attr('width', svgWidth)
             .attr('height', svgHeight);
   // scale
-  var x = d3.scaleLinear()
-            .domain([0,50,100,200,500,1000,2000,5000,10000,100000,150000,160000])
-            .range([0,(width-30)/10,(width-30)*2/10,(width-30)*3/10,(width-30)*4/10,(width-30)*5/10,(width-30)*6/10,(width-30)*7/10,(width-30)*8/10,(width-30)*9/10,width-30,width]);
-
   var y = d3.scaleLinear()
-            .domain([0,5,10,20,50,100,200,1000,1200])
-            .range([height,(height-30)*6/7+30,(height-30)*5/7+30,(height-30)*4/7+30,(height-30)*3/7+30,(height-30)*2/7+30,(height-30)/7+30, 30,0]);
+            .domain([0,100,200,500,1000,2000,5000,10000,50000,100000,150000,160000])
+            // .range([0,(width-30)/10,(width-30)*2/10,(width-30)*3/10,(width-30)*4/10,(width-30)*5/10,(width-30)*6/10,(width-30)*7/10,(width-30)*8/10,(width-30)*9/10,width-30,width]);
+            .range([height,(height-30)*9/10+30,(height-30)*8/10+30,(height-30)*7/10+30,(height-30)*6/10+30,(height-30)*5/10+30,(height-30)*4/10+30,(height-30)*3/10+30,(height-30)*2/10+30,(height-30)/10+30, 30,0])
+  var x = d3.scaleLinear()
+            .domain([0,5,20,50,100,200,500,1000,1200])
+            .range([0,(width-30)/7,(width-30)*2/7,(width-30)*3/7,(width-30)*4/7,(width-30)*5/7,(width-30)*6/7,width-30,width])
+            // .range([height,(height-30)*6/7+30,(height-30)*5/7+30,(height-30)*4/7+30,(height-30)*3/7+30,(height-30)*2/7+30,(height-30)/7+30, 30,0]);
   var r = d3.scaleLinear()
             .domain([0,0.5,1])
             .range([25,10,25]);
@@ -86,11 +87,13 @@
   // axises
   var xAxis = d3.axisBottom(x)
                 .tickSize(-height)
-                .tickValues([0,50,100,200,500,1000,2000,5000,10000,100000,150000]);
+                .tickValues([0,5,20,50,100,200,500,1000]); 
+                // .tickValues([0,50,100,200,500,1000,2000,5000,10000,100000,150000]);
 
   var yAxis = d3.axisLeft(y)
                 .tickSize(-width)
-                .tickValues([0,5,10,20,50,100,200,1000]); 
+                // .tickValues([0,5,10,20,50,100,200,1000]); 
+                .tickValues([0,100,200,500,1000,2000,5000,10000,50000,100000,150000]);
   svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top+height})`)
     .call(xAxis)
@@ -103,7 +106,7 @@
             "translate(" + (width-140) + " ," + 
                            (height + margin.top-10) + ")")
       .style("text-anchor", "start")
-      .text("Retweet")
+      .text("Tweet")
       .attr('class','xLabel');
   svg.append("g")
      .attr("transform", `translate(${margin.left},${margin.top})`)
@@ -115,7 +118,7 @@
       .attr("transform",
             "rotate(270)")
       .style("text-anchor", "end")
-      .text("Tweet")
+      .text("Retweet")
       .attr('class','xLabel');
 
   var bisect = d3.bisector(function(d) { return d[0]; });
@@ -131,8 +134,8 @@
     return data.map(d=>{
       return {
         label: d.label,
-        freq: findFreqByMonth(d.value,time),
-        forward: findForwardByMonth(d.value,time),
+        forward: findFreqByMonth(d.value,time),
+        freq: findForwardByMonth(d.value,time),
         time: time,
         trend: d.trend
       }
@@ -172,7 +175,7 @@
        .style("fill", function(d) { return color(d.trend); })
        .style("stroke",function(d) { return color(d.trend); })
        .style("display",function(d) {
-        if(d.freq<2&&d.forward<20){
+        if(d.freq<50&&d.forward<2){
             return 'none';}});
   }
 
@@ -193,6 +196,12 @@
       dataArray.push(tmp);
     });
     console.log(dataArray);
+
+    var monthText = svg.append('g')
+                   .append('text')
+                   .attr('x',margin.left+60)
+                   .attr('y',margin.top+160)
+                   .attr('class','monthText');
     // Add a dot per state. Initialize the data at 1950, and set the colors.
 	  var dot = svg.append("g")
 					.attr("class", "dots")
@@ -214,14 +223,9 @@
           .style("text-anchor", "middle")
           .style("fill", function(d) { return "#242424"; })
           .style("display",function(d) {
-            if(d.freq<2&&d.forward<20){
+            if(d.freq<50&&d.forward<2){
             return 'none';}});
 
-    var monthText = svg.append('g')
-                   .append('text')
-                   .attr('x',margin.left+60)
-                   .attr('y',margin.top+160)
-                   .attr('class','monthText');
 
     svg.transition()
        .duration(150000)
@@ -267,7 +271,7 @@
         .style("text-anchor", "middle")
         .style("fill", function(d) { return "#242424"; })
         .style("display",function(d) {
-          if(d.freq<2&&d.forward<20){
+          if(d.freq<50&&d.forward<2){
             return 'none';}});
     }
   });
