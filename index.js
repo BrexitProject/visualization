@@ -33,8 +33,8 @@ app.get('/wordProbability', function(req, res) {
 
 app.use('/public',express.static(__dirname+'/views/public'));
 
-app.get('/GoogleTrends', function(req, res) {
-  res.sendFile(path.join(__dirname + '/views/GoogleTrends.html'));
+app.get('/GoogleTrend', function(req, res) {
+  res.sendFile(path.join(__dirname + '/views/GoogleTrend.html'));
 });
 
 app.get('/speech', function(req, res) {
