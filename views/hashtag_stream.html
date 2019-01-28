@@ -36,7 +36,7 @@
       fill: #a0a0a0;
       font-weight: bold;
       font-size: 18px;
-      transform: "rotate(270)";
+      /* transform: "rotate(270)"; */
     }
 
     .axisLeft path {
@@ -137,7 +137,7 @@
     .range([height, 0]);
   var color = d3.scaleOrdinal()
     .domain(d3.range(0, 4, 1))
-    .range([ '#bab8bd','#cc5856','#1B6AA5',  '#FFCC66'])
+    .range([ '#1B6AA5','#FFCC66','#bab8bd', '#cc5856'])
 
   var xnow = d3.scaleTime()
     .domain([new Date(2016, 0), new Date(2016, 11)])
@@ -173,7 +173,7 @@
     .attr("y", 0)
     .attr("x", 9)
     .attr("dy", "1em")
-    .attr("transform", "rotate(270) translate(18, 2)");
+    .attr("transform", "translate(18, -20)");
   graph.append("g")
     .attr("class", "axisYear")
     // .attr("transform", `translate(0,${margin.top})`) 
@@ -266,35 +266,9 @@
     var sepLen = 50; // 每条线的间隔
 
     var textData = [];
-    for (let i = 0; i < timeLen; i++) {
-      let index = sortIndex(layers, i);
-      let sep = seperate(layers, i); // i时间点的竖线宽度
-      let extraSpace = sepLen * (dataTypeNum - 1);
-      let totalLen = sep + extraSpace;
-      if (i === 0) {
-        let start = - totalLen / 2;
-        let now = start;
-        let sepLen0 = ((ymax - ymin - 200) - sep) / (dataTypeNum - 1);
-        for (let j = 0; j < dataTypeNum; j++) {
-          let ii = index[j];
-          // let tmp = layers[ii][0][1] - layers[ii][0][0];
-          // layers[ii][0][0] = now;
-          // layers[ii][0][1] = now + tmp;
-          textData.push({ "text": layers[ii].key, "y": now, "type": j })
-          layers[ii].type = j;
-          // now = now + tmp + sepLen;
-        }
-      } else {
-        // let start = - totalLen / 2;
-        // let now = start;
-        // for (let j = 0; j < dataTypeNum; j++) {
-        //   let ii = index[j];
-        //   let tmp = layers[ii][i][1] - layers[ii][i][0];
-        //   layers[ii][i][0] = now;
-        //   layers[ii][i][1] = now + tmp;
-        //   now = now + tmp + sepLen;
-        // }
-      }
+    console.log(layers);
+    for (let d of layers) {
+      textData.push({ "text": d.key, "type": d.index })
     }
 
     ymin = d3.min(layers, stackMin) * 1.4;
@@ -317,7 +291,7 @@
       // .attr('clip-path','url(#myClip)')
       .attr("d", area)
       .style("fill-opacity", 0.78)
-      .style("fill", d => color(d.type))
+      .style("fill", d => color(d.index))
       // .style('stroke', '#fefefe').style('stroke-width', 1)
       // .style('stroke-opacity', 0.8);
 
@@ -339,14 +313,14 @@
       .enter().append('text')
       .attr('class', 'label')
       .attr("x", width + margin.left + 30)
-      .attr("y", (d,i) => 25*i + margin.top + 5)
+      .attr("y", (d,i) => -25*i + margin.top + 100+5)
       .text(d => d.text)
       .style('text-transform', 'capitalize')
       .style('fill', '#333333')
       .attr("font-family", "sans-serif")
       .attr("text-anchor", "start")
       .attr("font-size", 16)
-      .attr('font-weight', 900);
+      .attr('font-weight', 500);
 
 
     svg2.selectAll('.colorLabel')
@@ -354,7 +328,7 @@
        .enter().append('circle')
        .attr('class','colorLabel')
        .attr('cx',width+margin.left+20)
-       .attr('cy',(d,i) => 25*i + margin.top)
+       .attr('cy',(d,i) => -25*i + margin.top+100)
        .attr('r',6)
        .style("fill-opacity", 0.8)
        .style('fill',d=>color(d.type))
@@ -400,7 +374,7 @@
         .attr("y", 0)
         .attr("x", 9)
         .attr("dy", "1em")
-        .attr("transform", "rotate(270) translate(18, 2)");
+        .attr("transform", "translate(18, -20)");
 
       stream.transition()
         .duration(1000)
@@ -419,13 +393,6 @@
         interval.stop();
       }
     }, 1000);
-
-    // svg2.append("g")
-    //   .attr("transform", `translate(${margin.left},${margin.top})`)
-    //   .attr("class", "axisLeft")
-    //   .style("font", "12px Helvetica Neue")
-    //   .call(yAxis)
-
   });
 
 
