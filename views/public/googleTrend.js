@@ -109,7 +109,7 @@ async function render(datasetByWeek, datasetOfJune) {
   let {processedDataByWeek, maxValSetByWeek, dateByWeek} = datasetByWeek;
   let {processedDataOfJune, maxValSetOfJune, dateOfJune} = datasetOfJune;
 
-  let margin = {top: 20, bottom: 50, left: 80, right: 60};
+  let margin = {top: 20, bottom: 50, left: 80, right: 150};
   let svgWidth = 1300;
   let svgHeight = 600;
 
@@ -145,7 +145,10 @@ async function render(datasetByWeek, datasetOfJune) {
   let yScale = [yScaleByWeek, yScaleOfJune];
 
   let xAxis = d3.axisBottom()
-    .scale(xScaleByWeek);
+    .scale(xScaleByWeek)
+    .tickFormat(d => {
+      return `${d.getMonth() + 1}月`;
+    });
   let yAxis = d3.axisLeft()
     .scale(yScaleByWeek);
 
@@ -155,8 +158,20 @@ async function render(datasetByWeek, datasetOfJune) {
   let gLines = gChart.append('g')
     .attr('class', 'lines')
     .attr('clip-path', 'url(#mask)');
+
+  gYAxis.append("text")
+    .attr('class', 'text')
+    .attr("transform", "rotate(-90)")
+    .attr('fill', 'black')
+    .style("font-size", "30px")
+    .attr("y", 8)
+    .attr("dy", "0.8em")
+    .style("text-anchor", "end")
+    .text("搜索量");
+
   let colorSet = ['#7fc97f', '#beaed4', '#fdc086',
     '#ffff99', '#386cb0', '#f0027f'];
+
   let lineGenerator = d3.line()
     .x(d => xScale[0](parser(d.date)))
     .y(d => yScale[0](d.val));
@@ -166,6 +181,12 @@ async function render(datasetByWeek, datasetOfJune) {
   });
   
   renderAll(processedData, lineGenerator, colorSet, gLines, ofJuneFlag);
+
+  let legendRectSize = 18, legendSpacing = 6;
+  let legendData = colorSet.map((color, i) => {
+    return [d3.select(`g.lines > path:nth-child(${i + 1})`).attr("data-legend"), color];
+  });
+  setupLegend(svg, margin, width, height, legendData, legendSpacing, legendRectSize);     
 
   let order = maxValSetByWeek.map(d => d[0]);
   let delay = 3000;
@@ -180,6 +201,35 @@ async function render(datasetByWeek, datasetOfJune) {
       darkenOtherLines('', gLines, duration, 1);
     }
   }
+}
+
+function setupLegend(svg, margin, w, h, legendData, legendSpacing, legendRectSize) {
+  let gLegend = svg.append("g")
+    .attr("transform", `translate(${w + margin.left + 50}, ${margin.top + h / 3})`);
+
+  let legend = gLegend.selectAll('.legend')                
+    .data(legendData)                              
+    .enter()                                           
+    .append('g')                                       
+    .attr('class', 'legend')                           
+    .attr('transform', function(_, i) {                
+      var height = legendRectSize + legendSpacing;     
+      var offset =  height * legendData.length / 2;
+      var horz = -2 * legendRectSize;                  
+      var vert = i * height - offset;                  
+      return 'translate(' + horz + ',' + vert + ')';   
+    });                                                
+
+  legend.append('rect')                                
+    .attr('width', legendRectSize)                     
+    .attr('height', legendRectSize)                    
+    .style('fill', d => d[1])                         
+    .style('stroke', d => d[1]);                           
+          
+  legend.append('text')                                
+    .attr('x', legendRectSize + legendSpacing)         
+    .attr('y', legendRectSize - legendSpacing / 2)         
+    .text(function(d) { return d[0]; }); 
 }
 
 function defineXScale(domain, width, parser) {
@@ -199,11 +249,20 @@ function updateYScale(yScale, domain, ofJuneFlag) {
 }
 
 function renderAll(data, lineGenerator, colorSet, selector) {
+  let mapping = {
+    "what-is-eu": "什么是欧盟",
+    "what-is-brexit": "什么是脱欧",
+    "is-russia-in-the-eu": "俄罗斯是不是欧盟国家",
+    "what-is-article-50": "什么是脱欧法案",
+    "is-sweden-in-the-eu": "瑞典是不是欧盟国家",
+    "what-is-single-market": "什么是单一市场"
+  };
   selector.selectAll('path')
     .data(data)
     .enter()
     .append('path')
     .attr('d', d => lineGenerator(d[1]))
+    .attr("data-legend", d => mapping[d[0]])
     .attr("fill", "none")
     .attr("stroke-width","0.16em")
     .attr("stroke", (_, i) => colorSet[i]);
@@ -277,7 +336,19 @@ function updateXAxis(gXAxis, xAxis, xScale, duration, ofJuneFlag) {
     .transition()
     .ease(d3.easeLinear)
     .duration(duration)
-    .call(xAxis.scale(xScale[ofJuneFlag]));
+    .call((() => {
+      xAxis.scale(xScale[ofJuneFlag]);
+      if (ofJuneFlag) {
+        xAxis.tickFormat(d => {
+          return d3.timeFormat("%m/%d")(d);
+        })
+      } else {
+        xAxis.tickFormat(d => {
+          return `${d.getMonth() + 1}月`;
+        })
+      }
+      return xAxis;
+    })());
 }
 
 function spanLine(parser, range, gYAxis, yAxis, yScale, gXAxis, xAxis, xScale, lineGenerator, selector, delay, duration) {
