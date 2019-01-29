@@ -252,9 +252,9 @@ function restoreOtherLines(key, selector, duration) {
 
 function updateYAxis(gYAxis, yAxis, yScale, duration, ofJuneFlag) {
   gYAxis
-      // .transition()
-  //   .ease(d3.easeLinear)
-  //   .duration(duration)
+    .transition()
+    .ease(d3.easeLinear)
+    .duration(duration)
     .call(yAxis.scale(yScale[ofJuneFlag]));
 }
 
@@ -263,9 +263,9 @@ function updateLines(parser, selector, yScale, xScale, lineGenerator, duration, 
     .y(d => yScale[ofJuneFlag](d.val));
 
   selector.selectAll('path')
-    // .transition()
-    // .ease(d3.easeLinear)
-    // .duration(duration)
+    .transition()
+    .ease(d3.easeLinear)
+    .duration(duration)
     .attr('d', d => {
       return lineGenerator(d[1 + ofJuneFlag])
     })
@@ -273,9 +273,9 @@ function updateLines(parser, selector, yScale, xScale, lineGenerator, duration, 
 
 function updateXAxis(gXAxis, xAxis, xScale, duration, ofJuneFlag) {
   gXAxis
-    // .transition()
-    // .ease(d3.easeLinear)
-    // .duration(duration)
+    .transition()
+    .ease(d3.easeLinear)
+    .duration(duration)
     .call(xAxis.scale(xScale[ofJuneFlag]));
 }
 
