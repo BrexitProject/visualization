@@ -170,14 +170,15 @@ async function render(datasetByWeek, datasetOfJune) {
   let order = maxValSetByWeek.map(d => d[0]);
   let delay = 3000;
   let duration = 2000;
+
   for (let [index, key] of order.entries()) {
     let item = maxValSetOfJune.find(d => d[0] === key);
     // darkenOtherLines(key, gLines, duration, 0);
     await fitLine(parser, key, [0, maxValSetByWeek[index][1] * 1.1], [0, item[1] * 1.1], gYAxis, yAxis, yScale, gXAxis, xAxis, xScale, lineGenerator, gLines, delay, duration);
     console.log(index, key);
-    // if (index === order.length - 1) {
-    //   darkenOtherLines('', gLines, duration, 1);
-    // }
+    if (index === order.length - 1) {
+      darkenOtherLines('', gLines, duration, 1);
+    }
   }
 }
 
@@ -219,7 +220,7 @@ async function fitLine(parser, key, rangeByWeek, rangeOfJune, gYAxis, yAxis, ySc
       console.log("span", key);
       await restoreLine(parser, rangeByWeek, gYAxis, yAxis, yScale, gXAxis, xAxis, xScale, lineGenerator, selector, delay, duration);
       console.log("restore", key);
-      resolve();
+      resolve("OK");
     }, delay);
   });
 }
