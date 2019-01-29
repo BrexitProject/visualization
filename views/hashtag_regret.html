@@ -118,10 +118,10 @@
                  .padding(0.15);
 
   var yscale = d3.scaleLinear()
+                 .domain([0,50])
                  .range([height,0]);
 
-  var color = d3.scaleSequential(d3.interpolateBlues)
-    .domain([-1,4])
+  var color = ['#1B6AA5','#bab8bd'];
     // .range(d3.interpolateBlues)
     // .range([ '#1B6AA5','#bab8bd', '#cc5856', '#FFCC66'])
 
@@ -137,37 +137,25 @@
   var yAxis = d3.axisLeft(yscale)
                 .tickSize(-width);
   
-  d3.csv('public/data/hashtag_stream.csv').then(function (data) {
+  d3.csv('public/data/regret.csv').then(function (data) {
     var dataArray = [];
     var keys = [];
-
-    var originData = []
+    
     data.forEach(d => {
-      let word = d.hashtag.trim();
-      keys.push(word);
-      for (let label in d) {
-        if (label !== 'hashtag') {
-          let tmp = {};
-          tmp.key = word;
-          tmp.date = parseDate(label);
-          tmp.value = parseInt(d[label]);
-          originData.push(tmp);
+      let tmp={};
+      tmp.label=d.hashtag.trim();
+      tmp.values=[];
+      for(let label in d){
+        if(label!=='hashtag'&&label!=='trend'&&label.substr(0,2)!=='re'){
+          tmp.values.push([parseDate(label),parseInt(d[label]),parseInt(d['re'+label])]);
         }
       }
+      tmp.values.sort((a,b)=> a[0]-b[0]);
+      dataArray.push(tmp);
     });
+    console.log(dataArray);
 
-    var maxY = d3.max(originData.map((d)=>d.value));
-
-    var nestData = d3.nest()
-      .key(d => d.key)
-      .entries(originData);
-    
-    var n = nestData.length;
-    var keyScale = d3.scaleBand()
-                     .domain(nestData.map(d=>d.key))
-                     .range([0,n])
-    xscale.domain(nestData[0].values.map((d)=>d.date));
-    yscale.domain([0,maxY]);
+    xscale.domain(dataArray[0].values.map((d)=>d[0]));
 
     svg.append('g')
      .attr('transform',`translate(${margin.left},${margin.top+height})`)
@@ -180,34 +168,26 @@
        .call(yAxis);
 
     var g = svg.append('g')
-       .attr('transform',`translate(${margin.left},${margin.top})`)
-    var rect = g.selectAll('.bar')
-       .data(nestData)
-       .enter()
-       .append("g")
-       .attr("fill", (d, i) => color(i))
-       .selectAll("rect")
-       .data(d => {
-         return d.values;
-       })
-       .enter()
-       .append("rect")
-       .attr("x", (d, i) => {
-         return xscale(d.date);
-       })
-       .attr("y", d=>yscale(d.value))
-       .attr("width", xscale.bandwidth())
-       .attr("height", 0);
+       .attr('transform',`translate(${margin.left},${margin.top})`);
 
-    rect.transition()
-        .duration(500)
-        .delay((d, i) => i * 20)
-        .attr("x", (d, i) => {
-         return xscale(d.date)+xscale.bandwidth() / n*keyScale(d.key);
-        })
-        .attr("y", d=>yscale(d.value))
-        .attr("width", xscale.bandwidth() / n)
-        .attr("height", d=>height-yscale(d.value));
+    var line = d3.line()
+              .x(d=>{console.log(d);return xscale(d.date);})
+              .y(d=>yscale(d.values[1]))
+              .curve(d3.curveCardinal.tension(0.3))
+
+    var linepath = g.selectAll('.line')
+       .data(dataArray)
+       .enter()
+       .append('path')
+       .attr('fill','none')
+       .attr("stroke", (d,i)=>color[i])
+       .attr("stroke-width", 1.5)
+       .attr("stroke-linejoin", "round")
+       .attr("stroke-linecap", "round")
+       .attr('d',d=>{
+         console.log(d);
+         return line(d.values);
+       });
 
     // legend
     svg.selectAll(".label")
