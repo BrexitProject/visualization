@@ -82,19 +82,19 @@ function processData(data) {
   let date = processedData['date'];
   delete processedData.date;
 
-  let maxValSet = data.map(datum => {
-    let cnt = 0;
-    Object.keys(datum).forEach(key => {
-      if (key !== "date") {
-        cnt += parseFloat(datum[key]);
-      }
-    });
-    return [datum["date"], cnt];
-  });
-  let maxSet = [];
+  // let maxValSet = data.map(datum => {
+  //   let cnt = 0;
+  //   Object.keys(datum).forEach(key => {
+  //     if (key !== "date") {
+  //       cnt += parseFloat(datum[key]);
+  //     }
+  //   });
+  //   return [datum["date"], cnt];
+  // });
+  let maxValSet = [];
   keys.map(key => {
     if (key !== "date") {
-      maxSet.push([key, Math.max(...processedData[key])]);
+      maxValSet.push([key, Math.max(...processedData[key])]);
     }
   });
 
@@ -102,10 +102,12 @@ function processData(data) {
     processedData[key] = processedData[key].map((d, i) => ({date: date[i], val: d}));
   });
 
-  maxSet.sort((a, b) => a[1] - b[1]);
-  keys = maxSet.map(d => d[0]);
+  maxValSet.sort((a, b) => b[1] - a[1]);
+  keys = maxValSet.map(d => d[0]);
 
-  let stackedData = d3.stack().keys(maxSet.map(d => d[0]))(data);
+  // let stackedData = d3.stack().keys(maxValSet.map(d => d[0]))(data);
+  let stackedData = keys.map(key => processedData[key]);
+  keys.map((key, i) => stackedData[i]["key"] = key);
 
   let dataset = {processedData, maxValSet, date, stackedData, keys};
   
@@ -186,7 +188,7 @@ function render(dataset) {
     .text("相对搜索量");
 
   let colorSet = ['#7fc97f', '#beaed4',
-    '#386cb0', '#f0027f'];
+    '#386cb0', '#f0027f'].reverse();
 
   // let lineGenerator = d3.line()
   //   .x(d => xScale(parser(d.date)))
@@ -194,9 +196,9 @@ function render(dataset) {
     // .curve(d3.curveCardinal);
 
   let areaGenerator = d3.area()
-    .x(d => xScale[0](parser(d.data.date)))
-    .y0(d => yScale(d[0]))
-    .y1(d => yScale(d[1]));
+    .x(d => xScale[0](parser(d.date)))
+    .y0(_ => yScale(0))
+    .y1(d => yScale(parseFloat(d.val)));
   // let bindedData = Object.keys(processedData).map(key => {
   //   return [key, processedData[key]];
   // });
@@ -308,9 +310,12 @@ function renderAll(stackedData, areaGenerator, colorSet, selector) {
     .data(stackedData)
     .enter()
     .append("path")
-    .attr("class", function(d) { return "myArea " + d.key })
+    .attr("class", function(d) { 
+      return "myArea " + d.key;
+    })
     .attr("data-legend", d => mapping[d.key])
     .style("fill", function(d, i) { return colorSet[i]; })
+    .style("fill-opacity", 0.6)
     .attr("d", areaGenerator)
 }
 
@@ -397,7 +402,7 @@ function updateYAxis(gYAxis, yAxis, yScale, duration, ofJuneFlag) {
 }
 
 function updateLines(parser, selector, areaGenerator, xScale, duration, ofJuneFlag) {
-  areaGenerator.x(d => xScale[ofJuneFlag](parser(d.data.date)));
+  areaGenerator.x(d => xScale[ofJuneFlag](parser(d.date)));
 
   selector.selectAll('path')
     .transition()
