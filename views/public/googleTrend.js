@@ -177,13 +177,13 @@ function render(dataset) {
 
   gYAxis.append("text")
     .attr('class', 'text')
-    .attr("transform", "rotate(-90)")
+    .attr("transform", `translate(${160}, ${0})`)
     .attr('fill', 'black')
     .style("font-size", "30px")
     .attr("y", 8)
     .attr("dy", "0.8em")
     .style("text-anchor", "end")
-    .text("搜索量");
+    .text("相对搜索量");
 
   let colorSet = ['#7fc97f', '#beaed4',
     '#386cb0', '#f0027f'];
