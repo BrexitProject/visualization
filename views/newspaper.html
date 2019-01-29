@@ -65,7 +65,7 @@
 </body>
 <script>
 let categorys =  ['express','dailymail','dailystar','sun','inews','guardian','ft','economist'];
-let color = d3.scaleOrdinal().domain(categorys).range(['#67000d', '#a50f15','#cb181d','#ef3b2c','#6baed6','#2171b5','#08519c','#08306b'])
+let color = d3.scaleOrdinal().domain(categorys).range(['#67000d', '#a50f15','#cb181d','rgb(238, 136, 136)','#6baed6','#2171b5','#08519c','#08306b'])
 let promises = categorys.map(function (id) {
   return  new Promise(function (resolve, reject) {
       d3.csv(`public/data/newspaper/new_${(id)}.csv`).then(function(data) {
