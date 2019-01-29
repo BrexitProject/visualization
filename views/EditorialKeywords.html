@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>EditorialKeywords</title>
+  <style>
+    .container{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .chart{
+      width: 960px;
+      height: 520px;
+    }
+    text{
+        text-anchor: middle;
+        alignment-baseline: central;
+        font-size: 100%;
+        font-family: 'Roboto';
+    font-size: 12px;
+    dominant-baseline: central;
+    font-weight: 500;
+      }
+    tspan{
+      /* fill: #fff; */
+    paint-order: stroke;
+    stroke-width: 3px;
+    stroke-linejoin: round;
+    font-weight: 700;
+    text-anchor: middle;
+    font-size:.7rem;
+    font-weight: 500;
+    letter-spacing: .1em;
+    pointer-events: none;
+    }
+    .axis{
+      stroke: #C1C1C1;
+    stroke-width: 1px;
+    }
+  </style>
+  <script src="public/d3.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class='chart' >
+        <svg id='editorial' width='100%' height='100%'>
+          <defs>  
+            <linearGradient id="myGradient" x1="0%" y1="0%" x2="100%" y2="0%">  
+                <stop offset="0%" stop-color="rgb(103, 0, 31)" /> 
+                <stop offset="50%" stop-color="rgb(242, 239, 238)" />  
+                <stop offset="100%" stop-color="rgb(5, 48, 97)" />  
+            </linearGradient>  
+          </defs> 
+          <line x1='20' y1='20' x2='20' y2='40' style='stroke:rgb(103, 0, 31)'/>
+          <text x='20' y='11' style='text-anchor: start;fill:rgb(103, 0, 31)'>More probablely Word of Out</text>
+          <line x1='940' y1='20' x2='940' y2='40' style='stroke:rgb(5, 48, 97)'/>
+          <text x='940' y='11' style=' text-anchor: end;fill:rgb(5, 48, 97)'>More probablely Word of In</text>
+          <text x='750' y='490' style=' text-anchor: end;'>possibility:</text>
+          <rect fill="url(#myGradient)"  
+           x="760" y="480" width="130" height="20"/>
+           <text x='760' y='510' style=' text-anchor: start;'>Out</text>
+           <text x='890' y='510' style=' text-anchor: end;'>In</text>
+        </svg>
+    </div>
+  </div>
+</body>
+<script src="public/EditorialKeywords.js"></script>
+</html>
