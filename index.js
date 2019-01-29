@@ -11,7 +11,7 @@ app.get('/bubble', function(req, res) {
   res.sendFile(path.join(__dirname + '/views/2_hashtag.html'));
 });
 
-app.get('/hashtag', function(req, res) {
+app.get('/two_hashtag', function(req, res) {
   res.sendFile(path.join(__dirname + '/views/hashtag_regret.html'));
 });
 

@@ -173,7 +173,7 @@
     .attr("y", 0)
     .attr("x", 9)
     .attr("dy", "1em")
-    .attr("transform", "translate(1, -20)");
+    .attr("transform", "translate(1, 0)");
   graph.append("g")
     .attr("class", "axisYear")
     // .attr("transform", `translate(0,${margin.top})`) 
@@ -271,7 +271,7 @@
       textData.push({ "text": d.key, "type": d.index })
     }
 
-    ymin = d3.min(layers, stackMin) * 1.4;
+    ymin = d3.min(layers, stackMin) * 1.2;
     ymax = d3.max(layers, stackMax) * 1.2;
     y.domain([ymin, ymax]);
 
@@ -346,9 +346,9 @@
     // add the X gridlines
     var grid = graph.append("g")			
       .attr("class", "grid")
-      .attr("transform", `translate(0,${height-80})`)
+      .attr("transform", `translate(0,${height-65})`)
       .call(make_x_gridlines()
-          .tickSize(-height+80)
+          .tickSize(-height+65)
           .tickFormat(()=>{return '公投日'})
       )
 
@@ -366,7 +366,7 @@
       // xTicks.shift();
       // xAxis.tickValues(xTicks);
       var labelText = graph.select('.axisBottom').transition().duration(1000).ease(d3.easeLinear).attr('transform', `translate( ${-xseperate},${height})`);
-      graph.select('.grid').transition().duration(1000).ease(d3.easeLinear).attr('transform', `translate( ${-xseperate},${height-80})`);
+      graph.select('.grid').transition().duration(1000).ease(d3.easeLinear).attr('transform', `translate( ${-xseperate},${height-65})`);
       // .tickValues([new Date(2016,5,23)]).tickSize(-height)
       //     .tickFormat(()=>{return '6.23 公投日'}));
       labelText.selectAll('text')
@@ -374,7 +374,7 @@
         .attr("y", 0)
         .attr("x", 9)
         .attr("dy", "1em")
-        .attr("transform", "translate(1, -20)");
+        .attr("transform", "translate(1, 0)");
 
       stream.transition()
         .duration(1000)
