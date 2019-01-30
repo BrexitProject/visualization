@@ -42,6 +42,8 @@ function render(dataset) {
   renderMain(dataset);
 
   renderFooter();
+
+  // exportSVG(document.querySelector("#svg"));
 }
 
 function generatePosConfig(spanConfig) {
@@ -96,6 +98,17 @@ function addPlaceholder(svgWidth, svgHeight, spanConfig) {
       .attr("class", "placeholder")
       .attr("width", svgWidth * horizontal[className])
       .attr("height", parentNode.select(`rect.p-${parentNode.attr("class")}`).attr("data-height"));
+
+    // if (className === "map") {
+    //   node.select("foreignobject")
+    //     .attr("width", svgWidth * horizontal[className])
+    //     .attr("height", parentNode.select(`rect.p-${parentNode.attr("class")}`).attr("data-height"))
+    //     .append("div")
+    //     .attr("id", "map")
+    //     .attr("width", svgWidth * horizontal[className])
+    //     .attr("height", parentNode.select(`rect.p-${parentNode.attr("class")}`).attr("data-height"))
+    //     .attr("innerHTML", "adfaf");
+    // }
   });
 }
 
@@ -127,7 +140,7 @@ function renderHeader(svgWidth, height) {
 function renderMain(dataset) {
   renderAside();
 
-  renderSection(dataset);
+  // renderSection(dataset);
 }
 
 function renderAside() {
@@ -166,7 +179,7 @@ function renderAside() {
   let fontSize = 16;
   let legendMargin = {
     top: 20,
-    left: 20,
+    left: 30,
   };
   let letterSpacing = 10;
   let len = countries.length;
@@ -197,7 +210,44 @@ function renderAside() {
 }
 
 function renderSection(dataset) {
+  am4core.useTheme(am4themes_animated);
+  // Themes end
 
+  // Create map instance
+  let chart = am4core.create("#map", am4maps.MapChart);
+
+  // Set map definition
+  chart.geodata = am4geodata_worldLow;
+
+  // Set projection
+  chart.projection = new am4maps.projections.Miller();
+
+  // Create map polygon series
+  let polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
+
+  // Exclude Antartica
+  polygonSeries.exclude = ["AQ"];
+
+  // Make map load polygon (like country names) data from GeoJSON
+  polygonSeries.useGeodata = true;
+
+  // Configure series
+  let polygonTemplate = polygonSeries.mapPolygons.template;
+  polygonTemplate.tooltipText = "{name}";
+  polygonTemplate.fill = chart.colors.getIndex(0);
+
+  // Create hover state and set alternative fill color
+  let hs = polygonTemplate.states.create("hover");
+  hs.properties.fill = chart.colors.getIndex(0).brighten(-0.5);
+
+  // Create active state
+  let activeState = polygonTemplate.states.create("active");
+  activeState.properties.fill = chart.colors.getIndex(3).brighten(-0.5);
+
+  // Create an event to toggle "active" state
+  polygonTemplate.events.on("hit", function(ev) {
+    ev.target.isActive = !ev.target.isActive;
+  })
 }
 
 function renderFooter() {
