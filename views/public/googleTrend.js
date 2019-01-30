@@ -141,8 +141,8 @@ function render(dataset) {
   svg.append('clipPath')
     .attr('id', 'xAxis-mask')
     .append('rect')
-    .attr('x', -15)
-    .attr('width', width + 15)
+    .attr('x', -18)
+    .attr('width', width + 18)
     .attr('height', height);
 
   let gChart = svg.append('g')
