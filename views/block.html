@@ -232,11 +232,12 @@ d3.select("svg").append("rect")
 
 d3.select("svg").append("text")
             .attr("class","mark")
-            .attr("x",630)
-            .attr("y",50)
-            .text("IN")
-            .attr("font-size",30)
-            .attr("fill","#0038c3");
+            .attr("x",660)
+            .attr("y",45)
+            .text("支持留欧")
+            .attr("font-size",15)
+            .attr("fill","#0038c3")
+            .attr('text-anchor','end');
 
 d3.select("svg").append("rect")
             .attr("x",720)
@@ -247,10 +248,11 @@ d3.select("svg").append("rect")
 
 d3.select("svg").append("text")
             .attr("class","mark")
-            .attr("x",750)
-            .attr("y",50)
-            .text("OUT")
-            .attr("font-size",30)
+            .attr("x",748)
+            .attr("y",45)
+            .text("支持脱欧")
+            .attr("font-size",15)
+            .attr('text-anchor','start')
             .attr("fill","#cf142b");
 
 
