@@ -168,7 +168,8 @@ function render(dataset) {
       return `${d.getMonth() + 1}月`;
     });
   let yAxis = d3.axisLeft()
-    .scale(yScale);
+    .scale(yScale)
+    .ticks(5);
 
   gXAxis.call(xAxis);
   gYAxis.call(yAxis);
@@ -186,6 +187,26 @@ function render(dataset) {
     .attr("dy", "0.8em")
     .style("text-anchor", "end")
     .text("相对搜索量");
+
+  gYAxis.append("text")
+    .attr('class', 'text')
+    .attr("transform", `translate(${145}, ${40})`)
+    .attr('fill', 'black')
+    .style("font-size", "30px")
+    .attr("y", 8)
+    .attr("dy", "0.8em")
+    .style("text-anchor", "end")
+    .text("（英国）");
+
+  gYAxis.append("text")
+    .attr('class', 'text')
+    .attr("transform", `translate(${width + 100}, ${height - 20})`)
+    .attr('fill', 'black')
+    .style("font-size", "30px")
+    .attr("y", 8)
+    .attr("dy", "0.8em")
+    .style("text-anchor", "end")
+    .text("2016");
 
   let colorSet = ['#7fc97f', '#beaed4',
     '#386cb0', '#f0027f'].reverse();
@@ -208,7 +229,7 @@ function render(dataset) {
   let legendRectSize = 18, legendSpacing = 6;
   let legendData = colorSet.slice(0, keys.length).map((color, i) => {
     return [d3.select(`g.lines > path:nth-child(${i + 1})`).attr("data-legend"), color];
-  }).reverse();
+  });
   setupLegend(svg, margin, width, height, legendData, legendSpacing, legendRectSize);     
 
   // let order = maxValSetByWeek.map(d => d[0]);
@@ -315,7 +336,7 @@ function renderAll(stackedData, areaGenerator, colorSet, selector) {
     })
     .attr("data-legend", d => mapping[d.key])
     .style("fill", function(d, i) { return colorSet[i]; })
-    .style("fill-opacity", 0.6)
+    .style("fill-opacity", 1)
     .attr("d", areaGenerator)
 }
 
