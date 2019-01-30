@@ -147,7 +147,7 @@ var b1 = bar1.selectAll("rect").data(data).enter()
                 .attr("height", function () {
                     return 40;
                 })
-                .attr("fill","#cf142b");
+                .attr("fill","rgb(205, 91, 95)");
 
 b1.transition()
     .duration(1000)
@@ -194,7 +194,7 @@ var b2 = bar2.selectAll("rect").data(data).enter()
                 .attr("height", function () {
                     return 40;
                 })
-                .attr("fill","#0038c3");
+                .attr("fill","rgb(60, 141, 211");
 
 b2.transition()
     .duration(1000)
@@ -228,7 +228,7 @@ d3.select("svg").append("rect")
             .attr("y",30)
             .attr("width","18")
             .attr("height",18)
-            .attr("fill","#0038c3");
+            .attr("fill","rgb(60, 141, 211)");
 
 d3.select("svg").append("text")
             .attr("class","mark")
@@ -236,7 +236,7 @@ d3.select("svg").append("text")
             .attr("y",45)
             .text("支持留欧")
             .attr("font-size",15)
-            .attr("fill","#0038c3")
+            .attr("fill","rgb(60, 141, 211)")
             .attr('text-anchor','end');
 
 d3.select("svg").append("rect")
@@ -244,7 +244,7 @@ d3.select("svg").append("rect")
             .attr("y",30)
             .attr("width","18")
             .attr("height",18)
-            .attr("fill","#cf142b");
+            .attr("fill","rgb(217,84,92)");
 
 d3.select("svg").append("text")
             .attr("class","mark")
@@ -253,7 +253,7 @@ d3.select("svg").append("text")
             .text("支持脱欧")
             .attr("font-size",15)
             .attr('text-anchor','start')
-            .attr("fill","#cf142b");
+            .attr("fill","rgb(217,84,92)");
 
 
 
