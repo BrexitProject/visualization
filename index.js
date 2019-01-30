@@ -37,6 +37,10 @@ app.get('/GoogleTrend', function(req, res) {
   res.sendFile(path.join(__dirname + '/views/GoogleTrend.html'));
 });
 
+app.get('/invasion', function(req, res) {
+  res.sendFile(path.join(__dirname + '/views/invasion.html'));
+});
+
 app.get('/speech', function(req, res) {
   res.sendFile(path.join(__dirname + '/views/speech.html'));
 });

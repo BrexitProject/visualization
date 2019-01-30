@@ -1,12 +1,16 @@
 async function loadData() {
-  let dataByWeek = await d3.csv('public/data/GoogleTrendByWeek.csv');
-  let dataOfJune = await d3.csv('public/data/GoogleTrendOfJune.csv');
-  if (dataByWeek && dataOfJune) {
-    let {newDataByWeek, newDataOfJune} = processData1(dataByWeek, dataOfJune);
-    newDataByWeek.columns = dataByWeek.columns;
-    newDataOfJune.columns = dataOfJune.columns;
-    console.log(newDataByWeek, newDataOfJune);
-    processData(newDataByWeek, newDataOfJune);
+  let dataW = await d3.csv('public/data/GoogleTrendByDayW.csv');
+  let dataI = await d3.csv('public/data/GoogleTrendByDayI.csv');
+  if (dataW && dataI) {
+    // let {newDataByWeek, newDataOfJune} = processData1(dataByWeek, dataOfJune);
+    // newDataByWeek.columns = dataByWeek.columns;
+    // newDataOfJune.columns = dataOfJune.columns;
+    console.log(dataW, dataI);
+    let data = [dataW, dataI];
+    for (let rawData of data) {
+      let dataset = processData(rawData);
+      await render(dataset);
+    }
   }
 }
 
@@ -67,47 +71,55 @@ function gcd(a, b) {
   return gcd(b, a % b);
 };
 
-function processData(dataByWeek, dataOfJune) {
-  let keys = [...dataByWeek.columns];
+function processData(data) {
+  let keys = [...data.columns];
 
-  let processedDataByWeek = {}, processedDataOfJune = {};
+  let processedData = {};
   keys.forEach(key => {
-    processedDataByWeek[key] = dataByWeek.map(d => d[key]);
-    processedDataOfJune[key] = dataOfJune.map(d => d[key]);
+    processedData[key] = data.map(d => d[key]);
   });
 
-  let dateByWeek = processedDataByWeek['date'];
-  let dateOfJune = processedDataOfJune['date'];
-  delete processedDataByWeek.date;
-  delete processedDataOfJune.date
+  let date = processedData['date'];
+  delete processedData.date;
 
-  let maxValSetByWeek = [], maxValSetOfJune = [];
+  // let maxValSet = data.map(datum => {
+  //   let cnt = 0;
+  //   Object.keys(datum).forEach(key => {
+  //     if (key !== "date") {
+  //       cnt += parseFloat(datum[key]);
+  //     }
+  //   });
+  //   return [datum["date"], cnt];
+  // });
+  let maxValSet = [];
   keys.map(key => {
     if (key !== "date") {
-      maxValSetByWeek.push([key, Math.max(...processedDataByWeek[key])]);
-      maxValSetOfJune.push([key, Math.max(...processedDataOfJune[key])]);
+      maxValSet.push([key, Math.max(...processedData[key])]);
     }
   });
 
-  Object.keys(processedDataByWeek).forEach(key => {
-    processedDataByWeek[key] = processedDataByWeek[key].map((d, i) => ({date: dateByWeek[i], val: d}));
-  });
-  Object.keys(processedDataOfJune).forEach(key => {
-    processedDataOfJune[key] = processedDataOfJune[key].map((d, i) => ({date: dateOfJune[i], val: d}));
+  Object.keys(processedData).forEach(key => {
+    processedData[key] = processedData[key].map((d, i) => ({date: date[i], val: d}));
   });
 
-  maxValSetByWeek.sort((a, b) => a[1] - b[1]);
-  maxValSetOfJune.sort((a, b) => a[1] - b[1]);
+  maxValSet.sort((a, b) => b[1] - a[1]);
+  keys = maxValSet.map(d => d[0]);
 
-  let datasetByWeek = {processedDataByWeek, maxValSetByWeek, dateByWeek};
-  let datasetOfJune = {processedDataOfJune, maxValSetOfJune, dateOfJune};
+  // let stackedData = d3.stack().keys(maxValSet.map(d => d[0]))(data);
+  let stackedData = keys.map(key => processedData[key]);
+  keys.map((key, i) => stackedData[i]["key"] = key);
+
+  let dataset = {processedData, maxValSet, date, stackedData, keys};
   
-  render(datasetByWeek, datasetOfJune);
+  return dataset;
 }
 
-async function render(datasetByWeek, datasetOfJune) {
-  let {processedDataByWeek, maxValSetByWeek, dateByWeek} = datasetByWeek;
-  let {processedDataOfJune, maxValSetOfJune, dateOfJune} = datasetOfJune;
+function clearSvg(selector) {
+  selector.selectAll("*").remove();
+}
+
+function render(dataset) {
+  let {processedData, maxValSet, date, stackedData, keys} = dataset;
 
   let margin = {top: 20, bottom: 50, left: 80, right: 150};
   let svgWidth = 1300;
@@ -118,10 +130,19 @@ async function render(datasetByWeek, datasetOfJune) {
 
   let svg = d3.select("#svg");
 
+  clearSvg(svg);
+
   svg.append('clipPath')
-    .attr('id', 'mask')
+    .attr('id', 'path-mask')
     .append('rect')
     .attr('width', width)
+    .attr('height', height);
+
+  svg.append('clipPath')
+    .attr('id', 'xAxis-mask')
+    .append('rect')
+    .attr('x', -18)
+    .attr('width', width + 18)
     .attr('height', height);
 
   let gChart = svg.append('g')
@@ -130,77 +151,116 @@ async function render(datasetByWeek, datasetOfJune) {
 
   let gXAxis = gChart.append('g')
     .attr('class', 'x-axis')
-    .attr('transform', `translate(${0},${height})`);
+    .attr('transform', `translate(${0},${height})`)
+    .attr('clip-path', 'url(#xAxis-mask)');
   let gYAxis = gChart.append('g')
     .attr('class', 'y-axis');
 
-  let parser = d3.timeParse("%Y-%m-%d-%H-%M-%S");
-  // let parser = d3.timeParse("%Y-%m-%d");
-  let xScaleByWeek = defineXScale(dateByWeek, width, parser);
-  let yScaleByWeek = defineYScale([0, Math.max(...maxValSetByWeek.map(d => d[1])) * 1.1], height);
-  let xScaleOfJune = defineXScale(dateOfJune, width, parser);
-  let yScaleOfJune = defineYScale([0, Math.max(...maxValSetOfJune.map(d => d[1])) * 1.1], height);
-  let ofJuneFlag = 0;
-  let xScale = [xScaleByWeek, xScaleOfJune];
-  let yScale = [yScaleByWeek, yScaleOfJune];
+  let parser = d3.timeParse("%Y-%m-%d");
+  let xScaleByYear = defineXScale(date, width, parser);
+  let xScaleOfJune = defineXScale(["2016-06-01", "2016-06-30"], width, parser);
+  let yScale = defineYScale([0, Math.max(...maxValSet.map(d => d[1]))], height);
+  let xScale = [xScaleByYear, xScaleOfJune];
 
   let xAxis = d3.axisBottom()
-    .scale(xScaleByWeek)
+    .scale(xScale[0])
     .tickFormat(d => {
       return `${d.getMonth() + 1}月`;
     });
   let yAxis = d3.axisLeft()
-    .scale(yScaleByWeek);
+    .scale(yScale)
+    .ticks(5);
 
   gXAxis.call(xAxis);
   gYAxis.call(yAxis);
 
   let gLines = gChart.append('g')
     .attr('class', 'lines')
-    .attr('clip-path', 'url(#mask)');
+    .attr('clip-path', 'url(#path-mask)');
 
   gYAxis.append("text")
     .attr('class', 'text')
-    .attr("transform", "rotate(-90)")
+    .attr("transform", `translate(${160}, ${0})`)
     .attr('fill', 'black')
     .style("font-size", "30px")
     .attr("y", 8)
     .attr("dy", "0.8em")
     .style("text-anchor", "end")
-    .text("搜索量");
+    .text("相对搜索量");
 
-  let colorSet = ['#7fc97f', '#beaed4', '#fdc086',
-    '#ffff99', '#386cb0', '#f0027f'];
+  gYAxis.append("text")
+    .attr('class', 'text')
+    .attr("transform", `translate(${145}, ${40})`)
+    .attr('fill', 'black')
+    .style("font-size", "30px")
+    .attr("y", 8)
+    .attr("dy", "0.8em")
+    .style("text-anchor", "end")
+    .text("（英国）");
 
-  let lineGenerator = d3.line()
-    .x(d => xScale[0](parser(d.date)))
-    .y(d => yScale[0](d.val));
+  gYAxis.append("text")
+    .attr('class', 'text')
+    .attr("transform", `translate(${width + 100}, ${height - 20})`)
+    .attr('fill', 'black')
+    .style("font-size", "30px")
+    .attr("y", 8)
+    .attr("dy", "0.8em")
+    .style("text-anchor", "end")
+    .text("2016");
+
+  let colorSet = ['#7fc97f', '#beaed4',
+    '#386cb0', '#f0027f'].reverse();
+
+  // let lineGenerator = d3.line()
+  //   .x(d => xScale(parser(d.date)))
+  //   .y(d => yScale(d.val));
     // .curve(d3.curveCardinal);
-  let processedData = Object.keys(processedDataByWeek).map(key => {
-    return [key, processedDataByWeek[key], processedDataOfJune[key]];
-  });
+
+  let areaGenerator = d3.area()
+    .x(d => xScale[0](parser(d.date)))
+    .y0(_ => yScale(0))
+    .y1(d => yScale(parseFloat(d.val)));
+  // let bindedData = Object.keys(processedData).map(key => {
+  //   return [key, processedData[key]];
+  // });
   
-  renderAll(processedData, lineGenerator, colorSet, gLines, ofJuneFlag);
+  renderAll(stackedData, areaGenerator, colorSet, gLines);
 
   let legendRectSize = 18, legendSpacing = 6;
-  let legendData = colorSet.map((color, i) => {
+  let legendData = colorSet.slice(0, keys.length).map((color, i) => {
     return [d3.select(`g.lines > path:nth-child(${i + 1})`).attr("data-legend"), color];
   });
   setupLegend(svg, margin, width, height, legendData, legendSpacing, legendRectSize);     
 
-  let order = maxValSetByWeek.map(d => d[0]);
+  // let order = maxValSetByWeek.map(d => d[0]);
   let delay = 3000;
   let duration = 2000;
 
-  for (let [index, key] of order.entries()) {
-    let item = maxValSetOfJune.find(d => d[0] === key);
-    // darkenOtherLines(key, gLines, duration, 0);
-    await fitLine(parser, key, [0, maxValSetByWeek[index][1] * 1.1], [0, item[1] * 1.1], gYAxis, yAxis, yScale, gXAxis, xAxis, xScale, lineGenerator, gLines, delay, duration);
-    console.log(index, key);
-    if (index === order.length - 1) {
-      darkenOtherLines('', gLines, duration, 1);
-    }
-  }
+
+  return new Promise(resolve => {
+    animateLine(parser, gLines, areaGenerator, gXAxis, xAxis, xScale, duration, delay).then(async () => {
+      await delayMs(delay);
+      resolve();
+    });
+  });
+
+  // for (let [index, key] of order.entries()) {
+  //   let item = maxValSetOfJune.find(d => d[0] === key);
+  //   // darkenOtherLines(key, gLines, duration, 0);
+  //   await fitLine(parser, key, [0, maxValSetByWeek[index][1] * 1.1], [0, item[1] * 1.1], gYAxis, yAxis, yScale, gXAxis, xAxis, xScale, lineGenerator, gLines, delay, duration);
+  //   console.log(index, key);
+  //   if (index === order.length - 1) {
+  //     darkenOtherLines('', gLines, duration, 1);
+  //   }
+  // }
+}
+
+function delayMs(delay) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve();
+    }, delay);
+  })
 }
 
 function setupLegend(svg, margin, w, h, legendData, legendSpacing, legendRectSize) {
@@ -248,7 +308,7 @@ function updateYScale(yScale, domain, ofJuneFlag) {
   yScale[ofJuneFlag].domain(domain);
 }
 
-function renderAll(data, lineGenerator, colorSet, selector) {
+function renderAll(stackedData, areaGenerator, colorSet, selector) {
   let mapping = {
     "what-is-eu": "什么是欧盟",
     "what-is-brexit": "什么是脱欧",
@@ -257,15 +317,59 @@ function renderAll(data, lineGenerator, colorSet, selector) {
     "is-sweden-in-the-eu": "瑞典是不是欧盟国家",
     "what-is-single-market": "什么是单一市场"
   };
-  selector.selectAll('path')
-    .data(data)
+  // selector.selectAll('path')
+  //   .data(bindedData)
+  //   .enter()
+  //   .append('path')
+  //   .attr('d', d => lineGenerator(d[1]))
+  //   .attr("data-legend", d => mapping[d[0]])
+  //   .attr("fill", "none")
+  //   .attr("stroke-width", "0.16em")
+  //   .attr("stroke", (_, i) => colorSet[i]);
+
+  selector.selectAll("path")
+    .data(stackedData)
     .enter()
-    .append('path')
-    .attr('d', d => lineGenerator(d[1]))
-    .attr("data-legend", d => mapping[d[0]])
-    .attr("fill", "none")
-    .attr("stroke-width","0.16em")
-    .attr("stroke", (_, i) => colorSet[i]);
+    .append("path")
+    .attr("class", function(d) { 
+      return "myArea " + d.key;
+    })
+    .attr("data-legend", d => mapping[d.key])
+    .style("fill", function(d, i) { return colorSet[i]; })
+    .style("fill-opacity", 1)
+    .attr("d", areaGenerator)
+}
+
+async function animateLine(parser, selector, areaGenerator, gXAxis, xAxis, xScale, duration, delay) {
+  return new Promise(resolve => {
+    setTimeout(async () => {
+      await zoomIn(parser, selector, areaGenerator, gXAxis, xAxis, xScale, duration, delay);
+      console.log("span");
+      await restore(parser, selector, areaGenerator, gXAxis, xAxis, xScale, duration, delay);
+      console.log("restore");
+      resolve();
+    }, 0);
+  });
+}
+
+function zoomIn(parser, selector, areaGenerator, gXAxis, xAxis, xScale, duration, delay) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      updateXAxis(gXAxis, xAxis, xScale, duration, 1);
+      updateLines(parser, selector, areaGenerator, xScale, duration, 1);
+      resolve();
+    }, delay);
+  });
+}
+
+function restore(parser, selector, areaGenerator, gXAxis, xAxis, xScale, duration, delay) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      updateXAxis(gXAxis, xAxis, xScale, duration, 0);
+      updateLines(parser, selector, areaGenerator, xScale, duration, 0);
+      resolve();
+    }, delay);
+  });
 }
 
 async function fitLine(parser, key, rangeByWeek, rangeOfJune, gYAxis, yAxis, yScale, gXAxis, xAxis, xScale, lineGenerator, selector, delay, duration) {
@@ -318,17 +422,14 @@ function updateYAxis(gYAxis, yAxis, yScale, duration, ofJuneFlag) {
     .call(yAxis.scale(yScale[ofJuneFlag]));
 }
 
-function updateLines(parser, selector, yScale, xScale, lineGenerator, duration, ofJuneFlag) {
-  lineGenerator.x(d => xScale[ofJuneFlag](parser(d.date)))
-    .y(d => yScale[ofJuneFlag](d.val));
+function updateLines(parser, selector, areaGenerator, xScale, duration, ofJuneFlag) {
+  areaGenerator.x(d => xScale[ofJuneFlag](parser(d.date)));
 
   selector.selectAll('path')
     .transition()
     .ease(d3.easeLinear)
     .duration(duration)
-    .attr('d', d => {
-      return lineGenerator(d[1 + ofJuneFlag])
-    })
+    .attr("d", areaGenerator);
 }
 
 function updateXAxis(gXAxis, xAxis, xScale, duration, ofJuneFlag) {

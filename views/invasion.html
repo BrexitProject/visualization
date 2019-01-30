@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>British Territory</title>
+
+    <script src="public/d3.min.js"></script>
+
+    <style>
+      body {
+        margin: 0 90px;
+        position: absolute;
+        left: 0px;
+        right: 0px;
+        top: 0px;
+        bottom: 0px;
+        overflow: auto;
+      }
+
+      svg {
+        width: 1740px;
+        height: 938px;
+        margin: 0;
+        background-color: rgba(127, 127, 127, 0.1);
+      }
+
+      .placeholder {
+        fill: none;
+        stroke: red;
+        stroke-width: 1px;
+      }
+
+      rect.container {
+        fill: none;
+        /* fill-opacity: 0.1; */
+        stroke: red;
+      }
+
+      .legend {
+        text-align: center;
+      }
+    </style>
+  </head>
+
+  <body>
+    <svg>
+      <g class = "header">
+
+      </g>
+
+      <g class = "main">
+        <g class = "aside">
+        </g>
+
+        <g class = "map"></g>
+      </g>
+
+      <!-- <g class = "footer"></g> -->
+    </svg>
+    <!-- <header>
+      <h1>Only 22 countries have never been invaded by Britain</h1>
+      <h3>All the countries invaded by Britain throughout history</h3>
+    </header>
+
+    <main>
+      <aside>
+      </aside>
+
+      <section>
+      </section>
+    </main>
+
+    <footer>
+
+    </footer> -->
+    <script src = "public/invasion.js"></script>
+
+    <script type="text/javascript">
+      window.onload = loadData;
+    </script>
+  </body>
+</html>
