@@ -125,7 +125,8 @@ function renderHeader(svgWidth, height) {
     .style("font-size", "50px")
     .attr("y", 8)
     .attr("dy", "0.8em")
-    .text("Only 22 countries have never been invaded by Britain");
+    .text("只有22个国家从未被英国入侵");
+    // .text("Only 22 countries have never been invaded by Britain");
 
   gText.append("text")
     .attr('class', 'h3')
@@ -134,7 +135,8 @@ function renderHeader(svgWidth, height) {
     .style("font-size", "30px")
     .attr("y", 8)
     .attr("dy", "0.8em")
-    .text("All the countries invaded by Britain throughout history");
+    .text("历史上所有被英国入侵的国家");
+    // .text("All the countries invaded by Britain throughout history");
 }
 
 function renderMain(dataset) {
@@ -150,6 +152,31 @@ function renderAside() {
     "Mongolia", "Paraguay", "Sao Tome and Principe", "Sweden", "Tajikistan",
     "Uzbekistan", "Vatican City"
   ];
+
+  let mapping = {
+    "Andorra": "安道尔",
+    "Belarus": "白俄罗斯",
+    "Bolivia": "玻利维亚",
+    "Burundi": "布隆迪",
+    "Central African Republic": "中非共和国",
+    "Chad": "乍得",
+    "Republic of the Congo": "刚果共和国", 
+    "Guatemala": "危地马拉", 
+    "Ivory Coast": "科特迪瓦", 
+    "Kyrgyzstan": "吉尔吉斯斯坦",
+    "Liechtenstein": "列支敦士登", 
+    "Luxembourg": "卢森堡", 
+    "Mali": "马里", 
+    "Marshall Islands": "马绍尔群岛共和国", 
+    "Monaco": "摩纳哥",
+    "Mongolia": "蒙古", 
+    "Paraguay": "巴拉圭", 
+    "Sao Tome and Principe": "圣多美和普林西比民主共和国", 
+    "Sweden": "瑞典", 
+    "Tajikistan": "塔吉克斯坦",
+    "Uzbekistan": "乌兹别克斯坦", 
+    "Vatican City": "梵蒂冈",
+  }
 
   let spacing = {
     top: 30,
@@ -179,7 +206,7 @@ function renderAside() {
   let fontSize = 16;
   let legendMargin = {
     top: 20,
-    left: 30,
+    left: 22,
   };
   let letterSpacing = 10;
   let len = countries.length;
@@ -204,50 +231,13 @@ function renderAside() {
     .attr("class", "legend-text")                              
     .attr('x', legendRectSize + letterSpacing)         
     .attr('y', fontSize)         
-    .text(d => d)
+    .text(d => mapping[d])
     .style("font-size", fontSize)
     .style("dominant-baseline", "middle")
 }
 
 function renderSection(dataset) {
-  am4core.useTheme(am4themes_animated);
-  // Themes end
-
-  // Create map instance
-  let chart = am4core.create("#map", am4maps.MapChart);
-
-  // Set map definition
-  chart.geodata = am4geodata_worldLow;
-
-  // Set projection
-  chart.projection = new am4maps.projections.Miller();
-
-  // Create map polygon series
-  let polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
-
-  // Exclude Antartica
-  polygonSeries.exclude = ["AQ"];
-
-  // Make map load polygon (like country names) data from GeoJSON
-  polygonSeries.useGeodata = true;
-
-  // Configure series
-  let polygonTemplate = polygonSeries.mapPolygons.template;
-  polygonTemplate.tooltipText = "{name}";
-  polygonTemplate.fill = chart.colors.getIndex(0);
-
-  // Create hover state and set alternative fill color
-  let hs = polygonTemplate.states.create("hover");
-  hs.properties.fill = chart.colors.getIndex(0).brighten(-0.5);
-
-  // Create active state
-  let activeState = polygonTemplate.states.create("active");
-  activeState.properties.fill = chart.colors.getIndex(3).brighten(-0.5);
-
-  // Create an event to toggle "active" state
-  polygonTemplate.events.on("hit", function(ev) {
-    ev.target.isActive = !ev.target.isActive;
-  })
+  
 }
 
 function renderFooter() {
