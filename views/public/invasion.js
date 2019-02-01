@@ -41,9 +41,7 @@ function render(dataset) {
 
   renderMain(dataset);
 
-  renderFooter();
-
-  // exportSVG(document.querySelector("#svg"));
+  // renderFooter();
 }
 
 function generatePosConfig(spanConfig) {
@@ -98,17 +96,6 @@ function addPlaceholder(svgWidth, svgHeight, spanConfig) {
       .attr("class", "placeholder")
       .attr("width", svgWidth * horizontal[className])
       .attr("height", parentNode.select(`rect.p-${parentNode.attr("class")}`).attr("data-height"));
-
-    // if (className === "map") {
-    //   node.select("foreignobject")
-    //     .attr("width", svgWidth * horizontal[className])
-    //     .attr("height", parentNode.select(`rect.p-${parentNode.attr("class")}`).attr("data-height"))
-    //     .append("div")
-    //     .attr("id", "map")
-    //     .attr("width", svgWidth * horizontal[className])
-    //     .attr("height", parentNode.select(`rect.p-${parentNode.attr("class")}`).attr("data-height"))
-    //     .attr("innerHTML", "adfaf");
-    // }
   });
 }
 
@@ -142,7 +129,7 @@ function renderHeader(svgWidth, height) {
 function renderMain(dataset) {
   renderAside();
 
-  // renderSection(dataset);
+  renderSection(dataset);
 }
 
 function renderAside() {
@@ -160,7 +147,7 @@ function renderAside() {
     "Burundi": "布隆迪",
     "Central African Republic": "中非共和国",
     "Chad": "乍得",
-    "Republic of the Congo": "刚果共和国", 
+    "Republic of Congo": "刚果共和国", 
     "Guatemala": "危地马拉", 
     "Ivory Coast": "科特迪瓦", 
     "Kyrgyzstan": "吉尔吉斯斯坦",
@@ -237,7 +224,13 @@ function renderAside() {
 }
 
 function renderSection(dataset) {
-  
+  let gMap = document.querySelector("g.map");
+  let placeholderEle = gMap.querySelector("rect");
+  let placeholderWidth = parseFloat(window.getComputedStyle(placeholderEle).getPropertyValue("width"));
+  let mapWidth = d3.select("#svg258").attr("width");
+
+  d3.select("#map-container")
+    .attr("transform", `translate(${(placeholderWidth - mapWidth) / 2}, ${0})`);
 }
 
 function renderFooter() {
