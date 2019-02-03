@@ -15,7 +15,7 @@ function processData(data) {
   
 }
 
-function render(dataset) {
+function render() {
   let svgEle = document.querySelector("svg");
   let svgWidth = parseFloat(window.getComputedStyle(svgEle).getPropertyValue("width"));
   let svgHeight = parseFloat(window.getComputedStyle(svgEle).getPropertyValue("height"));
@@ -39,7 +39,7 @@ function render(dataset) {
 
   renderHeader(svgWidth, svgHeight * spanConfig.vertical.header);
 
-  renderMain(dataset);
+  renderMain();
 
   // renderFooter();
 }
@@ -124,12 +124,21 @@ function renderHeader(svgWidth, height) {
     .attr("dy", "0.8em")
     .text("历史上所有被英国入侵的国家");
     // .text("All the countries invaded by Britain throughout history");
+
+  gText.append("text")
+    .attr('id', 'year')
+    .attr("transform", `translate(${1400}, ${100})`)
+    .attr('fill', 'black')
+    .style("font-size", "30px")
+    .attr("y", 8)
+    .attr("dy", "0.8em")
+    .text("");
 }
 
-function renderMain(dataset) {
+function renderMain() {
   renderAside();
 
-  renderSection(dataset);
+  renderSection();
 }
 
 function renderAside() {
@@ -223,16 +232,79 @@ function renderAside() {
     .style("dominant-baseline", "middle")
 }
 
-function renderSection(dataset) {
+function renderSection() {
   let gMap = document.querySelector("g.map");
   let placeholderEle = gMap.querySelector("rect");
   let placeholderWidth = parseFloat(window.getComputedStyle(placeholderEle).getPropertyValue("width"));
   let mapWidth = d3.select("#svg258").attr("width");
 
   d3.select("#map-container")
-    .attr("transform", `translate(${(placeholderWidth - mapWidth) / 2}, ${0})`);
+    .attr("transform", `translate(${(placeholderWidth - mapWidth) / 2}, ${0})`)
+
+  
+  let width = d3.select(".map rect")
+    .attr("width");
+  let height = d3.select(".map rect")
+    .attr("height");
+
+  let spacing = {
+    top: 30,
+    left: 30,
+    rx: 10,
+    ry: 10,
+  }
+
+  let img = d3.select(".map")
+    .append("image")
+    .attr("id", "map-img")
+    .attr("x", spacing.left)
+    .attr("y", spacing.top)
+    .attr("width", width - 2 * spacing.top)
+    .attr("height", height - 2 * spacing.left);
+
+  animateMap();
 }
 
-function renderFooter() {
+async function animateMap() {
+  let timeline = [1450, 1680, 1750, 1820, 1885, 1901, 1915, 1919, 1938, 1945, 1959, 1974, 2018];
+  let duration = 2000;
+  
+  for (let year of timeline) {
+    await animate(year, duration);
 
+    if (year === 2018) {
+      d3.select("#map-img")
+        .style("display", "none");
+      d3.select("#map-container")
+        .style("display", "block");
+    }
+  }
+}
+
+function animate(year, duration) {
+  return new Promise(resolve => {
+    updateMap(year, duration).then(async () => {
+      console.log(year);
+      await delayMs(duration);
+      resolve();
+    });
+  });
+}
+
+function updateMap(year, duration) {
+  return new Promise(resolve => {
+    d3.select("#year")
+      .text(year);
+    d3.select("#map-img")
+      .attr("xlink:href", `public/data/territory/${year}.svg`);;
+    resolve();
+  }, duration);
+}
+
+function delayMs(delay) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve();
+    }, delay);
+  })
 }
