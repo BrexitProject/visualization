@@ -57,4 +57,8 @@ app.get('/EditorialKeywords', function(req, res) {
   res.sendFile(path.join(__dirname + '/views/EditorialKeywords.html'));
 });
 
+app.get('/free', function(req, res) {
+  res.sendFile(path.join(__dirname + '/views/free.html'));
+});
+
 app.listen(3000);
