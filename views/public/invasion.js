@@ -143,7 +143,7 @@ function renderMain() {
 
 function renderAside() {
   let countries = ["Andorra", "Belarus", "Bolivia", "Burundi", "Central African Republic",
-    "Chad", "Republic of the Congo", "Guatemala", "Ivory Coast", "Kyrgyzstan",
+    "Chad", "Republic of Congo", "Guatemala", "Ivory Coast", "Kyrgyzstan",
     "Liechtenstein", "Luxembourg", "Mali", "Marshall Islands", "Monaco",
     "Mongolia", "Paraguay", "Sao Tome and Principe", "Sweden", "Tajikistan",
     "Uzbekistan", "Vatican City"
@@ -277,6 +277,8 @@ async function animateMap() {
         .style("display", "none");
       d3.select("#map-container")
         .style("display", "block");
+      d3.select("#year")
+        .text("");
     }
   }
 }
