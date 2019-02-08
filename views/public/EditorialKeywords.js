@@ -123,6 +123,8 @@ function removefreword(){
 editorial.then(function(d){
     removeEditorial();
     setTimeout( () => {
+        d3.select('#mark')
+        .style('fill','url(#background)')
         freword().then(function(d){
             removefreword();
             setTimeout( ()=>{
