@@ -70,11 +70,12 @@
             .attr('height', svgHeight);
   // scale
   var y = d3.scaleLinear()
-            .domain([0,100,200,500,1000,2000,5000,10000,50000,100000,150000,160000])
+            // .domain([0,100,200,500,1000,2000,5000,10000,50000,100000,150000,160000])
+            .domain(d3.range(0, 440000, 40000))
             // .range([0,(width-30)/10,(width-30)*2/10,(width-30)*3/10,(width-30)*4/10,(width-30)*5/10,(width-30)*6/10,(width-30)*7/10,(width-30)*8/10,(width-30)*9/10,width-30,width]);
             .range([height,(height-30)*9/10+30,(height-30)*8/10+30,(height-30)*7/10+30,(height-30)*6/10+30,(height-30)*5/10+30,(height-30)*4/10+30,(height-30)*3/10+30,(height-30)*2/10+30,(height-30)/10+30, 30,0])
   var x = d3.scaleLinear()
-            .domain([0,5,20,50,100,200,500,1000,1200])
+            .domain(d3.range(0, 2400, 2400 / 7))
             .range([0,(width-30)/7,(width-30)*2/7,(width-30)*3/7,(width-30)*4/7,(width-30)*5/7,(width-30)*6/7,width-30,width])
             // .range([height,(height-30)*6/7+30,(height-30)*5/7+30,(height-30)*4/7+30,(height-30)*3/7+30,(height-30)*2/7+30,(height-30)/7+30, 30,0]);
   var r = d3.scaleLinear()
@@ -87,13 +88,13 @@
   // axises
   var xAxis = d3.axisBottom(x)
                 .tickSize(-height)
-                .tickValues([0,5,20,50,100,200,500,1000]); 
+                // .tickValues([0,5,20,50,100,200,500,1000]); 
                 // .tickValues([0,50,100,200,500,1000,2000,5000,10000,100000,150000]);
 
   var yAxis = d3.axisLeft(y)
                 .tickSize(-width)
                 // .tickValues([0,5,10,20,50,100,200,1000]); 
-                .tickValues([0,100,200,500,1000,2000,5000,10000,50000,100000,150000]);
+                // .tickValues([0,100,200,500,1000,2000,5000,10000,50000,100000,150000]);
   svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top+height})`)
     .call(xAxis)
@@ -241,8 +242,13 @@
       dot.data(getDataByMonth(dataArray,year)).call(position);
       textPosition(getDataByMonth(dataArray,year));
       if(year<=new Date(2018,11)){
+        let tmpYear = new Date(year);
         year.setMonth(year.getMonth() + 1);
-        monthText.text(year.getFullYear()+'/'+(year.getMonth()+1));
+        if (+year === +new Date(2019, 0)) {
+          monthText.text(tmpYear.getFullYear()+'/'+(tmpYear.getMonth()+1));
+        } else {
+          monthText.text(year.getFullYear()+'/'+(year.getMonth()+1));
+        }
       }
     }
 
