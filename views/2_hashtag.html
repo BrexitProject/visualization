@@ -69,11 +69,14 @@
             .attr('width', svgWidth)
             .attr('height', svgHeight);
   // scale
-  var y = d3.scaleLinear()
+  var y = d3.scaleLog()
+            .domain([1, 400000])
+            .range([height, 0])
+            .base(5);
             // .domain([0,100,200,500,1000,2000,5000,10000,50000,100000,150000,160000])
-            .domain([0, 100, 250, 500, 1000, 5000, 10000, 50000, 100000, 240000, 380000, 400000])
+            // .domain([0, 100, 250, 500, 1000, 5000, 10000, 50000, 100000, 240000, 380000, 400000])
             // .range([0,(width-30)/10,(width-30)*2/10,(width-30)*3/10,(width-30)*4/10,(width-30)*5/10,(width-30)*6/10,(width-30)*7/10,(width-30)*8/10,(width-30)*9/10,width-30,width]);
-            .range([height,(height-30)*9/10+30,(height-30)*8/10+30,(height-30)*7/10+30,(height-30)*6/10+30,(height-30)*5/10+30,(height-30)*4/10+30,(height-30)*3/10+30,(height-30)*2/10+30,(height-30)/10+30, 30,0])
+            // .range([height,(height-30)*9/10+30,(height-30)*8/10+30,(height-30)*7/10+30,(height-30)*6/10+30,(height-30)*5/10+30,(height-30)*4/10+30,(height-30)*3/10+30,(height-30)*2/10+30,(height-30)/10+30, 30,0])
   var x = d3.scaleLog()
             .domain([1, 4096])
             .range([0, width])
@@ -97,7 +100,8 @@
 
   var yAxis = d3.axisLeft(y)
                 .tickSize(-width)
-                .tickValues([0, 100, 250, 500, 1000, 5000, 10000, 50000, 100000, 240000, 380000]);
+                .tickValues([1, 5, 25, 125, 625, 3125, 15625, 78125, 390625]);
+                // .tickValues([0, 100, 250, 500, 1000, 5000, 10000, 50000, 100000, 240000, 380000]);
                 // .tickValues([0,5,10,20,50,100,200,1000]); 
                 // .tickValues([0,100,200,500,1000,2000,5000,10000,50000,100000,150000]);
   svg.append("g")
@@ -174,14 +178,14 @@
   function position(dot){
     dot.attr('cx',d=>x(d.forward + 1)+margin.left)
        .attr('cy',d=>{
-         return y(d.freq)+margin.top;
+         return y(d.freq + 1)+margin.top;
         })
        .attr('r',d=>{
         return r(d.trend);})
        .style("fill", function(d) { return color(d.trend); })
        .style("stroke",function(d) { return color(d.trend); })
        .style("display",function(d) {
-        if(d.freq<50&&d.forward<1){
+        if(d.freq<1&&d.forward<1){
             return 'none';}});
   }
 
@@ -229,7 +233,7 @@
           .style("text-anchor", "middle")
           .style("fill", function(d) { return "#242424"; })
           .style("display",function(d) {
-            if(d.freq<50&&d.forward<1){
+            if(d.freq<1&&d.forward<1){
             return 'none';}});
 
 
@@ -261,7 +265,7 @@
       text.data(textData).each(function(d) {
         d.width = this.getBBox().width;
         d.x = x(d.forward + 1)+margin.left;
-        d.y = y(d.freq)+margin.top;
+        d.y = y(d.freq + 1)+margin.top;
         d.r = r(d.trend);
         d.height = this.getBBox().height;
       })
@@ -282,7 +286,7 @@
         .style("text-anchor", "middle")
         .style("fill", function(d) { return "#242424"; })
         .style("display",function(d) {
-          if(d.freq<50&&d.forward<1){
+          if(d.freq<1&&d.forward<1){
             return 'none';}});
     }
   });
