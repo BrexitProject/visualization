@@ -13,15 +13,15 @@
     }
     .chart{
       width: 960px;
-      height: 520px;
+      height: 700px;
     }
     text{
-        text-anchor: middle;
+      fill:black;
+      dominant-baseline: middle;
         alignment-baseline: central;
         font-size: 100%;
         font-family: 'Roboto';
     font-size: 12px;
-    dominant-baseline: central;
     font-weight: 500;
       }
     tspan{
@@ -37,8 +37,22 @@
     pointer-events: none;
     }
     .axis{
-      stroke: #C1C1C1;
+      /* stroke: #C1C1C1; */
     stroke-width: 1px;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    }
+    .lable{
+        stroke:grey;
+        /* stroke-dasharray: 3 3; */
+        fill:none
+    }
+    line{
+        stroke:grey;
+        /* stroke-width: 2px */
+    }
+    .domain{
+        stroke:none
     }
   </style>
   <script src="public/d3.min.js"></script>
@@ -53,7 +67,20 @@
                 <stop offset="50%" stop-color="rgb(242, 239, 238)" />  
                 <stop offset="100%" stop-color="rgb(5, 48, 97)" />  
             </linearGradient>  
-          </defs> 
+          </defs>
+          <defs>
+              <marker id="arrow" 
+                      markerUnits="strokeWidth" 
+                      markerWidth="12" 
+                      markerHeight="12" 
+                      viewBox="0 0 12 12" 
+                      refX="6" 
+                      refY="6" 
+                      orient="auto">
+                      <path d="M2,2 L10,6 L2,10 L6,6 L2,2" style="fill:grey;" />
+              </marker>
+          </defs>
+          <g class='static'>
           <line x1='20' y1='20' x2='20' y2='40' style='stroke:rgb(103, 0, 31)'/>
           <text x='20' y='11' style='text-anchor: start;fill:rgb(103, 0, 31)'>More probablely Word of Out</text>
           <line x1='940' y1='20' x2='940' y2='40' style='stroke:rgb(5, 48, 97)'/>
@@ -64,9 +91,12 @@
            x="760" y="480" width="130" height="20"/>
            <text x='760' y='510' style=' text-anchor: start;'>Out</text>
            <text x='890' y='510' style=' text-anchor: end;'>In</text>
+           <g>
         </svg>
     </div>
   </div>
 </body>
+<script src="public/freword.js"></script>
+<script src="public/free.js"></script>
 <script src="public/EditorialKeywords.js"></script>
 </html>

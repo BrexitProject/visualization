@@ -28,16 +28,17 @@ d3.csv('public/data/word_probability1.csv').then(function(data) {
         if(d.probability < min.probability)
             min = d;
     })
-    xScale.domain([min.probability,1])
-    circleScale.domain([min.probability,1])
+    // console.log(min.probability);
+    xScale.domain([0.766795,1])
+    circleScale.domain([0.766795,1])
     let b=deepClone(data);
     let totalWord = wordCloud(b,[width,height]);
-    let words = category(data);
-    Object.keys(words).map( d=>{
-        wordCloud(words[d]['leave'],[width / 7,height /2]);
-        wordCloud(words[d]['remain'],[width / 7,height /2]);
-     });
-     console.log(words);
+    // let words = category(data);
+    // Object.keys(words).map( d=>{
+    //     wordCloud(words[d]['leave'],[width / 7,height /2]);
+    //     wordCloud(words[d]['remain'],[width / 7,height /2]);
+    //  });
+    //  console.log(words);
     //  Object.keys(words).map( d=>{
     //     drawWord(words[d]['leave'],scale(d)+`translate(0,${height/4})`);
     //     drawWord(words[d]['remain'],scale(d)+`translate(0,${height/4*3})`);
