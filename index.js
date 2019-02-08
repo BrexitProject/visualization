@@ -49,16 +49,8 @@ app.get('/newspaper', function(req, res) {
   res.sendFile(path.join(__dirname + '/views/newspaper.html'));
 });
 
-app.get('/freword', function(req, res) {
-  res.sendFile(path.join(__dirname + '/views/freword.html'));
-});
-
 app.get('/EditorialKeywords', function(req, res) {
   res.sendFile(path.join(__dirname + '/views/EditorialKeywords.html'));
-});
-
-app.get('/free', function(req, res) {
-  res.sendFile(path.join(__dirname + '/views/free.html'));
 });
 
 app.listen(3000);
