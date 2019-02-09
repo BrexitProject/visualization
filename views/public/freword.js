@@ -26,6 +26,11 @@ function freword() {
                     data:[],
                     list:[],
                     id:'great'
+                },
+                'free':{
+                    data:[],
+                    list:[],
+                    id:'free'
                 }
             };
             drawxlable(categorys,xScale);
@@ -37,20 +42,25 @@ function freword() {
            })
            word.map(d=>{
                scales[d].scale = d3.scaleLinear()
-                       .range([2,15])
+                       .range([2,26])
                        .domain([d3.min(scales[d].data), d3.max(scales[d].data)])
            })
            transition.append('g').attr('class','circle')
            drawarrow(xScale);
            drawlegend(xScale);
+           d3.select('#mark')
+           .style('fill','url(#myGradient)')
            Object.keys(scales).forEach(function(key,i){
             // key,scales[key]
-            setTimeout( () => {
-                drawcircle(scales[key],xScale,i);
-            },1000*i);
-            d3.select('.cells').transition()
-            .duration(1000)
-            .attr('transform','translate(999,0)')
+            // if(i===0){
+            //     split(scales[key],xScale);
+            // }
+            // if(i!==0){
+                setTimeout( () => {
+                    drawcircle(scales[key],xScale,i);
+                },second*7*i);
+            // }
+            d3.select('.cells')
             .remove()
             });
             resolve();
@@ -58,40 +68,46 @@ function freword() {
 
         });
 }
+// function split(key,xScale){
+//     d3.select('#we').remove()
+//     let circle = d3.select('.circle').append('g').attr('id',key.id)
+//     circle.append()
+// }
 function drawcircle(key,xScale,j) {
     let circle = d3.select('.circle').append('g').attr('id',key.id)
     circle.selectAll("circle")
     .data(key.list)
     .enter()
     .append('circle')
-    .attr('cx',0)
+    .attr('cx',xScale('express')+ xScale.bandwidth()/2 + paddingleft)
     .transition()
-    .duration((d,i)=>i*100)
-    .attr('cx',(d)=>xScale(d.media)+ xScale.bandwidth()/2)
-    .attr('cy',height / 2 - j*50)
+    .duration((d,i)=>i*second*1.2)
+    .attr('cx',(d)=>xScale(d.media)+ xScale.bandwidth()/2 + paddingleft)
+    .attr('cy',height / 2 - j*100)
     .attr('r',(d)=>d.fre==0?0:key.scale(d.fre))
-    .attr('fill','rgb(198,85,82)')
-
+    .attr('fill','rgb(158, 22, 42)')
+    // if(j!==0)
     d3.select('.axis').append('line').attr('id',key.id)
-          .attr('y1',height / 2 - j*50)
+          .attr('y1',height / 2 - j*100)
           .attr('x1',0)
-          .attr('y2',height / 2 - j*50)
+          .attr('y2',height / 2 - j*100)
           .attr('x2',width)
           .attr('stroke-dasharray','3 3')
-
-    circle.append('text')
-        .attr('x',0)
-        .attr('y',height / 2 - j*50)
-        .transition()
-        .duration(800)
+   let text =  circle.append('text')
+          .attr('x',xScale('express')+ xScale.bandwidth()/2 + paddingleft)
+          .attr('y',height / 2 - j*100)
+          .attr('y',height / 2 - j*100)
+          .text(key.id)
+          .attr('text-anchor','middle')
+setTimeout(()=>{
+    text.transition()
+        .duration(500)
         .attr('x',width + 30)
-        .attr('y',height / 2 - j*50)
-        .text(key.id)
-        .attr('text-anchor','end')
-        d3.select('.tra')
+    key.id!='free'&& d3.select('.tra')
         .transition()
-        .duration(800)
-        .attr('transform',`translate(0,${50*j})`)
+        .duration(500)
+        .attr('transform',`translate(0,${50*(j+1)})`)
+    },second*6)
 }
 function drawxlable(categorys,xScale){
     let xlable = transition.append('g')
@@ -102,35 +118,29 @@ function drawxlable(categorys,xScale){
     .append("text")
     .transition()
     .duration((d,i)=>200*i)
-    .attr('x',(d)=>xScale(d)+ xScale.bandwidth()/2)
+    .attr('x',(d)=>xScale(d)+ xScale.bandwidth()/2 + paddingleft)
     .attr('y',height / 2 + 40)
     .text((d)=>d)
     //原来的线移掉
     d3.selectAll('.axis').select('line').remove()
-    // xlable.append('line')
-    //       .attr('y1',height / 2)
-    //       .attr('x1',0)
-    //       .attr('y2',height / 2)
-    //       .attr('x2',width)
-    //       .attr('stroke-dasharray','3 3')
 }
 
 function drawarrow(xScale) {
     let arrow = transition.append('g').attr('class','arrow')
     let line = arrow.append("line")
     .attr("x1",width / 2 + 10)
-    .attr("y1",height /2 + 70)
+    .attr("y1",height /2 + 65)
     .attr("x2",width)
-    .attr("y2",height /2 + 70)
+    .attr("y2",height /2 + 65)
     .attr("stroke","black")
     .attr("stroke-width",2)
     .attr("marker-end","url(#arrow)");
 
     arrow.append("line")
     .attr("x1",width / 2 - 10)
-    .attr("y1",height /2 + 70)
+    .attr("y1",height /2 + 65)
     .attr("x2",0)
-    .attr("y2",height /2 + 70)
+    .attr("y2",height /2 + 65)
     .attr("stroke","black")
     .attr("stroke-width",2)
     .attr("marker-end","url(#arrow)");
@@ -149,11 +159,11 @@ function drawarrow(xScale) {
         .text('留欧')
 }
 function drawlegend(xScale){
-    let lable = g.append('g').attr('transform',`translate(${xScale('economist')+xScale.bandwidth() / 2},${30})`).attr('class','legend')
+    let lable = g.append('g').attr('transform',`translate(${xScale('economist')+xScale.bandwidth() / 2 + 30},${-50})`).attr('class','legend')
     lable.append('circle')
     .attr('class','lable')
     .attr('cx',0)
-    .attr('cy',70)
+    .attr('cy',65)
     .attr('r',15)
     .attr('fill','none')
     lable.append('line')

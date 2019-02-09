@@ -47,7 +47,7 @@ let editorial = new Promise(function(resolve, reject) {
                 .polygons(data)).enter().append("g").attr('id',(d)=>d.data.Word).attr('class',(d)=>d.data.Word==='we'?'':'sig');
     
     cell.append("circle")
-        .attr("r", 25)
+        .attr("r", 26)
         .attr("cx", function(d) { return d.data.x; })
         .attr("cy", function(d) { return d.data.y; })
         .attr('fill',(d)=>{
@@ -75,10 +75,25 @@ let editorial = new Promise(function(resolve, reject) {
 });
 function removeEditorial(){
     setTimeout( () => {
-        d3.selectAll('.sig')
+        d3.selectAll('.sig').selectAll('circle')
         .transition()
-        .duration(2000)
-        .attr('transform','translate(999,0)')
+        .ease(d3.easeBounce)
+        .duration(4000)
+        .attr('cy',450)
+        .transition()
+        .ease(d3.easeLinear)
+        .duration(4000)
+        .attr('cx',1000)
+        .remove()
+    d3.selectAll('.sig').selectAll('tspan')
+        .transition()
+        .ease(d3.easeBounce)
+        .duration(4000)
+        .attr('y',450)
+        .transition()
+        .ease(d3.easeLinear)
+        .duration(4000)
+        .attr('x',1000)
         .remove()
         d3.selectAll('.static')
         .transition()
@@ -117,19 +132,24 @@ function removefreword(){
         d3.selectAll('#great')
         .transition()
         .duration(500)
-        .attr('transform','translate(0,200)')
-    },second*5)
+        .attr('transform','translate(999,0)')
+        .remove()
+        d3.selectAll('#free')
+        .transition()
+        .duration(500)
+        .attr('transform','translate(0,450)')
+    },second*42)
 }
 editorial.then(function(d){
     removeEditorial();
+    // split();
     setTimeout( () => {
-        d3.select('#mark')
-        .style('fill','url(#background)')
+        d3.selectAll('.sig').remove();
         freword().then(function(d){
             removefreword();
             setTimeout( ()=>{
                 free();
-            },second*7)
+            },second*45)
         })
-    },second*4)
+    },second*12)
 })

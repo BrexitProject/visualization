@@ -1,18 +1,19 @@
-let margin = {top: 20, bottom: 40, left: 40, right: 40};
+let margin = {top: 20, bottom: 40, left: 30, right: 60};
 let svgWidth = 960;
 let svgHeight = 700;
 
 let width=svgWidth - margin.left - margin.right;
 let height=svgHeight - margin.top - margin.bottom;
 let second = 1000;
+let paddingleft = 13;
 let g = d3.select('#editorial')
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 let transition = g.append('g').attr('class','tra')
 let color =d3.scaleSequential(d3.interpolateViridis).domain([-1,1]).interpolator(d3.interpolateRdBu);
-let categorys =  ['express','dailymail','dailystar','sun','inews','guardian','ft','economist'];
-let word = ['we','people','country','control','great'];
-let xScale = d3.scaleBand().domain(categorys).range([0,width]);
+let categorys =  ['express','sun','dailystar','dailymail','inews','guardian','ft','economist'];
+let word = ['we','people','country','control','great','free'];
+let xScale = d3.scaleBand().domain(categorys).range([0,width - paddingleft * 2]);
 let yScale = d3.scaleLinear().range([height ,120]).domain([0,0.6]);
 function free(){
     d3.csv('public/data/free/free.csv').then(function(data) {
