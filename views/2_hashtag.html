@@ -88,8 +88,8 @@
   var r = d3.scaleLinear()
             .domain([0,0.5,1])
             .range([25,10,25]);
-  var color = d3.scaleQuantize()
-                .domain([0,1])
+  var color = d3.scaleQuantile()
+                .domain([0, 0.365010869, 2 / 3, 1])
                 .range(["#1B6AA5", "#8A949B","#E8110F" ]);
 
   // axises
