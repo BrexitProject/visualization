@@ -22,11 +22,6 @@ function freword() {
                     list:[],
                     id:'control'
                 },
-                'great':{
-                    data:[],
-                    list:[],
-                    id:'great'
-                },
                 'free':{
                     data:[],
                     list:[],
@@ -48,8 +43,6 @@ function freword() {
            transition.append('g').attr('class','circle')
            drawarrow(xScale);
            drawlegend(xScale);
-           d3.select('#mark')
-           .style('fill','url(#myGradient)')
            Object.keys(scales).forEach(function(key,i){
             // key,scales[key]
             // if(i===0){
@@ -63,30 +56,39 @@ function freword() {
             d3.select('.cells')
             .remove()
             });
-            resolve();
+            resolve(scales['free']);
            });
 
         });
 }
-// function split(key,xScale){
-//     d3.select('#we').remove()
-//     let circle = d3.select('.circle').append('g').attr('id',key.id)
-//     circle.append()
-// }
 function drawcircle(key,xScale,j) {
     let circle = d3.select('.circle').append('g').attr('id',key.id)
-    circle.selectAll("circle")
+    circle.selectAll("path")
     .data(key.list)
     .enter()
-    .append('circle')
-    .attr('cx',xScale('express')+ xScale.bandwidth()/2 + paddingleft)
+    .append('path')
+    .attr("d", (d)=>{
+        let cx = xScale('express')+ xScale.bandwidth()/2 + paddingleft;
+        let cy = height / 2 - j*100;
+        let myr = d.fre==0?0:key.scale(d.fre);
+        return "M" + cx + "," + cy + " " +
+        "m" + -myr + ", 0 " +
+        "a" + myr + "," + myr + " 0 1,0 " + myr*2  + ",0 " +
+        "a" + myr + "," + myr + " 0 1,0 " + -myr*2 + ",0Z";
+    })
     .transition()
     .duration((d,i)=>i*second*1.2)
-    .attr('cx',(d)=>xScale(d.media)+ xScale.bandwidth()/2 + paddingleft)
-    .attr('cy',height / 2 - j*100)
-    .attr('r',(d)=>d.fre==0?0:key.scale(d.fre))
+    .attr("d", (d)=>{
+        let cx = xScale(d.media)+ xScale.bandwidth()/2 + paddingleft;
+        let cy = height / 2 - j*100;
+        let myr = d.fre==0?0:key.scale(d.fre);
+        return "M" + cx + "," + cy + " " +
+        "m" + -myr + ", 0 " +
+        "a" + myr + "," + myr + " 0 1,0 " + myr*2  + ",0 " +
+        "a" + myr + "," + myr + " 0 1,0 " + -myr*2 + ",0Z";
+    })
     .attr('fill','rgb(158, 22, 42)')
-    // if(j!==0)
+
     d3.select('.axis').append('line').attr('id',key.id)
           .attr('y1',height / 2 - j*100)
           .attr('x1',0)

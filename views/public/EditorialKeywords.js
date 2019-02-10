@@ -104,6 +104,8 @@ function removeEditorial(){
 }
 function removefreword(){
     setTimeout( () => {
+        d3.select('#mark')
+        .style('fill','url(#myGradient)')
         d3.selectAll('#we')
         .transition()
         .duration(500)
@@ -137,19 +139,25 @@ function removefreword(){
         d3.selectAll('#free')
         .transition()
         .duration(500)
-        .attr('transform','translate(0,450)')
-    },second*42)
+        .attr('transform','translate(0,400)')
+    },second*35)
 }
-editorial.then(function(d){
-    removeEditorial();
-    // split();
-    setTimeout( () => {
-        d3.selectAll('.sig').remove();
-        freword().then(function(d){
-            removefreword();
-            setTimeout( ()=>{
-                free();
-            },second*45)
-        })
+// editorial.then(function(d){
+//     removeEditorial();
+//     setTimeout( () => {
+//         d3.selectAll('.sig').remove();
+//         freword().then(function(result){
+//             removefreword();
+//             setTimeout( ()=>{
+//                 free(result);
+//             },second*37)
+//         })
+//     },second*12)
+// })
+
+freword().then(function(result){
+    removefreword();
+    setTimeout( ()=>{
+        free(result);
     },second*12)
 })
