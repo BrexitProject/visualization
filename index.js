@@ -41,6 +41,10 @@ app.get('/invasion', function(req, res) {
   res.sendFile(path.join(__dirname + '/views/invasion.html'));
 });
 
+app.get('/writingStyle', function(req, res) {
+  res.sendFile(path.join(__dirname + '/views/writingStyle.html'));
+});
+
 app.get('/speech', function(req, res) {
   res.sendFile(path.join(__dirname + '/views/speech.html'));
 });
