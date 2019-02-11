@@ -9,7 +9,20 @@ async function loadData() {
 }
 
 function processData(rawData) {
-  return rawData;
+  let dataset = {};
+  let keys = rawData.columns;
+  let nameKey = keys[0];
+  let indices = keys.slice(1, keys.length - 2);
+
+  let nameArray = rawData.map(d => d[nameKey]);
+
+  for (let index of indices) {
+    dataset[index] = rawData.map(d => parseFloat(d[index]));
+  }
+
+  dataset["indices"] = indices;
+  dataset["nameArray"] = nameArray;
+  return dataset;
 }
 
 function render(dataset) {
@@ -39,7 +52,7 @@ function render(dataset) {
 
   renderHeader(svgWidth, svgHeight * spanConfig.vertical.header, padding);
 
-  renderMain(dataset);
+  renderMain(dataset, svgWidth, svgHeight * spanConfig.vertical.main, padding);
 }
 
 function generatePosConfig(spanConfig) {
@@ -116,6 +129,129 @@ function renderHeader(width, height, padding) {
     .attr("xlink:href", `public/data/writingStyle/brexit.svg`);
 }
 
-function renderMain(dataset) {
+function renderMain(dataset, width, height, padding) {
+  addGEleByIndices(dataset.indices);
+  let spanConfig = constructSpanConfig(dataset.indices);
+  let posConfig = generatePosConfig(spanConfig);
+  setupLayout(width, height, posConfig);
 
+  addPlaceholder(width, height, spanConfig);
+
+  for (let index of dataset.indices) {
+    renderRow(d3.select(`.${index}`), dataset[index], dataset["nameArray"], index, padding);
+  }
+}
+
+function addGEleByIndices(indices) {
+  for (let index of indices) {
+    d3.select(".main")
+      .append("g")
+      .attr("class", `${index}`);
+  }
+}
+
+function constructSpanConfig(indices) {
+  let spanConfig = {
+    vertical: {},
+    horizontal: {},
+  };
+
+  let ratio = 1 / indices.length;
+
+  for (let index of indices) {
+    spanConfig["vertical"][index] = ratio;
+  }
+
+  return spanConfig;
+}
+
+function renderRow(selector, data, nameArray, index, padding) {
+  let width = selector.select("rect").attr("width");
+  let height = selector.select("rect").attr("height");
+
+  let top =5;
+
+  let gChart = selector.append("g")
+    .attr("transform", `translate(${padding.left}, ${padding.top})`)
+    .attr("class", "chart");
+
+  let axisWidth = width - 2 * padding.left;
+  let axisHeight = height - 2 * padding.top;
+
+  let xScale = d3.scaleBand()
+    .domain(nameArray)
+    .range([0, axisWidth])
+    .paddingInner(0.97)
+    .paddingOuter(0.97);
+  let yScale = d3.scaleLinear()
+    .domain([0, d3.extent(data)[1]])
+    .range([axisHeight, 0]);
+
+  let xAxis = d3.axisBottom()
+    .scale(xScale);
+  let yAxis = d3.axisRight()
+    .tickSize(axisWidth)
+    .scale(yScale)
+    .ticks(2);
+
+  let gXAxis = gChart.append('g')
+    .attr('class', 'x-axis')
+    .attr('transform', `translate(${0}, ${axisHeight})`)
+    .call(xAxis);
+  let gYAxis = gChart.append("g")
+    .attr('class', 'y-axis')
+    .call(customYAxis(yAxis));
+
+  let colorSet = generateColorSet(nameArray);
+
+  let gBar = gChart.selectAll(".bar")
+    .data(data)
+    .enter()
+    .append("rect")
+    .attr("class", ".bar")
+    .attr("x", (_, i) => xScale(nameArray[i]))
+    .attr("y", d => yScale(d))
+    .attr("width", xScale.bandwidth())
+    .attr("height", d => axisHeight - yScale(d))
+    .attr("fill", (_, i) => colorSet[i]);
+
+  let radius = xScale.bandwidth() / 2 * 2;
+  let gCircle = gChart.selectAll(".circle")
+    .data(data)
+    .enter()
+    .append("circle")
+    .attr("class", ".circle")
+    .attr("cx", (_, i) => xScale(nameArray[i]) + xScale.bandwidth() / 2)
+    .attr("cy", d => yScale(d))
+    .attr("r", radius)
+    .attr("fill", (_, i) => colorSet[i]);
+
+  let legendData = [{
+    text: index,
+    offset: padding.left / 2,
+  }, {
+    text: index,
+    offset: width - padding.left / 2,
+  }];
+  let legend = selector.selectAll(".legend")
+    .data(legendData)
+    .enter()
+    .append("text")
+    .attr("transform", d => `translate(${d.offset}, ${axisHeight + padding.top})`)
+    .text(d => d.text)
+    .attr("text-anchor", "middle");
+}
+
+function generateColorSet(nameArray) {
+  let colorSet = nameArray.map((_, i) => i < nameArray.length / 2 ? "#006e89" : "#ed5931");
+  return colorSet;
+}
+
+function customYAxis(yAxis) {
+  return g => {
+    g.call(yAxis);
+    g.select(".domain").remove();
+    g.selectAll(".tick:not(:first-of-type) line").attr("stroke", "#777").attr("stroke-dasharray", "2,2");
+    g.selectAll(".tick text").attr("x", 4).attr("dy", -4);
+  }
 }
