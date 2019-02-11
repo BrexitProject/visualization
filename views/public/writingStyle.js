@@ -12,7 +12,7 @@ function processData(rawData) {
   let dataset = {};
   let keys = rawData.columns;
   let nameKey = keys[0];
-  let indices = keys.slice(1, keys.length - 2);
+  let indices = [...keys.slice(1, 3), ...keys.slice(5, 7)];
 
   let nameArray = rawData.map(d => d[nameKey]);
 
