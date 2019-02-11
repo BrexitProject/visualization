@@ -33,7 +33,7 @@ function render(dataset) {
 
   let spanConfig = {
     vertical: {
-      header: 0.3, 
+      header: 0.28, 
       main: 0.7,
     },
     horizontal: {
@@ -42,7 +42,7 @@ function render(dataset) {
 
   let padding = {
     left: 120,
-    top: 20,
+    top: 30,
   };
 
   let posConfig = generatePosConfig(spanConfig);
@@ -127,6 +127,28 @@ function renderHeader(width, height, padding) {
     .attr("width", imageWidth)
     .attr("height", imageHeight)
     .attr("xlink:href", `public/data/writingStyle/brexit.svg`);
+
+  let spaceBetweenLineAndImage = 10;
+  let horizontalLine = gHeader.append("line")
+    .attr("class", "header-line")
+    .attr("x1", padding.left + imageWidth + spaceBetweenLineAndImage)
+    .attr("y1", padding.top + imageHeight / 2)
+    .attr("x2", width - padding.left - imageWidth - spaceBetweenLineAndImage)
+    .attr("y2", padding.top + imageHeight / 2);
+  let verticalLine = gHeader.append("line")
+    .attr("class", "header-line")
+    .attr("x1", width / 2)
+    .attr("y1", padding.top + imageHeight / 2)
+    .attr("x2", width / 2)
+    .attr("y2", padding.top + imageHeight);
+
+  let spaceBetweenLineAndTitle = 15;
+  let title = gHeader.append("text")
+    .attr("class", "title")
+    .attr("transform", `translate(${width / 2}, ${padding.top + imageHeight / 2 - spaceBetweenLineAndTitle})`)
+    .text("Writing Style Indices")
+    .attr("text-anchor", "middle")
+    .attr("dominant-baseline", "baseline");
 }
 
 function renderMain(dataset, width, height, padding) {
@@ -187,12 +209,19 @@ function renderRow(selector, data, nameArray, index, padding) {
     .domain([0, d3.extent(data)[1]])
     .range([axisHeight, 0]);
 
+  let tickNum = 3;
+  let tickValues = [];
+  for (let i = 0; i < tickNum; i += 1) {
+    tickValues.push(i * yScale.domain()[1] / (tickNum - 1));
+  }
+
   let xAxis = d3.axisBottom()
-    .scale(xScale);
+    .scale(xScale)
+    .tickSizeOuter(0);
   let yAxis = d3.axisRight()
     .tickSize(axisWidth)
     .scale(yScale)
-    .ticks(2);
+    .tickValues(tickValues);
 
   let gXAxis = gChart.append('g')
     .attr('class', 'x-axis')
@@ -226,20 +255,40 @@ function renderRow(selector, data, nameArray, index, padding) {
     .attr("r", radius)
     .attr("fill", (_, i) => colorSet[i]);
 
+  let offset = 10;
   let legendData = [{
     text: index,
-    offset: padding.left / 2,
+    offset: padding.left - offset,
+    anchor: "end"
   }, {
     text: index,
-    offset: width - padding.left / 2,
+    offset: width - padding.left + offset,
+    anchor: "start"
   }];
   let legend = selector.selectAll(".legend")
     .data(legendData)
     .enter()
     .append("text")
     .attr("transform", d => `translate(${d.offset}, ${axisHeight + padding.top})`)
-    .text(d => d.text)
-    .attr("text-anchor", "middle");
+    .text(d => d.text.toUpperCase())
+    .attr("text-anchor", d => d.anchor)
+    .attr("dominant-baseline", "middle");
+
+  let valTextXOffset = 20;
+  let valTextData = data.map((d, i) => ({
+    val: d,
+    x: xScale(nameArray[i]) + xScale.bandwidth() / 2 + (i < data.length / 2 ? (-valTextXOffset) : valTextXOffset),
+    y: yScale(yScale.domain()[1] / 4 * 1),
+  }));
+  let valText = gChart.selectAll(".valText")
+    .data(valTextData)
+    .enter()
+    .append("text")
+    .attr("transform", d => `translate(${d.x}, ${d.y})`)
+    .text(d => d.val)
+    .attr("text-anchor", (_, i) => i < data.length / 2 ? "end" : "start")
+    .attr("dominant-baseline", "middle")
+    .attr("fill", (_, i) => colorSet[i]);
 }
 
 function generateColorSet(nameArray) {
