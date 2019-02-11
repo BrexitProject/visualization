@@ -67,25 +67,22 @@ function drawcircle(key,xScale,j) {
     .data(key.list)
     .enter()
     .append('path')
+    .attr('class',(d)=>`circlepath`)
     .attr("d", (d)=>{
         let cx = xScale('express')+ xScale.bandwidth()/2 + paddingleft;
         let cy = height / 2 - j*100;
-        let myr = d.fre==0?0:key.scale(d.fre);
-        return "M" + cx + "," + cy + " " +
-        "m" + -myr + ", 0 " +
-        "a" + myr + "," + myr + " 0 1,0 " + myr*2  + ",0 " +
-        "a" + myr + "," + myr + " 0 1,0 " + -myr*2 + ",0Z";
+        let r = d.fre==0?0:key.scale(d.fre);
+        let tie = `M${cx - 1} ${cy+r} L ${cx - 1} ${cy+r} Q ${cx} ${cy+r} ${cx} ${cy+r} L ${cx + 1} ${cy+r}`
+        return `M${cx-r} ${cy} C ${cx-r} ${cy},  ${cx-r} ${cy+r},  ${cx} ${cy+r} C ${cx} ${cy+r},  ${cx+r} ${cy+r},  ${cx+r} ${cy} C ${cx+r} ${cy},  ${cx+r} ${cy-r},  ${cx} ${cy-r} C ${cx} ${cy-r},  ${cx-r} ${cy-r},  ${cx-r} ${cy}` + tie
     })
     .transition()
     .duration((d,i)=>i*second*1.2)
     .attr("d", (d)=>{
         let cx = xScale(d.media)+ xScale.bandwidth()/2 + paddingleft;
         let cy = height / 2 - j*100;
-        let myr = d.fre==0?0:key.scale(d.fre);
-        return "M" + cx + "," + cy + " " +
-        "m" + -myr + ", 0 " +
-        "a" + myr + "," + myr + " 0 1,0 " + myr*2  + ",0 " +
-        "a" + myr + "," + myr + " 0 1,0 " + -myr*2 + ",0Z";
+        let r = d.fre==0?0:key.scale(d.fre);
+        let tie = `M${cx - 1} ${cy+r} L ${cx - 1} ${cy+r} Q ${cx} ${cy+r} ${cx} ${cy+r} L ${cx + 1} ${cy+r}`
+        return `M${cx-r} ${cy} C ${cx-r} ${cy},  ${cx-r} ${cy+r},  ${cx} ${cy+r} C ${cx} ${cy+r},  ${cx+r} ${cy+r},  ${cx+r} ${cy} C ${cx+r} ${cy},  ${cx+r} ${cy-r},  ${cx} ${cy-r} C ${cx} ${cy-r},  ${cx-r} ${cy-r},  ${cx-r} ${cy}` + tie
     })
     .attr('fill','rgb(158, 22, 42)')
 

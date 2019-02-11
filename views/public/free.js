@@ -20,8 +20,8 @@ const CANVASBALLOON = {
     KAPPA: (4 * (Math.sqrt(2) - 1))/3,
     WIDTH_FACTOR : 0.0333,
     HEIGHT_FACTOR: 0.4,
-    TIE_WIDTH_FACTOR : 0.12,
-    TIE_HEIGHT_FACTOR : 0.10,
+    TIE_WIDTH_FACTOR : 0.15,
+    TIE_HEIGHT_FACTOR : 0.13,
     TIE_CURVE_FACTOR : 0.13,
     GRADIENT_FACTOR : 0.3,
     GRADIENT_CIRCLE_RADIUS : 3
@@ -86,28 +86,21 @@ function draw(centerX,centerY,radius){
     return path;
 }
 function balloon(){
-    let ballon = d3.selectAll('path')
+    let ballon = d3.selectAll('.circlepath')
                     .transition()
                     .ease(d3.easeCubic)
-                    .duration(500)
+                    .duration(1000)
                     // .attrTween('d',(d)=>{
                     //     console.log(d);
                     //     return function(){
                     //         return draw( xScale(d.media) + xScale.bandwidth()/2, height - 720, 26)
                     //     }
                     // })
-    .attr('d',(d)=>{
-        let path = ''
-        if(d){
-            path = draw( xScale(d.media) + xScale.bandwidth()/2, height - 720, 26);}
-        return path;
-        })
-    // .transition()
-    // .ease(d3.easeLinear)
-    // .duration(5000)
-    // .attr("y", (d)=>yScale(d.value / 100) - 160)
-    // .attr('width', 40)
-    // .attr('height', 80)
+    .attr('d',(d)=>draw( xScale(d.media) + xScale.bandwidth()/2, height - 720, 26))
+    .transition()
+    .ease(d3.easeLinear)
+    .duration(5000)
+    .attr("transform",(d)=> `translate(0,${-height+ yScale(d.freevalue / 100)})`)
 }
 function sign(){
 
