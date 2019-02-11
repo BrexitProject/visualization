@@ -142,22 +142,16 @@ function removefreword(){
         .attr('transform','translate(0,400)')
     },second*35)
 }
-// editorial.then(function(d){
-//     removeEditorial();
-//     setTimeout( () => {
-//         d3.selectAll('.sig').remove();
-//         freword().then(function(result){
-//             removefreword();
-//             setTimeout( ()=>{
-//                 free(result);
-//             },second*37)
-//         })
-//     },second*12)
-// })
-
-freword().then(function(result){
-    removefreword();
-    setTimeout( ()=>{
-        free(result);
+editorial.then(function(d){
+    removeEditorial();
+    setTimeout( () => {
+        d3.selectAll('.sig').remove();
+        freword().then(function(result){
+            removefreword();
+            setTimeout( ()=>{
+                free(result);
+            },second*37)
+        })
     },second*12)
 })
+

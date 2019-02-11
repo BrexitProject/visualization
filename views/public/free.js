@@ -26,16 +26,13 @@ const CANVASBALLOON = {
     GRADIENT_FACTOR : 0.3,
     GRADIENT_CIRCLE_RADIUS : 3
 }
-let freepath = 'M782.933 953.6c-19.2-57.6-89.6-102.4-134.4-102.4-108.8 0-115.2-70.4-115.2-83.2h32s25.6 0 19.2-25.6l-38.4-83.2c38.4-6.4 70.4-25.6 102.4-51.2 12.8-19.2 32-38.4 44.8-51.2 64-96 89.6-185.6 96-236.8v-12.8-12.8-12.8-12.8c-6.4-147.2-128-268.8-281.6-268.8-153.6 0-281.6 121.6-281.6 281.6V326.4c12.8 121.6 70.4 211.2 102.4 256l6.4 6.4c6.4 0 12.8 6.4 19.2 12.8l6.4 6.4 6.4 6.4c25.6 25.6 64 44.8 108.8 57.6l-32 70.4c-12.8 32 19.2 32 19.2 32h32c12.8 121.6 102.4 121.6 140.8 121.6 102.4 12.8 108.8 96 108.8 108.8 0 6.4 6.4 19.2 25.6 19.2 19.2 0 19.2-25.6 19.2-25.6s0-12.8-6.4-44.8z'
 function free(free){
-    d3.csv('public/data/free/free.csv').then(function(data) {
-                drawAxis();
-                console.log(free,data);
-                balloon(data);
-                // setTimeout(function() {
-                //     sign();
-                //   }, 5000);
-    });
+    // d3.csv('public/data/free/free.csv').then(function(data) {
+                balloon();
+                setTimeout(()=>{
+                    drawAxis();
+                },second)
+    // });
 }
 function drawAxis(){
     let axis = g.append('g')
@@ -88,24 +85,23 @@ function draw(centerX,centerY,radius){
     let path = 'M' + topLeftCurveStartX + ' ' + topLeftCurveStartY + ' C ' +  topLeftCurveStartX + ' ' + (topLeftCurveStartY - handleLength - widthDiff) + ', ' + (topLeftCurveEndX - handleLength) + ' ' + topLeftCurveEndY + ', ' + topLeftCurveEndX + ' '+ topLeftCurveEndY + ' C '  +  (topRightCurveStartX + handleLength + widthDiff) + ' ' + topRightCurveStartY + ', ' + topRightCurveEndX + ' ' + (topRightCurveEndY - handleLength) + ', ' + topRightCurveEndX + ' '+ topRightCurveEndY  + ' C '  +  bottomRightCurveStartX + ' ' + (bottomRightCurveStartY + handleLength) + ', ' + (bottomRightCurveEndX + handleLength) + ' ' + bottomRightCurveEndY + ', ' + bottomRightCurveEndX + ' '+ bottomRightCurveEndY + ' C '  +  (bottomLeftCurveStartX - handleLength) + ' ' + bottomLeftCurveStartY + ', ' + bottomLeftCurveEndX + ' ' + ( bottomLeftCurveEndY + handleLength) + ', ' + bottomLeftCurveEndX + ' '+ bottomLeftCurveEndY + tie
     return path;
 }
-function balloon(data){
-    // d3.select('.circle').remove()
-    g.append('g')
-    .attr('class','icon')
-    .selectAll('g')
-    .data(data)
-    .enter()
-    .append('g')
-    .attr('class',(d)=>d.media)
-    // .attr('transform',(d)=>`translate(${xScale(d.media) + xScale.bandwidth()/2},${height - 160})scale(0.09234)`)
-    .append('path')
-    .attr('d',(d)=>draw( xScale(d.media) + xScale.bandwidth()/2, height - 160, 40))
-    .attr('fill','none')
-    .attr('stroke','black')
-    .attr('stroke-width',2)
-    // .attr('d',freepath)
-    // .attr("x", (d)=>xScale(d.media) + xScale.bandwidth()/2 - 20)
-    // .attr('y', height - 160)
+function balloon(){
+    let ballon = d3.selectAll('path')
+                    .transition()
+                    .ease(d3.easeCubic)
+                    .duration(500)
+                    // .attrTween('d',(d)=>{
+                    //     console.log(d);
+                    //     return function(){
+                    //         return draw( xScale(d.media) + xScale.bandwidth()/2, height - 720, 26)
+                    //     }
+                    // })
+    .attr('d',(d)=>{
+        let path = ''
+        if(d){
+            path = draw( xScale(d.media) + xScale.bandwidth()/2, height - 720, 26);}
+        return path;
+        })
     // .transition()
     // .ease(d3.easeLinear)
     // .duration(5000)
