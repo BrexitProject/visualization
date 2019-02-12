@@ -206,7 +206,7 @@ function renderRow(selector, data, nameArray, index, padding) {
     .paddingInner(0.97)
     .paddingOuter(0.97);
   let yScale = d3.scalePow()
-    .exponent(2)
+    .exponent(3)
     .domain([0, d3.extent(data)[1]])
     .range([axisHeight, 0]);
 
