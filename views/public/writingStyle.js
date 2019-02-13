@@ -205,15 +205,20 @@ function renderRow(selector, data, nameArray, index, padding) {
     .range([0, axisWidth])
     .paddingInner(0.97)
     .paddingOuter(0.97);
-  let yScale = d3.scaleLinear()
+  let yTransformer = d3.scalePow()
+    .exponent(3)
     .domain([0, d3.extent(data)[1]])
+    .range([0, 1]);
+  let yScale = d3.scaleLinear()
+    .domain(yTransformer.range())
     .range([axisHeight, 0]);
 
   let tickNum = 3;
   let tickValues = [];
   for (let i = 0; i < tickNum; i += 1) {
-    tickValues.push(i * yScale.domain()[1] / (tickNum - 1));
+    tickValues.push(yScale.invert(i * yScale.range()[0] / (tickNum - 1)));
   }
+  tickValues = tickValues.reverse();
 
   let xAxis = d3.axisBottom()
     .scale(xScale)
@@ -239,9 +244,9 @@ function renderRow(selector, data, nameArray, index, padding) {
     .append("rect")
     .attr("class", ".bar")
     .attr("x", (_, i) => xScale(nameArray[i]))
-    .attr("y", d => yScale(d))
+    .attr("y", d => yScale(yTransformer(d)))
     .attr("width", xScale.bandwidth())
-    .attr("height", d => axisHeight - yScale(d))
+    .attr("height", d => axisHeight - yScale(yTransformer(d)))
     .attr("fill", (_, i) => colorSet[i]);
 
   let radius = xScale.bandwidth() / 2 * 2;
@@ -251,7 +256,7 @@ function renderRow(selector, data, nameArray, index, padding) {
     .append("circle")
     .attr("class", ".circle")
     .attr("cx", (_, i) => xScale(nameArray[i]) + xScale.bandwidth() / 2)
-    .attr("cy", d => yScale(d))
+    .attr("cy", d => yScale(yTransformer(d)))
     .attr("r", radius)
     .attr("fill", (_, i) => colorSet[i]);
 
@@ -278,14 +283,14 @@ function renderRow(selector, data, nameArray, index, padding) {
   let valTextData = data.map((d, i) => ({
     val: d,
     x: xScale(nameArray[i]) + xScale.bandwidth() / 2 + (i < data.length / 2 ? (-valTextXOffset) : valTextXOffset),
-    y: yScale(yScale.domain()[1] / 4 * 1),
+    y: yScale.range()[0] * 3 / 4,
   }));
   let valText = gChart.selectAll(".valText")
     .data(valTextData)
     .enter()
     .append("text")
     .attr("transform", d => `translate(${d.x}, ${d.y})`)
-    .text(d => d.val)
+    .text(d => yTransformer(d.val).toFixed(2))
     .attr("text-anchor", (_, i) => i < data.length / 2 ? "end" : "start")
     .attr("dominant-baseline", "middle")
     .attr("fill", (_, i) => colorSet[i]);
