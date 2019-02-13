@@ -28,7 +28,7 @@ const CANVASBALLOON = {
 }
 function free(free){
     // d3.csv('public/data/free/free.csv').then(function(data) {
-                balloon();
+                balloon(free);
                 setTimeout(()=>{
                     drawAxis();
                 },second)
@@ -85,7 +85,7 @@ function draw(centerX,centerY,radius){
     let path = 'M' + topLeftCurveStartX + ' ' + topLeftCurveStartY + ' C ' +  topLeftCurveStartX + ' ' + (topLeftCurveStartY - handleLength - widthDiff) + ', ' + (topLeftCurveEndX - handleLength) + ' ' + topLeftCurveEndY + ', ' + topLeftCurveEndX + ' '+ topLeftCurveEndY + ' C '  +  (topRightCurveStartX + handleLength + widthDiff) + ' ' + topRightCurveStartY + ', ' + topRightCurveEndX + ' ' + (topRightCurveEndY - handleLength) + ', ' + topRightCurveEndX + ' '+ topRightCurveEndY  + ' C '  +  bottomRightCurveStartX + ' ' + (bottomRightCurveStartY + handleLength) + ', ' + (bottomRightCurveEndX + handleLength) + ' ' + bottomRightCurveEndY + ', ' + bottomRightCurveEndX + ' '+ bottomRightCurveEndY + ' C '  +  (bottomLeftCurveStartX - handleLength) + ' ' + bottomLeftCurveStartY + ', ' + bottomLeftCurveEndX + ' ' + ( bottomLeftCurveEndY + handleLength) + ', ' + bottomLeftCurveEndX + ' '+ bottomLeftCurveEndY + tie
     return path;
 }
-function balloon(){
+function balloon(free){
     let ballon = d3.selectAll('.circlepath')
                     .transition()
                     .ease(d3.easeCubic)
@@ -96,7 +96,7 @@ function balloon(){
                     //         return draw( xScale(d.media) + xScale.bandwidth()/2, height - 720, 26)
                     //     }
                     // })
-    .attr('d',(d)=>draw( xScale(d.media) + xScale.bandwidth()/2, height - 720, 26))
+    .attr('d',(d)=>draw( xScale(d.media) + xScale.bandwidth()/2, height - 720, free.scale(d.fre)))
     .transition()
     .ease(d3.easeLinear)
     .duration(5000)
