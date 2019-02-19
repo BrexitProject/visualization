@@ -208,9 +208,9 @@ function renderRow(selector, data, nameArray, index, padding) {
   let yTransformer = d3.scalePow()
     .exponent(3)
     .domain([0, d3.extent(data)[1]])
-    .range([0, 1]);
+    .range([0, 0.9]);
   let yScale = d3.scaleLinear()
-    .domain(yTransformer.range())
+    .domain([0, 1])
     .range([axisHeight, 0]);
 
   let tickNum = 3;
