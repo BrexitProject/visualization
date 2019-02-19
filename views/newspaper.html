@@ -45,7 +45,7 @@
     } */
   </style>
   <script src="public/d3.min.js"></script>
-  <script src="public/speech/js2wordcloud.js"></script>
+  <script src="public/js2wordcloud.js"></script>
 </head>
 <body>
   <div class="container">
@@ -99,7 +99,7 @@ Promise.all(promises).then(function (results) {
         var wc = new Js2WordCloud(document.getElementById(result.category))
         wc.setOption(option);
         d3.select('#'+result.category).select('svg').append('image')
-                        .attr('xlink:href', 'public/newspaper/images/'+result.category+'.jpg')
+                        .attr('xlink:href', 'public/data/newspaper/images/'+result.category+'.jpg')
                         // .attr('x',0)
                         // .attr('y',0)
                         .attr("x", 116)
