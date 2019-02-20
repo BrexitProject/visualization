@@ -21,28 +21,59 @@
       stroke-width: 2px;
       stroke: #313113;
     }
+
     .axis line {
       /* display: none; */
       stroke-width: 1px;
       stroke: #d0d0d0;
-      stroke-dasharray: 4, 2;
+      /* stroke-dasharray: 4, 2; */
     }
+
     .axis text {
       fill: #9090a0;
       font-weight: bold;
       font-size: 18px;
     }
+
     .xLabel{
       font-size: 50px;
       fill:#9090a0;
       font-weight: 700;
     }
+
     .monthText{
       font-family: 'Helvetica Neue';
       font-size: 160px;
       fill:#909099;
       font-weight: 700;
       fill-opacity: 0.9;
+    }
+
+    .video-slider {
+      /* stroke-width: 1px;
+      stroke: #909099; */
+      fill: #909099;
+      fill-opacity: 0.3;
+    }
+
+    .video-anchor {
+      fill: #E5AA17;
+      fill-opacity: 1;
+      stroke-width: 5px;
+      stroke: #fff;
+      stroke-opacity: 1;
+    }
+
+    .cursor {
+      stroke: black;
+      stroke-width: 1px;
+      stroke-dasharray: 4, 2;
+    }
+
+    .cursor-text {
+      font-size: 25px;
+      fill: #9090a0;
+      font-weight: bold;
     }
   </style>
   <script src="public/d3.min.js"></script>
@@ -53,11 +84,13 @@
   </div>
 </body>
 <script>
-  var margin = {top: 20, bottom: 50, left: 80, right: 60};
+  var margin = {top: 20, bottom: 100, left: 80, right: 60};
   var svgWidth = 1200;
-  var svgHeight = 650;
+  var svgHeight = 700;
+
   var width=svgWidth - margin.left - margin.right;
   var height=svgHeight - margin.top - margin.bottom;
+
   var svg = d3.select('.container')
             .append('svg')
             .attr('width', svgWidth)
@@ -85,6 +118,7 @@
   var color = d3.scaleQuantile()
                 .domain([0, 0.365010869, 2 / 3, 1])
                 .range(["#1B6AA5", "#8A949B","#E8110F" ]);
+
   // axises
   var xAxis = d3.axisBottom(x)
                 .tickSize(-height)
@@ -92,12 +126,41 @@
                 .tickValues([0, 10, 50, 75, 100, 600, 1200, 2400]);
                 // .tickValues([0,5,20,50,100,200,500,1000]); 
                 // .tickValues([0,50,100,200,500,1000,2000,5000,10000,100000,150000]);
+
   var yAxis = d3.axisLeft(y)
                 .tickSize(-width)
                 // .tickValues([1, 5, 25, 125, 625, 3125, 15625, 78125, 390625]);
                 .tickValues([0, 100, 250, 500, 1000, 4000, 7000, 10000, 50000, 100000, 380000]);
                 // .tickValues([0,5,10,20,50,100,200,1000]); 
                 // .tickValues([0,100,200,500,1000,2000,5000,10000,50000,100000,150000]);
+  let buttonSize = 40;
+  let buttonPlay = true;
+  let videoYOffset = 30;
+  let button = svg.append("image")
+    .attr("class", "video-button")                              
+    .attr('width', buttonSize)                     
+    .attr('height', buttonSize)  
+    .attr("xlink:href", d => `public/data/bubble/${buttonPlay ? 'play' : 'pause'}.svg`)
+    .attr("transform", `translate(${margin.left - buttonSize - 15},${margin.top + height + videoYOffset})`);
+
+  let sliderHeight = 10;
+  let borderRadius = 5;
+  let slider = svg.append("rect")
+    .attr("class", "video-slider")
+    .attr("x", margin.left)
+    .attr("y", margin.top + height + videoYOffset + buttonSize / 2 - sliderHeight / 2)
+    .attr("width", width)
+    .attr("height", sliderHeight)
+    .attr("rx", borderRadius)
+    .attr("ry", borderRadius);
+
+  let anchorRadius = 10;
+  let anchor = svg.append("circle")
+    .attr("class", "video-anchor")
+    .attr("cx", margin.left)
+    .attr("cy", margin.top + height + videoYOffset + buttonSize / 2)
+    .attr("r", anchorRadius);
+
   svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top+height})`)
     .call(xAxis)
@@ -124,6 +187,7 @@
       .style("text-anchor", "end")
       .text("Retweet")
       .attr('class','xLabel');
+
   var bisect = d3.bisector(function(d) { return d[0]; });
   
   function parseDate(str){
@@ -181,6 +245,51 @@
         if(d.freq<50&&d.forward<2){
             return 'none';}});
   }
+
+  function horCursorPosition(line) {
+    line.attr("x1", margin.left)
+      .attr("y1", d => y(d.freq + 1) + margin.top)
+      .attr("x2", d => x(d.forward + 1) + margin.left - r(d.trend))
+      .attr("y2", d => y(d.freq + 1) + margin.top)
+      .style("display", d => {
+        if (d.freq < 50 && d.forward < 2) {
+          return "none";
+        }
+      });
+  }
+
+  function verCursorPosition(line) {
+    line.attr("x1", d => x(d.forward + 1) + margin.left)
+      .attr("y1", d => y(d.freq + 1) + margin.top + r(d.trend))
+      .attr("x2", d => x(d.forward + 1) + margin.left)
+      .attr("y2", y.range()[0] + margin.top)
+      .style("display", d => {
+        if (d.freq < 50 && d.forward < 2) {
+          return "none";
+        }
+      });
+  }
+
+  function horTextPosition(text) {
+    text.attr("transform", d => `translate(${margin.left}, ${y(d.freq + 1) + margin.top})`)
+      .text(d => parseInt(d.freq) + 1)
+      .style("display", d => {
+        if (d.freq < 50 && d.forward < 2) {
+          return "none";
+        }
+      });
+  }
+
+  function verTextPosition(text) {
+    text.attr("transform", d => `translate(${x(d.forward + 1) + margin.left}, ${y.range()[0] + margin.top})`)
+      .text(d => parseInt(d.forward) + 1)
+      .style("display", d => {
+        if (d.freq < 50 && d.forward < 2) {
+          return "none";
+        }
+      });
+  }
+
   var dataArray=[];
   d3.csv('public/data/hashtag_bubble_new.csv').then(function(data) {
     console.log(data);
@@ -198,6 +307,7 @@
       dataArray.push(tmp);
     });
     console.log(dataArray);
+
     var monthText = svg.append('g')
                    .append('text')
                    .attr('x',margin.left+60)
@@ -209,7 +319,47 @@
           .selectAll(".dot")
           .data(getDataByMonth(dataArray,new Date(2015,11)))
           .enter().append("circle")
-					.attr("class", "dot");
+          .attr("class", "dot")
+          .attr("data-label", d => d.label.slice(1));
+
+    let cursorLines = svg.append("g")
+      .attr("class", "cursor")
+    let horizontalCursor = cursorLines.selectAll(".horizontal")
+      .data(getDataByMonth(dataArray,new Date(2015,11)))
+      .enter()
+      .append("line")
+      .attr("class", "horizontal")
+      .attr("data-label", d => d.label.slice(1))
+      .attr("stroke-opacity", 0);
+    let verticalCursor = cursorLines.selectAll(".vertical")
+      .data(getDataByMonth(dataArray,new Date(2015,11)))
+      .enter()
+      .append("line")
+      .attr("class", "vertical")
+      .attr("data-label", d => d.label.slice(1))
+      .attr("stroke-opacity", 0);
+    
+    let cursorText = svg.append("g")
+      .attr("class", "cursor-text")
+    let horizontalText = cursorText.selectAll(".horizontal")
+      .data(getDataByMonth(dataArray,new Date(2015,11)))
+      .enter()
+      .append("text")
+      .attr("class", "horizontal")
+      .attr("data-label", d => d.label.slice(1))
+      .attr("text-anchor", "end")
+      .attr("dominant-baseline", "baseline")
+      .style("fill-opacity", 0);
+    let verticalText = cursorText.selectAll(".vertical")
+      .data(getDataByMonth(dataArray,new Date(2015,11)))
+      .enter()
+      .append("text")
+      .attr("class", "vertical")
+      .attr("data-label", d => d.label.slice(1))
+      .attr("text-anchor", "middle")
+      .attr("dominant-baseline", "hanging")
+      .style("fill-opacity", 0);
+
     var text = svg.append("g")
           .selectAll(".text")
           .data(getDataByMonth(dataArray,new Date(2015,11)))
@@ -220,23 +370,115 @@
           }).attr("y", function(d) {
             return d.y;
           })
+          .attr("data-label", d => d.label.slice(1))
           .text(d=>d.label)
           .style("text-anchor", "middle")
           .style("fill", function(d) { return "#242424"; })
           .style("display",function(d) {
             if(d.freq<50&&d.forward<2){
             return 'none';}});
-    svg.transition()
-       .duration(150000)
-       .ease(d3.easeLinear)
-       .tween('time',()=>{
+    
+    let timer = svg.append("svg:text")
+      .attr("T", 0)
+      .text("");
+    let totalTime = 150000;
+    let easeFunc = d3.easeLinear;
+    let dateScale = d3.scaleTime()
+      .domain([new Date(2015,11), new Date(2018,11)])
+      .range([0, totalTime]);
+    initTime();
+    startTime(easeFunc, totalTime, totalTime, dateScale);
+
+    button.on("click", () => {
+      buttonPlay = !buttonPlay;
+      button.attr("xlink:href", d => `public/data/bubble/${buttonPlay ? 'play' : 'pause'}.svg`);
+      if (!buttonPlay) {
+        stopTime();
+      } else {
+        let timeTodo = totalTime - getTime();
+        startTime(easeFunc, totalTime, timeTodo, dateScale);
+      }
+    });
+
+    text.on("mouseover", mouseOverHandler);
+    text.on("mouseout", mouseOutHandler);
+    dot.on("mouseover", mouseOverHandler);
+    dot.on("mouseout", mouseOutHandler);
+
+    function mouseOverHandler() {
+      let label = d3.select(this).attr("data-label")
+      d3.selectAll(".cursor")
+        .selectAll(`line[data-label = ${label}]`)
+        .attr("stroke-opacity", 1);
+
+      d3.selectAll(".cursor-text")
+        .selectAll(`text[data-label = ${label}]`)
+        .style("fill-opacity", 1);
+
+      d3.selectAll("g.axis")
+        .selectAll("g.tick")
+        .selectAll("text")
+        .style("display", "none");
+    }
+
+    function mouseOutHandler() {
+      let label = d3.select(this).attr("data-label")
+      d3.selectAll(".cursor")
+        .selectAll(`line[data-label = ${label}]`)
+        .attr("stroke-opacity", 0);
+
+      d3.selectAll(".cursor-text")
+        .selectAll(`text[data-label = ${label}]`)
+        .style("fill-opacity", 0);
+
+      d3.selectAll("g.axis")
+        .selectAll("g.tick")
+        .selectAll("text")
+        .style("display", "block");
+    }
+
+    function initTime(totalTime, easeFunc) {
+      resetTime();
+    }
+
+    function resetTime() {
+      timer.attr("T", 0);
+    }
+
+    function startTime(ease, totalTime, timeTodo, dateScale) {
+      timer.transition()
+        .duration(timeTodo)
+        .ease(easeFunc)
+        .attr("T", totalTime);
+
+      svg.transition()
+       .duration(timeTodo)
+       .ease(easeFunc)
+       .tween('time', () => {
         return function(t) {
-          var month = d3.interpolateDate(new Date(2015,11),new Date(2018,11))
+          var month = d3.interpolateDate(dateScale.invert(totalTime - timeTodo), new Date(2018,11))
           tweenYear(month(t));
         }
-       })
+      });
+    }
+
+    function stopTime() {
+      timer.transition()
+        .duration(0);
+      svg.transition()
+        .duration(0);
+    }
+
+    function getTime() {
+      return timer.attr("T");
+    }
+
     function tweenYear(year){
       dot.data(getDataByMonth(dataArray,year)).call(position);
+      horizontalCursor.data(getDataByMonth(dataArray,year)).call(horCursorPosition);
+      verticalCursor.data(getDataByMonth(dataArray,year)).call(verCursorPosition);
+      horizontalText.data(getDataByMonth(dataArray,year)).call(horTextPosition);
+      verticalText.data(getDataByMonth(dataArray,year)).call(verTextPosition);
       textPosition(getDataByMonth(dataArray,year));
       if(year<=new Date(2018,11)){
         let tmpYear = new Date(year);
@@ -247,7 +489,21 @@
           monthText.text(year.getFullYear()+'/'+(year.getMonth()+1));
         }
       }
+      let tmpYear = new Date(year);
+      updateVideoAnchor(tmpYear);
     }
+
+    function updateVideoAnchor(date) {
+      let width = d3.select(".video-slider").attr("width");
+      let timeScale = d3.scaleTime()
+        .domain([new Date(2016, 0), new Date(2018, 11)])
+        .range([0, width]);
+      let pos = parseFloat(timeScale(date));
+      pos = Math.min(pos, width);
+      d3.select(".video-anchor")
+        .attr("cx", pos + parseFloat(d3.select(".video-slider").attr("x")));
+    }
+
     function textPosition(textData){
       text.data(textData).each(function(d) {
         d.width = this.getBBox().width;
@@ -256,12 +512,14 @@
         d.r = r(d.trend);
         d.height = this.getBBox().height;
       })
+
       var labels = d3.labeler()
                .label(textData)
                .anchor(textData)
                .width(width)
             .height(height)
             .start(0);;
+
       text.attr("x", function(d) {
           return d.x;
         }).attr("y", function(d) {
