@@ -128,7 +128,7 @@
             // .range([height,(height-30)*6/7+30,(height-30)*5/7+30,(height-30)*4/7+30,(height-30)*3/7+30,(height-30)*2/7+30,(height-30)/7+30, 30,0]);
   var r = d3.scaleLinear()
             .domain([0,0.5,1])
-            .range([25,10,25]);
+            .range([25,17,25]);
   var color = d3.scaleQuantile()
                 .domain([0, 0.365010869, 2 / 3, 1])
                 .range(["#1B6AA5", "#8A949B","#E8110F" ]);
@@ -395,6 +395,8 @@
             if(d.freq<50&&d.forward<2){
             return 'none';}});
     
+    let pastCircle = initSelectionPastCircle(labelSet);
+    let pastLine = initSelectionPastLine(labelSet);
     let timer = svg.append("svg:text")
       .attr("T", 0)
       .text("");
@@ -426,6 +428,7 @@
       let selectedLabel = [];
       selection.each(d => selectedLabel.push(d));
       updateMask(selectedLabel);
+      updatePast(d3.select(this));
       console.log(selectedLabel);
     }
 
@@ -570,7 +573,8 @@
        .ease(easeFunc)
        .tween('time', () => {
         return function(t) {
-          var month = d3.interpolateDate(dateScale.invert(totalTime - timeTodo), new Date(2018,11))
+          var month = d3.interpolateDate(dateScale.invert(totalTime - timeTodo), new Date(2018,11));
+          console.log(month(t));
           tweenYear(month(t));
         }
       });
@@ -591,7 +595,7 @@
       timer.attr("T", currentTime);
     }
 
-    function tweenYear(year){
+    function tweenYear(year) {
       dot.data(getDataByMonth(dataArray,year)).call(position);
       horizontalCursor.data(getDataByMonth(dataArray,year)).call(horCursorPosition);
       verticalCursor.data(getDataByMonth(dataArray,year)).call(verCursorPosition);
@@ -751,6 +755,46 @@
       verticalCursor.style("display", "none");
       horizontalText.style("display", "none");
       verticalText.style("display", "none");
+    }
+
+    function initSelectionPastCircle(labelSet) {
+      let pastCircle = {};
+      let gPastCircle = svg.append("g")
+        .attr("class", "pastCircle");
+      labelSet.forEach(label => pastCircle[label] = {
+        ele: gPastCircle.append("g")
+          .attr("class", `pastCircle-${label}`),
+        data: [],
+      });
+
+      return pastCircle;
+    }
+
+    function initSelectionPastLine(labelSet) {
+      let pastLine = {};
+      let gPastLine = svg.append("g")
+        .attr("class", "pastLine");
+      labelSet.forEach(label => pastLine[label] = {
+        ele: gPastLine.append("g")
+          .attr("class", `pastLine-${label}`),
+        data: [],
+      });
+
+      return pastLine;
+    }
+
+    function updatePast(selector) {
+      let label = selector.attr("name");
+
+      if (selector.property("checked")) {
+
+      } else {
+        pastCircle[label]["ele"].selectAll("*").remove();
+        pastCircle[label]["data"] = [];
+
+        pastLine[label]["ele"].selectAll("*").remove();
+        pastLine[label]["data"] = [];
+      }
     }
 
   });
