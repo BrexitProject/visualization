@@ -265,11 +265,11 @@
       .attr("y1", d => y(d.freq + 1) + margin.top)
       .attr("x2", d => x(d.forward + 1) + margin.left - r(d.trend))
       .attr("y2", d => y(d.freq + 1) + margin.top)
-      .style("display", d => {
-        if (d.freq < 50 && d.forward < 2) {
-          return "none";
-        }
-      });
+      // .style("display", d => {
+      //   if (d.freq < 50 && d.forward < 2) {
+      //     return "none";
+      //   }
+      // });
   }
 
   function verCursorPosition(line) {
@@ -277,31 +277,31 @@
       .attr("y1", d => y(d.freq + 1) + margin.top + r(d.trend))
       .attr("x2", d => x(d.forward + 1) + margin.left)
       .attr("y2", y.range()[0] + margin.top)
-      .style("display", d => {
-        if (d.freq < 50 && d.forward < 2) {
-          return "none";
-        }
-      });
+      // .style("display", d => {
+      //   if (d.freq < 50 && d.forward < 2) {
+      //     return "none";
+      //   }
+      // });
   }
 
   function horTextPosition(text) {
     text.attr("transform", d => `translate(${margin.left}, ${y(d.freq + 1) + margin.top})`)
       .text(d => parseInt(d.freq) + 1)
-      .style("display", d => {
-        if (d.freq < 50 && d.forward < 2) {
-          return "none";
-        }
-      });
+      // .style("display", d => {
+      //   if (d.freq < 50 && d.forward < 2) {
+      //     return "none";
+      //   }
+      // });
   }
 
   function verTextPosition(text) {
     text.attr("transform", d => `translate(${x(d.forward + 1) + margin.left}, ${y.range()[0] + margin.top})`)
       .text(d => parseInt(d.forward) + 1)
-      .style("display", d => {
-        if (d.freq < 50 && d.forward < 2) {
-          return "none";
-        }
-      });
+      // .style("display", d => {
+      //   if (d.freq < 50 && d.forward < 2) {
+      //     return "none";
+      //   }
+      // });
   }
 
   var dataArray=[];
@@ -405,6 +405,7 @@
       .range([0, totalTime]);
     initTime();
     startTime(easeFunc, totalTime, totalTime, dateScale);
+    disableCursor();
 
     let checkboxs = d3.selectAll("input");
 
@@ -433,9 +434,11 @@
       button.attr("xlink:href", d => `public/data/bubble/${buttonPlay ? 'play' : 'pause'}.svg`);
       if (!buttonPlay) {
         stopTime();
+        enableCursor();
       } else {
         let timeTodo = totalTime - getTime();
         startTime(easeFunc, totalTime, timeTodo, dateScale);
+        disableCursor();
       }
     }
 
@@ -508,18 +511,20 @@
         })
         .text(d => d.label.slice(1));
 
-      d3.selectAll(".cursor")
-        .selectAll(`line[data-label = ${label}]`)
-        .attr("stroke-opacity", 1);
+      if (!buttonPlay) {
+        d3.selectAll(".cursor")
+          .selectAll(`line[data-label = ${label}]`)
+          .attr("stroke-opacity", 1);
 
-      d3.selectAll(".cursor-text")
-        .selectAll(`text[data-label = ${label}]`)
-        .style("fill-opacity", 1);
+        d3.selectAll(".cursor-text")
+          .selectAll(`text[data-label = ${label}]`)
+          .style("fill-opacity", 1);
 
-      d3.selectAll("g.axis")
-        .selectAll("g.tick")
-        .selectAll("text")
-        .style("display", "none");
+        d3.selectAll("g.axis")
+          .selectAll("g.tick")
+          .selectAll("text")
+          .style("display", "none");
+      }
     }
 
     function mouseOutHandler() {
@@ -530,18 +535,20 @@
       selection.each(d => selectedLabel.push(d));
       updateMask(selectedLabel);
 
-      d3.selectAll(".cursor")
-        .selectAll(`line[data-label = ${label}]`)
-        .attr("stroke-opacity", 0);
+      if (!buttonPlay) {
+        d3.selectAll(".cursor")
+          .selectAll(`line[data-label = ${label}]`)
+          .attr("stroke-opacity", 0);
 
-      d3.selectAll(".cursor-text")
-        .selectAll(`text[data-label = ${label}]`)
-        .style("fill-opacity", 0);
+        d3.selectAll(".cursor-text")
+          .selectAll(`text[data-label = ${label}]`)
+          .style("fill-opacity", 0);
 
-      d3.selectAll("g.axis")
-        .selectAll("g.tick")
-        .selectAll("text")
-        .style("display", "block");
+        d3.selectAll("g.axis")
+          .selectAll("g.tick")
+          .selectAll("text")
+          .style("display", "block");
+      }
     }
 
     function initTime(totalTime, easeFunc) {
@@ -636,7 +643,7 @@
         }).attr("y", function(d) {
           return d.y;
         })
-        .text("")
+        // .text("")
         .style("text-anchor", "middle")
         .style("fill", function(d) { return "#242424"; })
         .style("display",function(d) {
@@ -674,6 +681,15 @@
     }
 
     function updateMask(selectedLabel) {
+      if (selectedLabel.length === 0) {
+        d3.selectAll(".dot")
+          .attr("opacity", 1);
+
+        d3.selectAll(".textLabel")
+          .text("");
+        return;
+      }
+
       d3.selectAll(".dot")
         .filter(function(d, i) {
           return selectedLabel.findIndex((label) => label === d3.select(this).attr("data-label")) < 0;
@@ -697,6 +713,44 @@
           return selectedLabel.findIndex((label) => label === d3.select(this).attr("data-label")) >= 0;
         })
         .text(d => d.label.slice(1));
+    }
+
+    function enableCursor() {
+      horizontalCursor.style("display", d => {
+        if (d.freq < 50 && d.forward < 2) {
+          return "none";
+        } else {
+          return "block";
+        }
+      });
+      verticalCursor.style("display", d => {
+        if (d.freq < 50 && d.forward < 2) {
+          return "none";
+        } else {
+          return "block";
+        }
+      });
+      horizontalText.style("display", d => {
+        if (d.freq < 50 && d.forward < 2) {
+          return "none";
+        } else {
+          return "block";
+        }
+      });
+      verticalText.style("display", d => {
+        if (d.freq < 50 && d.forward < 2) {
+          return "none";
+        } else {
+          return "block";
+        }
+      });
+    }
+
+    function disableCursor() {
+      horizontalCursor.style("display", "none");
+      verticalCursor.style("display", "none");
+      horizontalText.style("display", "none");
+      verticalText.style("display", "none");
     }
 
   });
