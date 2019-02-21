@@ -75,6 +75,20 @@
       fill: #9090a0;
       font-weight: bold;
     }
+
+    .container {
+      display: flex;
+      flex-direction: row;
+    }
+
+    .aside {
+      /* border: 1px solid black; */
+      overflow-y: auto;
+    }
+
+    div.labelRow {
+      margin: 5px 3px, 5px, 4px;
+    }
   </style>
   <script src="public/d3.min.js"></script>
   <script src="public/labeler.js"></script>
@@ -308,6 +322,8 @@
     });
     console.log(dataArray);
 
+    createAsidePanel(dataArray.map(d => d.label).sort());
+
     var monthText = svg.append('g')
                    .append('text')
                    .attr('x',margin.left+60)
@@ -371,7 +387,7 @@
             return d.y;
           })
           .attr("data-label", d => d.label.slice(1))
-          .text(d=>d.label)
+          .text("")
           .style("text-anchor", "middle")
           .style("fill", function(d) { return "#242424"; })
           .style("display",function(d) {
@@ -381,7 +397,7 @@
     let timer = svg.append("svg:text")
       .attr("T", 0)
       .text("");
-    let totalTime = 150000;
+    let totalTime = 1500;
     let easeFunc = d3.easeLinear;
     let dateScale = d3.scaleTime()
       .domain([new Date(2015,11), new Date(2018,11)])
@@ -447,6 +463,13 @@
 
     function mouseOverHandler() {
       let label = d3.select(this).attr("data-label")
+
+      d3.selectAll(".dot")
+        .filter(function(d, i) {
+          return d3.select(this).attr("data-label") !== label;
+        })
+        .attr("opacity", 0.1)
+
       d3.selectAll(".cursor")
         .selectAll(`line[data-label = ${label}]`)
         .attr("stroke-opacity", 1);
@@ -463,6 +486,13 @@
 
     function mouseOutHandler() {
       let label = d3.select(this).attr("data-label")
+
+      d3.selectAll(".dot")
+        .filter(function(d, i) {
+          return d3.select(this).attr("data-label") !== label;
+        })
+        .attr("opacity", 1)
+
       d3.selectAll(".cursor")
         .selectAll(`line[data-label = ${label}]`)
         .attr("stroke-opacity", 0);
@@ -569,13 +599,43 @@
         }).attr("y", function(d) {
           return d.y;
         })
-        .text(d=>d.label)
+        .text("")
         .style("text-anchor", "middle")
         .style("fill", function(d) { return "#242424"; })
         .style("display",function(d) {
           if(d.freq<50&&d.forward<2){
             return 'none';}});
     }
+
+    function createAsidePanel(labelSet) {
+      let asideWidth = 250;
+      let aside = d3.select(".container")
+        .append("div")
+        .attr("class", "aside")
+      document.querySelector("div.aside").style.width = `${asideWidth}px`;
+      document.querySelector("div.aside").style.height = `${anchor.attr("cy")}px`;
+      document.querySelector("div.aside").style.margin = `${margin.top}px 0 ${svgHeight - anchor.attr("cy")}px 0`;
+
+      let rows = aside.selectAll(".labelRow")
+        .data(labelSet)
+        .enter()
+        .append("div")
+        .attr("class", "labelRow")
+        .attr("id", d => `row-${d}`);
+
+      rows.append("input")
+        .attr("type", "checkbox")
+        .attr("name", d => d)
+        .attr("id", d => `input-${d}`);
+
+      rows.append("label")
+        .attr("id", d => `label-${d}`)
+        .attr("for", d => d)
+        .html(d => d);
+
+      document.querySelector("div.aside").style.overflow = "auto";
+    }
+
   });
 </script>
 </html>
