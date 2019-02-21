@@ -389,7 +389,17 @@
     initTime();
     startTime(easeFunc, totalTime, totalTime, dateScale);
 
-    button.on("click", () => {
+    button.on("click", clickedHandler);
+    anchor.call(d3.drag()
+      .on("start", dragStartedHandler)
+      .on("drag", draggedHandler)
+      .on("end", dragendedHandler));
+    text.on("mouseover", mouseOverHandler);
+    text.on("mouseout", mouseOutHandler);
+    dot.on("mouseover", mouseOverHandler);
+    dot.on("mouseout", mouseOutHandler);
+
+    function clickedHandler() {
       buttonPlay = !buttonPlay;
       button.attr("xlink:href", d => `public/data/bubble/${buttonPlay ? 'play' : 'pause'}.svg`);
       if (!buttonPlay) {
@@ -398,12 +408,42 @@
         let timeTodo = totalTime - getTime();
         startTime(easeFunc, totalTime, timeTodo, dateScale);
       }
-    });
+    }
 
-    text.on("mouseover", mouseOverHandler);
-    text.on("mouseout", mouseOutHandler);
-    dot.on("mouseover", mouseOverHandler);
-    dot.on("mouseout", mouseOutHandler);
+    function dragStartedHandler() {
+      button.on("click", null);
+
+      buttonPlay = false;
+      button.attr("xlink:href", d => `public/data/bubble/${buttonPlay ? 'play' : 'pause'}.svg`);
+      stopTime();
+    }
+
+    function draggedHandler() {
+      let anchorScale = d3.scaleLinear()
+        .domain([0, width])
+        .range([0, totalTime]);
+
+      let offset = parseFloat(d3.select(".video-slider").attr("x"));
+      let minCXPos = offset + anchorScale.domain()[0];
+      let maxCXPos = offset + anchorScale.domain()[1];
+      let currentCXPos = Math.max(minCXPos, d3.event.x);
+      currentCXPos = Math.min(maxCXPos, currentCXPos);
+
+      d3.select(this)
+        .attr("cx", currentCXPos);
+
+      let currentTime = anchorScale(currentCXPos - offset);
+      setTime(currentTime);
+    }
+
+    function dragendedHandler() {
+      buttonPlay = true;
+      button.attr("xlink:href", d => `public/data/bubble/${buttonPlay ? 'play' : 'pause'}.svg`);
+      let timeTodo = totalTime - getTime();
+      startTime(easeFunc, totalTime, timeTodo, dateScale);
+
+      button.on("click", clickedHandler);
+    }
 
     function mouseOverHandler() {
       let label = d3.select(this).attr("data-label")
@@ -471,6 +511,10 @@
 
     function getTime() {
       return timer.attr("T");
+    }
+
+    function setTime(currentTime) {
+      timer.attr("T", currentTime);
     }
 
     function tweenYear(year){
