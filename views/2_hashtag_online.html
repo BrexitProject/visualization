@@ -98,8 +98,8 @@
   </div>
 </body>
 <script>
-  var margin = {top: 20, bottom: 100, left: 80, right: 60};
-  var svgWidth = 1200;
+  var margin = {top: 20, bottom: 100, left: 120, right: 60};
+  var svgWidth = 1240;
   var svgHeight = 700;
 
   var width=svgWidth - margin.left - margin.right;
@@ -322,7 +322,8 @@
     });
     console.log(dataArray);
 
-    createAsidePanel(dataArray.map(d => d.label).sort());
+    let labelSet = dataArray.map(d => d.label.slice(1)).sort();
+    createAsidePanel(labelSet);
 
     var monthText = svg.append('g')
                    .append('text')
@@ -397,7 +398,7 @@
     let timer = svg.append("svg:text")
       .attr("T", 0)
       .text("");
-    let totalTime = 1500;
+    let totalTime = 150000;
     let easeFunc = d3.easeLinear;
     let dateScale = d3.scaleTime()
       .domain([new Date(2015,11), new Date(2018,11)])
@@ -405,6 +406,9 @@
     initTime();
     startTime(easeFunc, totalTime, totalTime, dateScale);
 
+    let checkboxs = d3.selectAll("input");
+
+    checkboxs.on("change", checkedHandler)
     button.on("click", clickedHandler);
     anchor.call(d3.drag()
       .on("start", dragStartedHandler)
@@ -414,6 +418,15 @@
     text.on("mouseout", mouseOutHandler);
     dot.on("mouseover", mouseOverHandler);
     dot.on("mouseout", mouseOutHandler);
+
+    function checkedHandler() {
+      let selection = d3.selectAll("input[type='checkbox']:checked");
+
+      let selectedLabel = [];
+      selection.each(d => selectedLabel.push(d));
+      updateMask(selectedLabel);
+      console.log(selectedLabel);
+    }
 
     function clickedHandler() {
       buttonPlay = !buttonPlay;
@@ -464,11 +477,36 @@
     function mouseOverHandler() {
       let label = d3.select(this).attr("data-label")
 
+      let selection = d3.selectAll("input[type='checkbox']:checked");
+      let selectedLabel = [];
+      selection.each(d => selectedLabel.push(d));
       d3.selectAll(".dot")
         .filter(function(d, i) {
-          return d3.select(this).attr("data-label") !== label;
+          let testLabel = d.label.slice(1);
+          return testLabel !== label && selectedLabel.findIndex((k) => testLabel === k) < 0;
         })
-        .attr("opacity", 0.1)
+        .attr("opacity", 0.1);
+
+      d3.selectAll(".dot")
+        .filter(function(d, i) {
+          let testLabel = d.label.slice(1);
+          return testLabel === label || selectedLabel.findIndex((k) => testLabel === k) >= 0;
+        })
+        .attr("opacity", 1);
+
+      d3.selectAll(".textLabel")
+        .filter(function(d, i) {
+          let testLabel = d.label.slice(1);
+          return testLabel !== label && selectedLabel.findIndex((k) => testLabel === k) < 0;
+        })
+        .text("");
+
+      d3.selectAll(".textLabel")
+        .filter(function(d, i) {
+          let testLabel = d.label.slice(1);
+          return testLabel === label || selectedLabel.findIndex((k) => testLabel === k) >= 0;
+        })
+        .text(d => d.label.slice(1));
 
       d3.selectAll(".cursor")
         .selectAll(`line[data-label = ${label}]`)
@@ -487,11 +525,10 @@
     function mouseOutHandler() {
       let label = d3.select(this).attr("data-label")
 
-      d3.selectAll(".dot")
-        .filter(function(d, i) {
-          return d3.select(this).attr("data-label") !== label;
-        })
-        .attr("opacity", 1)
+      let selection = d3.selectAll("input[type='checkbox']:checked");
+      let selectedLabel = [];
+      selection.each(d => selectedLabel.push(d));
+      updateMask(selectedLabel);
 
       d3.selectAll(".cursor")
         .selectAll(`line[data-label = ${label}]`)
@@ -634,6 +671,32 @@
         .html(d => d);
 
       document.querySelector("div.aside").style.overflow = "auto";
+    }
+
+    function updateMask(selectedLabel) {
+      d3.selectAll(".dot")
+        .filter(function(d, i) {
+          return selectedLabel.findIndex((label) => label === d3.select(this).attr("data-label")) < 0;
+        })
+        .attr("opacity", 0.1);
+
+      d3.selectAll(".dot")
+        .filter(function(d, i) {
+          return selectedLabel.findIndex((label) => label === d3.select(this).attr("data-label")) >= 0;
+        })
+        .attr("opacity", 1);
+
+      d3.selectAll(".textLabel")
+        .filter(function(d, i) {
+          return selectedLabel.findIndex((label) => label === d3.select(this).attr("data-label")) < 0;
+        })
+        .text("");
+
+      d3.selectAll(".textLabel")
+        .filter(function(d, i) {
+          return selectedLabel.findIndex((label) => label === d3.select(this).attr("data-label")) >= 0;
+        })
+        .text(d => d.label.slice(1));
     }
 
   });
