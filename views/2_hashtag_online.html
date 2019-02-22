@@ -412,7 +412,8 @@
     let checkboxs = d3.selectAll("input");
 
     checkboxs.on("change", checkedHandler)
-    button.on("click", clickedHandler);
+    button.on("click", buttonClickedHandler);
+    slider.on("click", sliderClickedHandler);
     anchor.call(d3.drag()
       .on("start", dragStartedHandler)
       .on("drag", draggedHandler)
@@ -432,7 +433,7 @@
       console.log(selectedLabel);
     }
 
-    function clickedHandler() {
+    function buttonClickedHandler() {
       buttonPlay = !buttonPlay;
       button.attr("xlink:href", d => `public/data/bubble/${buttonPlay ? 'play' : 'pause'}.svg`);
       if (!buttonPlay) {
@@ -443,6 +444,28 @@
         startTime(easeFunc, totalTime, timeTodo, dateScale);
         disableCursor();
       }
+    }
+
+    function sliderClickedHandler() {
+      stopTime();
+
+      let anchorScale = d3.scaleLinear()
+        .domain([0, width])
+        .range([0, totalTime]);
+
+      let offset = parseFloat(d3.select(".video-slider").attr("x"));
+      let minCXPos = offset + anchorScale.domain()[0];
+      let maxCXPos = offset + anchorScale.domain()[1];
+      let currentCXPos = Math.max(minCXPos, d3.event.x);
+      currentCXPos = Math.min(maxCXPos, currentCXPos);
+
+      d3.select(this)
+        .attr("cx", currentCXPos);
+
+      let currentTime = anchorScale(currentCXPos - offset);
+      setTime(currentTime);
+
+      startTime(easeFunc, totalTime, totalTime - currentTime, dateScale);
     }
 
     function dragStartedHandler() {
@@ -477,7 +500,7 @@
       let timeTodo = totalTime - getTime();
       startTime(easeFunc, totalTime, timeTodo, dateScale);
 
-      button.on("click", clickedHandler);
+      button.on("click", buttonClickedHandler);
     }
 
     function mouseOverHandler() {
@@ -574,7 +597,7 @@
        .tween('time', () => {
         return function(t) {
           var month = d3.interpolateDate(dateScale.invert(totalTime - timeTodo), new Date(2018,11));
-          console.log(month(t));
+          // console.log(month(t));
           tweenYear(month(t));
         }
       });
