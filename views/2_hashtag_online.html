@@ -132,11 +132,11 @@
             .range([0,(width-30)/7,(width-30)*2/7,(width-30)*3/7,(width-30)*4/7,(width-30)*5/7,(width-30)*6/7,width-30,width])
             // .range([height,(height-30)*6/7+30,(height-30)*5/7+30,(height-30)*4/7+30,(height-30)*3/7+30,(height-30)*2/7+30,(height-30)/7+30, 30,0]);
   var r = d3.scaleLinear()
-            .domain([0, 0.365010869, 0.5, 2 / 3, 1])
-            .range([25, 20, 17, 20, 25]);
+            .domain([0, 0.365010869, (0.365010869 + 2 / 3) / 2, 2 / 3, 1])
+            .range([25, 7, 25, 7, 25]);
   var color = d3.scaleQuantile()
-                .domain([0, 0.365010869, 2 / 3, 1])
-                .range(["#1B6AA5", "#8A949B","#E8110F" ]);
+                .domain([0, 0.365010869, (0.365010869 + 2 / 3) / 2, 2 / 3, 1])
+                .range(["#1B6AA5", "#65869E", "#A9686C", "#E8110F" ]);
 
   // axises
   var xAxis = d3.axisBottom(x)
@@ -252,77 +252,6 @@
     }
     return now[2];
   }
-  // function position(dot){
-  //   dot.attr('cx',d=>x(d.forward + 1)+margin.left)
-  //     .attr('cy',d=>{
-  //       return y(d.freq + 1)+margin.top;
-  //     })
-  //     .attr('r',d=>{
-  //     return r(d.trend);})
-  //     .style("fill", function(d) { return color(d.trend); })
-  //     .style("stroke",function(d) { return color(d.trend); })
-  //     .style("display", function(d) {
-  //       if (d.freq<50&&d.forward<2) {
-  //         d3.select(`#row-${d.label.slice(1)}`)
-  //           .classed("disabled", true);
-  //         d3.select(`#input-${d.label.slice(1)}`)
-  //           .property("disabled", true)
-  //           .property("checked", false);
-  //         updatePast(d3.select(`#input-${d.label.slice(1)}`));
-  //         return 'none';
-  //       } else {
-  //         d3.select(`#row-${d.label.slice(1)}`)
-  //           .classed("disabled", false);
-  //         d3.select(`#input-${d.label.slice(1)}`)
-  //           .property("disabled", false);
-  //         return "block";
-  //       }
-  //     });
-  // }
-
-  // function horCursorPosition(line) {
-  //   line.attr("x1", margin.left)
-  //     .attr("y1", d => y(d.freq + 1) + margin.top)
-  //     .attr("x2", d => x(d.forward + 1) + margin.left - r(d.trend))
-  //     .attr("y2", d => y(d.freq + 1) + margin.top)
-  //     // .style("display", d => {
-  //     //   if (d.freq < 50 && d.forward < 2) {
-  //     //     return "none";
-  //     //   }
-  //     // });
-  // }
-
-  // function verCursorPosition(line) {
-  //   line.attr("x1", d => x(d.forward + 1) + margin.left)
-  //     .attr("y1", d => y(d.freq + 1) + margin.top + r(d.trend))
-  //     .attr("x2", d => x(d.forward + 1) + margin.left)
-  //     .attr("y2", y.range()[0] + margin.top)
-  //     // .style("display", d => {
-  //     //   if (d.freq < 50 && d.forward < 2) {
-  //     //     return "none";
-  //     //   }
-  //     // });
-  // }
-
-  // function horTextPosition(text) {
-  //   text.attr("transform", d => `translate(${margin.left}, ${y(d.freq + 1) + margin.top})`)
-  //     .text(d => parseInt(d.freq) + 1)
-  //     // .style("display", d => {
-  //     //   if (d.freq < 50 && d.forward < 2) {
-  //     //     return "none";
-  //     //   }
-  //     // });
-  // }
-
-  // function verTextPosition(text) {
-  //   text.attr("transform", d => `translate(${x(d.forward + 1) + margin.left}, ${y.range()[0] + margin.top})`)
-  //     .text(d => parseInt(d.forward) + 1)
-  //     // .style("display", d => {
-  //     //   if (d.freq < 50 && d.forward < 2) {
-  //     //     return "none";
-  //     //   }
-  //     // });
-  // }
 
   var dataArray=[];
   d3.csv('public/data/hashtag_bubble_new.csv').then(function(data) {
@@ -415,6 +344,7 @@
             if(d.freq<50&&d.forward<2){
             return 'none';}});
     
+    let mouseoverDot = null;
     let timeline = generateTimeline(dataArray);
     let pastTimeline = initSelectionTimeline(labelSet);
     let pastCircle = initSelectionPastCircle(labelSet);
@@ -464,7 +394,6 @@
               .property("checked", false);
 
             updatePast(d3.select(`#input-${d.label.slice(1)}`));
-            updateMask(getSelectedLabel());
             return 'none';
           } else {
             d3.select(`#row-${d.label.slice(1)}`)
@@ -474,6 +403,8 @@
             return "block";
           }
         });
+
+      updateMask(getSelectedLabel());
     }
 
     function horCursorPosition(line) {
@@ -608,6 +539,8 @@
       let label = d3.select(this).attr("data-label");
       let selectedLabel = getSelectedLabel();
 
+      mouseoverDot = label;
+
       d3.selectAll(".dot")
         .filter(function(d, i) {
           let testLabel = d.label.slice(1);
@@ -653,7 +586,9 @@
     }
 
     function mouseOutHandler() {
-      let label = d3.select(this).attr("data-label")
+      let label = d3.select(this).attr("data-label");
+
+      mouseoverDot = null;
 
       let selectedLabel = getSelectedLabel();
       updateMask(selectedLabel);
@@ -900,25 +835,25 @@
 
       d3.selectAll(".dot")
         .filter(function(d, i) {
-          return selectedLabel.findIndex((label) => label === d3.select(this).attr("data-label")) < 0;
+          return selectedLabel.findIndex((label) => label === d3.select(this).attr("data-label")) < 0 && (mouseoverDot === null || d.label.slice(1) !== mouseoverDot);
         })
         .attr("opacity", 0.1);
 
       d3.selectAll(".dot")
         .filter(function(d, i) {
-          return selectedLabel.findIndex((label) => label === d3.select(this).attr("data-label")) >= 0;
+          return selectedLabel.findIndex((label) => label === d3.select(this).attr("data-label")) >= 0 || (mouseoverDot !== null && d.label.slice(1) === mouseoverDot);
         })
         .attr("opacity", 1);
 
       d3.selectAll(".textLabel")
         .filter(function(d, i) {
-          return selectedLabel.findIndex((label) => label === d3.select(this).attr("data-label")) < 0;
+          return selectedLabel.findIndex((label) => label === d3.select(this).attr("data-label")) < 0 && (mouseoverDot === null || d.label.slice(1) !== mouseoverDot);
         })
         .text("");
 
       d3.selectAll(".textLabel")
         .filter(function(d, i) {
-          return selectedLabel.findIndex((label) => label === d3.select(this).attr("data-label")) >= 0;
+          return selectedLabel.findIndex((label) => label === d3.select(this).attr("data-label")) >= 0 || (mouseoverDot !== null && d.label.slice(1) === mouseoverDot);
         })
         .text(d => d.label.slice(1));
     }
