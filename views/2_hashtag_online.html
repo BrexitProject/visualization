@@ -77,12 +77,18 @@
     }
 
     .container {
-      display: flex;
-      flex-direction: row;
+      width: 1500px;
+      height: 720px;
+      /* flex-direction: row; */
+    }
+
+    svg {
+      display: inline-block;
     }
 
     .aside {
       /* border: 1px solid black; */
+      display: inline-block;
       overflow-y: auto;
     }
 
@@ -103,9 +109,9 @@
   </div>
 </body>
 <script>
-  var margin = {top: 20, bottom: 100, left: 120, right: 60};
-  var svgWidth = 1240;
-  var svgHeight = 700;
+  var margin = {top: 20, bottom: 100, left: 80, right: 30};
+  var svgWidth = 1100;
+  var svgHeight = 750;
 
   var width=svgWidth - margin.left - margin.right;
   var height=svgHeight - margin.top - margin.bottom;
@@ -541,33 +547,35 @@
 
       mouseoverDot = label;
 
-      d3.selectAll(".dot")
-        .filter(function(d, i) {
-          let testLabel = d.label.slice(1);
-          return testLabel !== label && selectedLabel.findIndex((k) => testLabel === k) < 0;
-        })
-        .attr("opacity", 0.1);
+      updateMask(selectedLabel);
 
-      d3.selectAll(".dot")
-        .filter(function(d, i) {
-          let testLabel = d.label.slice(1);
-          return testLabel === label || selectedLabel.findIndex((k) => testLabel === k) >= 0;
-        })
-        .attr("opacity", 1);
+      // d3.selectAll(".dot")
+      //   .filter(function(d, i) {
+      //     let testLabel = d.label.slice(1);
+      //     return testLabel !== label && selectedLabel.findIndex((k) => testLabel === k) < 0;
+      //   })
+      //   .attr("opacity", 0.1);
 
-      d3.selectAll(".textLabel")
-        .filter(function(d, i) {
-          let testLabel = d.label.slice(1);
-          return testLabel !== label && selectedLabel.findIndex((k) => testLabel === k) < 0;
-        })
-        .text("");
+      // d3.selectAll(".dot")
+      //   .filter(function(d, i) {
+      //     let testLabel = d.label.slice(1);
+      //     return testLabel === label || selectedLabel.findIndex((k) => testLabel === k) >= 0;
+      //   })
+      //   .attr("opacity", 1);
 
-      d3.selectAll(".textLabel")
-        .filter(function(d, i) {
-          let testLabel = d.label.slice(1);
-          return testLabel === label || selectedLabel.findIndex((k) => testLabel === k) >= 0;
-        })
-        .text(d => d.label.slice(1));
+      // d3.selectAll(".textLabel")
+      //   .filter(function(d, i) {
+      //     let testLabel = d.label.slice(1);
+      //     return testLabel !== label && selectedLabel.findIndex((k) => testLabel === k) < 0;
+      //   })
+      //   .text("");
+
+      // d3.selectAll(".textLabel")
+      //   .filter(function(d, i) {
+      //     let testLabel = d.label.slice(1);
+      //     return testLabel === label || selectedLabel.findIndex((k) => testLabel === k) >= 0;
+      //   })
+      //   .text(d => d.label.slice(1));
 
       if (!buttonPlay) {
         d3.selectAll(".cursor")
@@ -698,14 +706,16 @@
 
           let targetCircle = d3.select(`.dot[data-label=${label}]`);
 
-          let circleEle = targetPastCircle["ele"];
-          circleEle.append("circle")
-            .attr("id", `pastCircle-${label}-${currentDate}`)
-            .attr("cx", targetCircle.attr("cx"))
-            .attr("cy", targetCircle.attr("cy"))
-            .attr("r", targetCircle.attr("r"))
-            .style("fill", targetCircle.style("fill"))
-            .style("stroke", targetCircle.style("stroke"));
+          if (targetTimeline.length > 1) {
+            let circleEle = targetPastCircle["ele"];
+            circleEle.append("circle")
+              .attr("id", `pastCircle-${label}-${currentDate}`)
+              .attr("cx", targetCircle.attr("cx"))
+              .attr("cy", targetCircle.attr("cy"))
+              .attr("r", targetCircle.attr("r"))
+              .style("fill", targetCircle.style("fill"))
+              .style("stroke", targetCircle.style("stroke"));
+          }
 
           let lineEle = targetPastLine["ele"];
           let lineData = targetPastLine["data"];
@@ -795,7 +805,7 @@
     }
 
     function createAsidePanel(labelSet) {
-      let asideWidth = 250;
+      let asideWidth = 220;
       let aside = d3.select(".container")
         .append("div")
         .attr("class", "aside")
@@ -826,10 +836,28 @@
     function updateMask(selectedLabel) {
       if (selectedLabel.length === 0) {
         d3.selectAll(".dot")
+          .filter(function(d, i) {
+            return mouseoverDot === null || d.label.slice(1) === mouseoverDot;
+          })
           .attr("opacity", 1);
 
+        d3.selectAll(".dot")
+          .filter(function(d, i) {
+            return mouseoverDot !== null && d.label.slice(1) !== mouseoverDot;
+          })
+          .attr("opacity", 0.1);
+
         d3.selectAll(".textLabel")
+          .filter(function(d, i) {
+            return mouseoverDot === null || d.label.slice(1) !== mouseoverDot;
+          })
           .text("");
+
+        d3.selectAll(".textLabel")
+          .filter(function(d, i) {
+            return mouseoverDot !== null && d.label.slice(1) === mouseoverDot;
+          })
+          .text(d => d.label.slice(1));
         return;
       }
 
