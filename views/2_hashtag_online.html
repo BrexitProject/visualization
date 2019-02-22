@@ -88,6 +88,11 @@
 
     div.labelRow {
       margin: 5px 3px, 5px, 4px;
+      background-color: rgba(144, 144, 153, 0);
+    }
+
+    div.labelRow.disabled {
+      background-color: rgba(144, 144, 153, 0.1);
     }
   </style>
   <script src="public/d3.min.js"></script>
@@ -249,16 +254,26 @@
   }
   function position(dot){
     dot.attr('cx',d=>x(d.forward + 1)+margin.left)
-       .attr('cy',d=>{
-         return y(d.freq + 1)+margin.top;
-        })
-       .attr('r',d=>{
-        return r(d.trend);})
-       .style("fill", function(d) { return color(d.trend); })
-       .style("stroke",function(d) { return color(d.trend); })
-       .style("display",function(d) {
-        if(d.freq<50&&d.forward<2){
-            return 'none';}});
+      .attr('cy',d=>{
+        return y(d.freq + 1)+margin.top;
+      })
+      .attr('r',d=>{
+      return r(d.trend);})
+      .style("fill", function(d) { return color(d.trend); })
+      .style("stroke",function(d) { return color(d.trend); })
+      .style("display", function(d) {
+        if (d.freq<50&&d.forward<2) {
+          d3.select(`#row-${d.label.slice(1)}`)
+            .classed("disabled", true);
+          d3.select(`#input-${d.label.slice(1)}`).property("disabled", true);
+          return 'none';
+        } else {
+          d3.select(`#row-${d.label.slice(1)}`)
+          .classed("disabled", false);
+          d3.select(`#input-${d.label.slice(1)}`).property("disabled", false);
+          return "block";
+        }
+      });
   }
 
   function horCursorPosition(line) {
@@ -401,7 +416,7 @@
     let timer = svg.append("svg:text")
       .attr("T", 0)
       .text("");
-    let totalTime = 15000;
+    let totalTime = 150000;
     let easeFunc = d3.easeLinear;
     let dateScale = d3.scaleTime()
       .domain([new Date(2015,11), new Date(2018,11)])
