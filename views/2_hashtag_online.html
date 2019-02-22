@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    .textLabel{
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'Georgia'
+    }
+    circle{
+      fill-opacity: 0.6;
+      stroke-width: 2px;
+      stroke-opacity: 0.8;
+    }
+    .axis path {
+      display: none;
+      stroke-width: 2px;
+      stroke: #313113;
+    }
+
+    .axis line {
+      /* display: none; */
+      stroke-width: 1px;
+      stroke: #d0d0d0;
+      /* stroke-dasharray: 4, 2; */
+    }
+
+    .axis text {
+      fill: #9090a0;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .xLabel{
+      font-size: 50px;
+      fill:#9090a0;
+      font-weight: 700;
+    }
+
+    .monthText{
+      font-family: 'Helvetica Neue';
+      font-size: 160px;
+      fill:#909099;
+      font-weight: 700;
+      fill-opacity: 0.9;
+    }
+
+    .video-slider {
+      /* stroke-width: 1px;
+      stroke: #909099; */
+      fill: #909099;
+      fill-opacity: 0.3;
+    }
+
+    .video-anchor {
+      fill: #E5AA17;
+      fill-opacity: 1;
+      stroke-width: 5px;
+      stroke: #fff;
+      stroke-opacity: 1;
+    }
+
+    .cursor {
+      stroke: black;
+      stroke-width: 1px;
+      stroke-dasharray: 4, 2;
+    }
+
+    .cursor-text {
+      font-size: 25px;
+      fill: #9090a0;
+      font-weight: bold;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: row;
+    }
+
+    .aside {
+      /* border: 1px solid black; */
+      overflow-y: auto;
+    }
+
+    div.labelRow {
+      margin: 5px 3px, 5px, 4px;
+      background-color: rgba(144, 144, 153, 0);
+    }
+
+    div.labelRow.disabled {
+      background-color: rgba(144, 144, 153, 0.1);
+    }
+  </style>
+  <script src="public/d3.min.js"></script>
+  <script src="public/labeler.js"></script>
+</head>
+<body>
+  <div class="container">
+  </div>
+</body>
+<script>
+  var margin = {top: 20, bottom: 100, left: 120, right: 60};
+  var svgWidth = 1240;
+  var svgHeight = 700;
+
+  var width=svgWidth - margin.left - margin.right;
+  var height=svgHeight - margin.top - margin.bottom;
+
+  var svg = d3.select('.container')
+            .append('svg')
+            .attr('width', svgWidth)
+            .attr('height', svgHeight);
+  // scale
+  var y = d3.scaleLinear()
+            // .domain([1, 400000])
+            // .range([height, 0])
+            // .base(5);
+            // .domain([0,100,200,500,1000,2000,5000,10000,50000,100000,150000,160000])
+            // .domain([0, 100, 250, 500, 1000, 5000, 10000, 50000, 100000, 240000, 380000, 400000])
+            .domain([0, 100, 250, 500, 1000, 4000, 7000, 10000, 50000, 100000, 380000, 400000])
+            // .range([0,(width-30)/10,(width-30)*2/10,(width-30)*3/10,(width-30)*4/10,(width-30)*5/10,(width-30)*6/10,(width-30)*7/10,(width-30)*8/10,(width-30)*9/10,width-30,width]);
+            .range([height,(height-30)*9/10+30,(height-30)*8/10+30,(height-30)*7/10+30,(height-30)*6/10+30,(height-30)*5/10+30,(height-30)*4/10+30,(height-30)*3/10+30,(height-30)*2/10+30,(height-30)/10+30, 30,0]);
+  var x = d3.scaleLinear()
+            // .domain([1, 4096])
+            // .range([0, width])
+            // .base(2);
+            .domain([0, 10, 50, 75, 100, 600, 1200, 2400])
+            .range([0,(width-30)/7,(width-30)*2/7,(width-30)*3/7,(width-30)*4/7,(width-30)*5/7,(width-30)*6/7,width-30,width])
+            // .range([height,(height-30)*6/7+30,(height-30)*5/7+30,(height-30)*4/7+30,(height-30)*3/7+30,(height-30)*2/7+30,(height-30)/7+30, 30,0]);
+  var r = d3.scaleLinear()
+            .domain([0, 0.365010869, 0.5, 2 / 3, 1])
+            .range([25, 20, 17, 20, 25]);
+  var color = d3.scaleQuantile()
+                .domain([0, 0.365010869, 2 / 3, 1])
+                .range(["#1B6AA5", "#8A949B","#E8110F" ]);
+
+  // axises
+  var xAxis = d3.axisBottom(x)
+                .tickSize(-height)
+                // .tickValues([0, 10, 25, 50, 100, 500, 1000, 2400]);
+                .tickValues([0, 10, 50, 75, 100, 600, 1200, 2400]);
+                // .tickValues([0,5,20,50,100,200,500,1000]); 
+                // .tickValues([0,50,100,200,500,1000,2000,5000,10000,100000,150000]);
+
+  var yAxis = d3.axisLeft(y)
+                .tickSize(-width)
+                .tickValues([0, 250, 1000, 7000, 50000, 380000])
+                // .tickValues([1, 5, 25, 125, 625, 3125, 15625, 78125, 390625]);
+                // .tickValues([0, 100, 250, 500, 1000, 4000, 7000, 10000, 50000, 100000, 380000]);
+                // .tickValues([0,5,10,20,50,100,200,1000]); 
+                // .tickValues([0,100,200,500,1000,2000,5000,10000,50000,100000,150000]);
+  let buttonSize = 40;
+  let buttonPlay = true;
+  let videoYOffset = 30;
+  let button = svg.append("image")
+    .attr("class", "video-button")                              
+    .attr('width', buttonSize)                     
+    .attr('height', buttonSize)  
+    .attr("xlink:href", d => `public/data/bubble/${buttonPlay ? 'play' : 'pause'}.svg`)
+    .attr("transform", `translate(${margin.left - buttonSize - 15},${margin.top + height + videoYOffset})`);
+
+  let sliderHeight = 10;
+  let borderRadius = 5;
+  let slider = svg.append("rect")
+    .attr("class", "video-slider")
+    .attr("x", margin.left)
+    .attr("y", margin.top + height + videoYOffset + buttonSize / 2 - sliderHeight / 2)
+    .attr("width", width)
+    .attr("height", sliderHeight)
+    .attr("rx", borderRadius)
+    .attr("ry", borderRadius);
+
+  let anchorRadius = 10;
+  let anchor = svg.append("circle")
+    .attr("class", "video-anchor")
+    .attr("cx", margin.left)
+    .attr("cy", margin.top + height + videoYOffset + buttonSize / 2)
+    .attr("r", anchorRadius);
+
+  svg.append("g")
+    .attr("transform", `translate(${margin.left},${margin.top+height})`)
+    .call(xAxis)
+    .attr('class','axis')
+    .selectAll("text")
+    .attr('dy',16)
+    .style("text-anchor", "middle");
+  svg.append("text")             
+      .attr("transform",
+            "translate(" + (width-140) + " ," + 
+                           (height + margin.top-10) + ")")
+      .style("text-anchor", "start")
+      .text("Tweet")
+      .attr('class','xLabel');
+  svg.append("g")
+     .attr("transform", `translate(${margin.left},${margin.top})`)
+     .attr('class','axis')
+     .call(yAxis);
+  svg.append('g')
+      .attr("transform",`translate(${margin.left+42},${margin.top+8})`)
+      .append("text")             
+      .attr("transform",
+            "rotate(270)")
+      .style("text-anchor", "end")
+      .text("Retweet")
+      .attr('class','xLabel');
+
+  var bisect = d3.bisector(function(d) { return d[0]; });
+  
+  function parseDate(str){
+    var y = str.substr(0,4),
+        m = str.substr(4,2)-1,
+        d = str.substr(6,2);
+    if(d) return new Date(y,m,d);
+    return new Date(y,m,1);
+  }
+  function getDataByMonth(data,time){
+    return data.map(d=>{
+      return {
+        label: d.label,
+        forward: findFreqByMonth(d.value,time),
+        freq: findForwardByMonth(d.value,time),
+        time: time,
+        trend: d.trend
+      }
+    })
+  }
+  function findFreqByMonth(data,time){
+    let index = bisect.left(data,time);
+    let now = data[index];
+    if (index > 0) {
+      let last = data[index-1];
+      let timeScale = d3.scaleLinear()
+            .domain([last[0], now[0]])
+            .range([last[1],now[1]]);
+      return timeScale(time);
+    }
+    return now[1];
+  }
+  function findForwardByMonth(data,time){
+    let index = bisect.left(data,time);
+    let now = data[index];
+    if (index > 0) {
+      let last = data[index-1];
+      let timeScale = d3.scaleLinear()
+            .domain([last[0], now[0]])
+            .range([last[2],now[2]]);
+      return timeScale(time);
+    }
+    return now[2];
+  }
+  // function position(dot){
+  //   dot.attr('cx',d=>x(d.forward + 1)+margin.left)
+  //     .attr('cy',d=>{
+  //       return y(d.freq + 1)+margin.top;
+  //     })
+  //     .attr('r',d=>{
+  //     return r(d.trend);})
+  //     .style("fill", function(d) { return color(d.trend); })
+  //     .style("stroke",function(d) { return color(d.trend); })
+  //     .style("display", function(d) {
+  //       if (d.freq<50&&d.forward<2) {
+  //         d3.select(`#row-${d.label.slice(1)}`)
+  //           .classed("disabled", true);
+  //         d3.select(`#input-${d.label.slice(1)}`)
+  //           .property("disabled", true)
+  //           .property("checked", false);
+  //         updatePast(d3.select(`#input-${d.label.slice(1)}`));
+  //         return 'none';
+  //       } else {
+  //         d3.select(`#row-${d.label.slice(1)}`)
+  //           .classed("disabled", false);
+  //         d3.select(`#input-${d.label.slice(1)}`)
+  //           .property("disabled", false);
+  //         return "block";
+  //       }
+  //     });
+  // }
+
+  // function horCursorPosition(line) {
+  //   line.attr("x1", margin.left)
+  //     .attr("y1", d => y(d.freq + 1) + margin.top)
+  //     .attr("x2", d => x(d.forward + 1) + margin.left - r(d.trend))
+  //     .attr("y2", d => y(d.freq + 1) + margin.top)
+  //     // .style("display", d => {
+  //     //   if (d.freq < 50 && d.forward < 2) {
+  //     //     return "none";
+  //     //   }
+  //     // });
+  // }
+
+  // function verCursorPosition(line) {
+  //   line.attr("x1", d => x(d.forward + 1) + margin.left)
+  //     .attr("y1", d => y(d.freq + 1) + margin.top + r(d.trend))
+  //     .attr("x2", d => x(d.forward + 1) + margin.left)
+  //     .attr("y2", y.range()[0] + margin.top)
+  //     // .style("display", d => {
+  //     //   if (d.freq < 50 && d.forward < 2) {
+  //     //     return "none";
+  //     //   }
+  //     // });
+  // }
+
+  // function horTextPosition(text) {
+  //   text.attr("transform", d => `translate(${margin.left}, ${y(d.freq + 1) + margin.top})`)
+  //     .text(d => parseInt(d.freq) + 1)
+  //     // .style("display", d => {
+  //     //   if (d.freq < 50 && d.forward < 2) {
+  //     //     return "none";
+  //     //   }
+  //     // });
+  // }
+
+  // function verTextPosition(text) {
+  //   text.attr("transform", d => `translate(${x(d.forward + 1) + margin.left}, ${y.range()[0] + margin.top})`)
+  //     .text(d => parseInt(d.forward) + 1)
+  //     // .style("display", d => {
+  //     //   if (d.freq < 50 && d.forward < 2) {
+  //     //     return "none";
+  //     //   }
+  //     // });
+  // }
+
+  var dataArray=[];
+  d3.csv('public/data/hashtag_bubble_new.csv').then(function(data) {
+    console.log(data);
+    data.forEach(d => {
+      let tmp={};
+      tmp.label=d.hashtag.trim();
+      tmp.trend=d.trend.trim();
+      tmp.value=[];
+      for(let label in d){
+        if(label!=='hashtag'&&label!=='trend'&&label.substr(0,2)!=='re'){
+          tmp.value.push([parseDate(label),parseInt(d[label]),parseInt(d['re'+label])]);
+        }
+      }
+      tmp.value.sort((a,b)=> a[0]-b[0]);
+      dataArray.push(tmp);
+    });
+    console.log(dataArray);
+
+    let labelSet = dataArray.map(d => d.label.slice(1)).sort();
+    createAsidePanel(labelSet);
+
+    var monthText = svg.append('g')
+                   .append('text')
+                   .attr('x',margin.left+60)
+                   .attr('y',margin.top+160)
+                   .attr('class','monthText');
+    // Add a dot per state. Initialize the data at 1950, and set the colors.
+	  var dot = svg.append("g")
+					.attr("class", "dots")
+          .selectAll(".dot")
+          .data(getDataByMonth(dataArray,new Date(2015,11)))
+          .enter().append("circle")
+          .attr("class", "dot")
+          .attr("data-label", d => d.label.slice(1));
+
+    let cursorLines = svg.append("g")
+      .attr("class", "cursor")
+    let horizontalCursor = cursorLines.selectAll(".horizontal")
+      .data(getDataByMonth(dataArray,new Date(2015,11)))
+      .enter()
+      .append("line")
+      .attr("class", "horizontal")
+      .attr("data-label", d => d.label.slice(1))
+      .attr("stroke-opacity", 0);
+    let verticalCursor = cursorLines.selectAll(".vertical")
+      .data(getDataByMonth(dataArray,new Date(2015,11)))
+      .enter()
+      .append("line")
+      .attr("class", "vertical")
+      .attr("data-label", d => d.label.slice(1))
+      .attr("stroke-opacity", 0);
+    
+    let cursorText = svg.append("g")
+      .attr("class", "cursor-text")
+    let horizontalText = cursorText.selectAll(".horizontal")
+      .data(getDataByMonth(dataArray,new Date(2015,11)))
+      .enter()
+      .append("text")
+      .attr("class", "horizontal")
+      .attr("data-label", d => d.label.slice(1))
+      .attr("text-anchor", "end")
+      .attr("dominant-baseline", "baseline")
+      .style("fill-opacity", 0);
+    let verticalText = cursorText.selectAll(".vertical")
+      .data(getDataByMonth(dataArray,new Date(2015,11)))
+      .enter()
+      .append("text")
+      .attr("class", "vertical")
+      .attr("data-label", d => d.label.slice(1))
+      .attr("text-anchor", "middle")
+      .attr("dominant-baseline", "hanging")
+      .style("fill-opacity", 0);
+
+    var text = svg.append("g")
+          .selectAll(".text")
+          .data(getDataByMonth(dataArray,new Date(2015,11)))
+          .enter().append("text")
+          .attr("class", "textLabel")
+          .attr("x", function(d) {
+            return d.x;
+          }).attr("y", function(d) {
+            return d.y;
+          })
+          .attr("data-label", d => d.label.slice(1))
+          .text("")
+          .style("text-anchor", "middle")
+          .style("fill", function(d) { return "#242424"; })
+          .style("display",function(d) {
+            if(d.freq<50&&d.forward<2){
+            return 'none';}});
+    
+    let timeline = generateTimeline(dataArray);
+    let pastTimeline = initSelectionTimeline(labelSet);
+    let pastCircle = initSelectionPastCircle(labelSet);
+    let pastLine = initSelectionPastLine(labelSet);
+
+    let timer = svg.append("svg:text")
+      .attr("T", 0)
+      .text("");
+    let totalTime = 150000;
+    let easeFunc = d3.easeLinear;
+    let dateScale = d3.scaleTime()
+      .domain([new Date(2015,11), new Date(2018,11)])
+      .range([0, totalTime]);
+    initTime();
+    startTime(easeFunc, totalTime, totalTime, dateScale);
+    disableCursor();
+
+    let checkboxs = d3.selectAll("input");
+
+    checkboxs.on("change", checkedHandler)
+    button.on("click", buttonClickedHandler);
+    slider.on("click", sliderClickedHandler);
+    anchor.call(d3.drag()
+      .on("start", dragStartedHandler)
+      .on("drag", draggedHandler)
+      .on("end", dragendedHandler));
+    text.on("mouseover", mouseOverHandler);
+    text.on("mouseout", mouseOutHandler);
+    dot.on("mouseover", mouseOverHandler);
+    dot.on("mouseout", mouseOutHandler);
+
+    function position(dot) {
+      dot.attr('cx',d=>x(d.forward + 1)+margin.left)
+        .attr('cy',d=>{
+          return y(d.freq + 1)+margin.top;
+        })
+        .attr('r',d=>{
+        return r(d.trend);})
+        .style("fill", function(d) { return color(d.trend); })
+        .style("stroke",function(d) { return color(d.trend); })
+        .style("display", function(d) {
+          if (d.freq<50&&d.forward<2) {
+            d3.select(`#row-${d.label.slice(1)}`)
+              .classed("disabled", true);
+            d3.select(`#input-${d.label.slice(1)}`)
+              .property("disabled", true)
+              .property("checked", false);
+
+            updatePast(d3.select(`#input-${d.label.slice(1)}`));
+            updateMask(getSelectedLabel());
+            return 'none';
+          } else {
+            d3.select(`#row-${d.label.slice(1)}`)
+              .classed("disabled", false);
+            d3.select(`#input-${d.label.slice(1)}`)
+              .property("disabled", false);
+            return "block";
+          }
+        });
+    }
+
+    function horCursorPosition(line) {
+      line.attr("x1", margin.left)
+        .attr("y1", d => y(d.freq + 1) + margin.top)
+        .attr("x2", d => x(d.forward + 1) + margin.left - r(d.trend))
+        .attr("y2", d => y(d.freq + 1) + margin.top)
+        // .style("display", d => {
+        //   if (d.freq < 50 && d.forward < 2) {
+        //     return "none";
+        //   }
+        // });
+    }
+
+    function verCursorPosition(line) {
+      line.attr("x1", d => x(d.forward + 1) + margin.left)
+        .attr("y1", d => y(d.freq + 1) + margin.top + r(d.trend))
+        .attr("x2", d => x(d.forward + 1) + margin.left)
+        .attr("y2", y.range()[0] + margin.top)
+        // .style("display", d => {
+        //   if (d.freq < 50 && d.forward < 2) {
+        //     return "none";
+        //   }
+        // });
+    }
+
+    function horTextPosition(text) {
+      text.attr("transform", d => `translate(${margin.left}, ${y(d.freq + 1) + margin.top})`)
+        .text(d => parseInt(d.freq) + 1)
+        // .style("display", d => {
+        //   if (d.freq < 50 && d.forward < 2) {
+        //     return "none";
+        //   }
+        // });
+    }
+
+    function verTextPosition(text) {
+      text.attr("transform", d => `translate(${x(d.forward + 1) + margin.left}, ${y.range()[0] + margin.top})`)
+        .text(d => parseInt(d.forward) + 1)
+        // .style("display", d => {
+        //   if (d.freq < 50 && d.forward < 2) {
+        //     return "none";
+        //   }
+        // });
+    }
+
+    function checkedHandler() {
+      let selectedLabel = getSelectedLabel();
+      let currentTime = getTime();
+      let currentDate = dateScale.invert(currentTime);
+
+      updateMask(selectedLabel);
+      updatePast(d3.select(this), currentDate, timeline);
+      console.log(selectedLabel);
+    }
+
+    function buttonClickedHandler() {
+      buttonPlay = !buttonPlay;
+      button.attr("xlink:href", d => `public/data/bubble/${buttonPlay ? 'play' : 'pause'}.svg`);
+      if (!buttonPlay) {
+        stopTime();
+        enableCursor();
+      } else {
+        let timeTodo = totalTime - getTime();
+        startTime(easeFunc, totalTime, timeTodo, dateScale);
+        disableCursor();
+      }
+    }
+
+    function sliderClickedHandler() {
+      buttonPlay = false;
+      button.attr("xlink:href", d => `public/data/bubble/${buttonPlay ? 'play' : 'pause'}.svg`);
+      stopTime();
+
+      let anchorScale = d3.scaleLinear()
+        .domain([0, width])
+        .range([0, totalTime]);
+
+      let offset = parseFloat(d3.select(".video-slider").attr("x"));
+      let minCXPos = offset + anchorScale.domain()[0];
+      let maxCXPos = offset + anchorScale.domain()[1];
+      let currentCXPos = Math.max(minCXPos, d3.event.x);
+      currentCXPos = Math.min(maxCXPos, currentCXPos);
+
+      d3.select(this)
+        .attr("cx", currentCXPos);
+
+      let currentTime = anchorScale(currentCXPos - offset);
+      setTime(currentTime);
+
+      startTime(easeFunc, totalTime, totalTime - currentTime, dateScale);
+      buttonPlay = true;
+      button.attr("xlink:href", d => `public/data/bubble/${buttonPlay ? 'play' : 'pause'}.svg`);
+    }
+
+    function dragStartedHandler() {
+      button.on("click", null);
+
+      buttonPlay = false;
+      button.attr("xlink:href", d => `public/data/bubble/${buttonPlay ? 'play' : 'pause'}.svg`);
+      stopTime();
+    }
+
+    function draggedHandler() {
+      let anchorScale = d3.scaleLinear()
+        .domain([0, width])
+        .range([0, totalTime]);
+
+      let offset = parseFloat(d3.select(".video-slider").attr("x"));
+      let minCXPos = offset + anchorScale.domain()[0];
+      let maxCXPos = offset + anchorScale.domain()[1];
+      let currentCXPos = Math.max(minCXPos, d3.event.x);
+      currentCXPos = Math.min(maxCXPos, currentCXPos);
+
+      d3.select(this)
+        .attr("cx", currentCXPos);
+
+      let currentTime = anchorScale(currentCXPos - offset);
+      setTime(currentTime);
+    }
+
+    function dragendedHandler() {
+      buttonPlay = true;
+      button.attr("xlink:href", d => `public/data/bubble/${buttonPlay ? 'play' : 'pause'}.svg`);
+      let timeTodo = totalTime - getTime();
+      startTime(easeFunc, totalTime, timeTodo, dateScale);
+
+      button.on("click", buttonClickedHandler);
+    }
+
+    function mouseOverHandler() {
+      let label = d3.select(this).attr("data-label");
+      let selectedLabel = getSelectedLabel();
+
+      d3.selectAll(".dot")
+        .filter(function(d, i) {
+          let testLabel = d.label.slice(1);
+          return testLabel !== label && selectedLabel.findIndex((k) => testLabel === k) < 0;
+        })
+        .attr("opacity", 0.1);
+
+      d3.selectAll(".dot")
+        .filter(function(d, i) {
+          let testLabel = d.label.slice(1);
+          return testLabel === label || selectedLabel.findIndex((k) => testLabel === k) >= 0;
+        })
+        .attr("opacity", 1);
+
+      d3.selectAll(".textLabel")
+        .filter(function(d, i) {
+          let testLabel = d.label.slice(1);
+          return testLabel !== label && selectedLabel.findIndex((k) => testLabel === k) < 0;
+        })
+        .text("");
+
+      d3.selectAll(".textLabel")
+        .filter(function(d, i) {
+          let testLabel = d.label.slice(1);
+          return testLabel === label || selectedLabel.findIndex((k) => testLabel === k) >= 0;
+        })
+        .text(d => d.label.slice(1));
+
+      if (!buttonPlay) {
+        d3.selectAll(".cursor")
+          .selectAll(`line[data-label = ${label}]`)
+          .attr("stroke-opacity", 1);
+
+        d3.selectAll(".cursor-text")
+          .selectAll(`text[data-label = ${label}]`)
+          .style("fill-opacity", 1);
+
+        d3.selectAll("g.axis")
+          .selectAll("g.tick")
+          .selectAll("text")
+          .style("display", "none");
+      }
+    }
+
+    function mouseOutHandler() {
+      let label = d3.select(this).attr("data-label")
+
+      let selectedLabel = getSelectedLabel();
+      updateMask(selectedLabel);
+
+      if (!buttonPlay) {
+        d3.selectAll(".cursor")
+          .selectAll(`line[data-label = ${label}]`)
+          .attr("stroke-opacity", 0);
+
+        d3.selectAll(".cursor-text")
+          .selectAll(`text[data-label = ${label}]`)
+          .style("fill-opacity", 0);
+
+        d3.selectAll("g.axis")
+          .selectAll("g.tick")
+          .selectAll("text")
+          .style("display", "block");
+      }
+    }
+
+    function initTime(totalTime, easeFunc) {
+      resetTime();
+    }
+
+    function resetTime() {
+      timer.attr("T", 0);
+    }
+
+    function startTime(ease, totalTime, timeTodo, dateScale) {
+      timer.transition()
+        .duration(timeTodo)
+        .ease(easeFunc)
+        .attr("T", totalTime);
+
+      svg.transition()
+       .duration(timeTodo)
+       .ease(easeFunc)
+       .tween('time', () => {
+        return function(t) {
+          var month = d3.interpolateDate(dateScale.invert(totalTime - timeTodo), new Date(2018,11));
+          // console.log(month(t));
+          tweenYear(month(t));
+        }
+      });
+    }
+
+    function stopTime() {
+      timer.transition()
+        .duration(0);
+      svg.transition()
+        .duration(0);
+    }
+
+    function getTime() {
+      return timer.attr("T");
+    }
+
+    function setTime(currentTime) {
+      timer.attr("T", currentTime);
+    }
+
+    function tweenYear(year) {
+      dot.data(getDataByMonth(dataArray,year)).call(position);
+
+      updateTraj(year);
+
+      horizontalCursor.data(getDataByMonth(dataArray,year)).call(horCursorPosition);
+      verticalCursor.data(getDataByMonth(dataArray,year)).call(verCursorPosition);
+      horizontalText.data(getDataByMonth(dataArray,year)).call(horTextPosition);
+      verticalText.data(getDataByMonth(dataArray,year)).call(verTextPosition);
+      textPosition(getDataByMonth(dataArray,year));
+
+      if (year <= new Date(2018,11)) {
+        let tmpYear = new Date(year);
+        year.setMonth(year.getMonth() + 1);
+        if (+year === +new Date(2019, 0)) {
+          monthText.text(tmpYear.getFullYear()+'/'+(tmpYear.getMonth()+1));
+        } else {
+          monthText.text(year.getFullYear()+'/'+(year.getMonth()+1));
+        }
+      }
+      let tmpYear = new Date(year);
+      updateVideoAnchor(tmpYear);
+    }
+
+    function updateTraj(currentDate) {
+      let selectedLabel = getSelectedLabel();
+
+      selectedLabel.forEach(label => {
+        let targetTimeline = pastTimeline[label];
+        let targetPastCircle = pastCircle[label];
+        let targetPastLine = pastLine[label];
+
+        if (targetTimeline.length > 0 && currentDate >= targetTimeline[0]) {
+          // let circleEle = targetPastCircle["ele"];
+          // let circleData = targetPastCircle["data"];
+          // if (circleData.length > 0) {
+          //   let datum = circleData[circleData.length - 1];
+          //   circleEle.append("circle")
+          //     .attr("id", `pastCircle-${label}-${currentDate}`)
+          //     .attr("cx", datum.cx)
+          //     .attr("cy", datum.cy)
+          //     .attr("r", datum.r)
+          //     .style("fill", datum.fill)
+          //     .style("stroke", datum.fill);
+          // }
+
+          let targetCircle = d3.select(`.dot[data-label=${label}]`);
+
+          let circleEle = targetPastCircle["ele"];
+          circleEle.append("circle")
+            .attr("id", `pastCircle-${label}-${currentDate}`)
+            .attr("cx", targetCircle.attr("cx"))
+            .attr("cy", targetCircle.attr("cy"))
+            .attr("r", targetCircle.attr("r"))
+            .style("fill", targetCircle.style("fill"))
+            .style("stroke", targetCircle.style("stroke"));
+
+          let lineEle = targetPastLine["ele"];
+          let lineData = targetPastLine["data"];
+          if (lineData.length > 0) {
+            let datum = lineData[lineData.length - 1];
+            let lineCoord = computeCoord(datum.x, datum.y, datum.r, targetCircle.attr("cx"), targetCircle.attr("cy"), targetCircle.attr("r"));
+            lineEle.append("line")
+              .attr("id", `pastLine-${label}-${currentDate}`)
+              .attr("x1", lineCoord.x1)
+              .attr("y1", lineCoord.y1)
+              .attr("x2", lineCoord.x2)
+              .attr("y2", lineCoord.y2)
+              .style("stroke", datum.stroke);
+          }
+
+          pastCircle[label]["data"].push({
+            cx: targetCircle.attr("cx"),
+            cy: targetCircle.attr("cy"),
+            r: targetCircle.attr("r"),
+            fill: targetCircle.style("fill"),
+          });
+          pastLine[label]["data"].push({
+            x: targetCircle.attr("cx"),
+            y: targetCircle.attr("cy"),
+            r: targetCircle.attr("r"),
+            stroke: targetCircle.style("stroke"),
+          });
+
+          targetTimeline.shift();
+        }
+      });
+    }
+
+    function computeCoord(x1, y1, r1, x2, y2, r2) {
+      x1 = parseFloat(x1); y1 = parseFloat(y1); r1 = parseFloat(r1);
+      x2 = parseFloat(x2); y2 = parseFloat(y2); r2 = parseFloat(r2);
+      let dist = Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2);
+
+      let lineCoord = {
+        x1: x1 + (x2 - x1) * r1 / dist,
+        y1: y1 + (y2 - y1) * r1 / dist,
+        x2: x2 + (x1 - x2) * r2 / dist,
+        y2: y2 + (y1 - y2) * r2 / dist,
+      };
+
+      return lineCoord;
+    }
+
+    function updateVideoAnchor(date) {
+      let width = d3.select(".video-slider").attr("width");
+      let timeScale = d3.scaleTime()
+        .domain([new Date(2016, 0), new Date(2018, 11)])
+        .range([0, width]);
+      let pos = parseFloat(timeScale(date));
+      pos = Math.min(pos, width);
+      d3.select(".video-anchor")
+        .attr("cx", pos + parseFloat(d3.select(".video-slider").attr("x")));
+    }
+
+    function textPosition(textData){
+      text.data(textData).each(function(d) {
+        d.width = this.getBBox().width;
+        d.x = x(d.forward + 1)+margin.left;
+        d.y = y(d.freq + 1)+margin.top;
+        d.r = r(d.trend);
+        d.height = this.getBBox().height;
+      })
+
+      var labels = d3.labeler()
+               .label(textData)
+               .anchor(textData)
+               .width(width)
+            .height(height)
+            .start(0);;
+
+      text.attr("x", function(d) {
+          return d.x;
+        }).attr("y", function(d) {
+          return d.y;
+        })
+        // .text("")
+        .style("text-anchor", "middle")
+        .style("fill", function(d) { return "#242424"; })
+        .style("display",function(d) {
+          if(d.freq<50&&d.forward<2){
+            return 'none';}});
+    }
+
+    function createAsidePanel(labelSet) {
+      let asideWidth = 250;
+      let aside = d3.select(".container")
+        .append("div")
+        .attr("class", "aside")
+      document.querySelector("div.aside").style.width = `${asideWidth}px`;
+      document.querySelector("div.aside").style.height = `${anchor.attr("cy")}px`;
+      document.querySelector("div.aside").style.margin = `${margin.top}px 0 ${svgHeight - anchor.attr("cy")}px 0`;
+
+      let rows = aside.selectAll(".labelRow")
+        .data(labelSet)
+        .enter()
+        .append("div")
+        .attr("class", "labelRow")
+        .attr("id", d => `row-${d}`);
+
+      rows.append("input")
+        .attr("type", "checkbox")
+        .attr("name", d => d)
+        .attr("id", d => `input-${d}`);
+
+      rows.append("label")
+        .attr("id", d => `label-${d}`)
+        .attr("for", d => d)
+        .html(d => d);
+
+      document.querySelector("div.aside").style.overflow = "auto";
+    }
+
+    function updateMask(selectedLabel) {
+      if (selectedLabel.length === 0) {
+        d3.selectAll(".dot")
+          .attr("opacity", 1);
+
+        d3.selectAll(".textLabel")
+          .text("");
+        return;
+      }
+
+      d3.selectAll(".dot")
+        .filter(function(d, i) {
+          return selectedLabel.findIndex((label) => label === d3.select(this).attr("data-label")) < 0;
+        })
+        .attr("opacity", 0.1);
+
+      d3.selectAll(".dot")
+        .filter(function(d, i) {
+          return selectedLabel.findIndex((label) => label === d3.select(this).attr("data-label")) >= 0;
+        })
+        .attr("opacity", 1);
+
+      d3.selectAll(".textLabel")
+        .filter(function(d, i) {
+          return selectedLabel.findIndex((label) => label === d3.select(this).attr("data-label")) < 0;
+        })
+        .text("");
+
+      d3.selectAll(".textLabel")
+        .filter(function(d, i) {
+          return selectedLabel.findIndex((label) => label === d3.select(this).attr("data-label")) >= 0;
+        })
+        .text(d => d.label.slice(1));
+    }
+
+    function enableCursor() {
+      horizontalCursor.style("display", d => {
+        if (d.freq < 50 && d.forward < 2) {
+          return "none";
+        } else {
+          return "block";
+        }
+      });
+      verticalCursor.style("display", d => {
+        if (d.freq < 50 && d.forward < 2) {
+          return "none";
+        } else {
+          return "block";
+        }
+      });
+      horizontalText.style("display", d => {
+        if (d.freq < 50 && d.forward < 2) {
+          return "none";
+        } else {
+          return "block";
+        }
+      });
+      verticalText.style("display", d => {
+        if (d.freq < 50 && d.forward < 2) {
+          return "none";
+        } else {
+          return "block";
+        }
+      });
+    }
+
+    function disableCursor() {
+      horizontalCursor.style("display", "none");
+      verticalCursor.style("display", "none");
+      horizontalText.style("display", "none");
+      verticalText.style("display", "none");
+    }
+
+    function getSelectedLabel() {
+      let selection = d3.selectAll("input[type='checkbox']:checked");
+
+      let selectedLabel = [];
+      selection.each(d => selectedLabel.push(d));
+
+      return selectedLabel;
+    }
+
+    function generateTimeline(dataArray) {
+      let timeline = dataArray[0]["value"].map(d => d[0]);
+      return timeline;
+    }
+
+    function initSelectionTimeline(labelSet) {
+      let pastTimeline = {};
+
+      labelSet.forEach(label => pastTimeline[label] = []);
+
+      return pastTimeline;
+    }
+
+    function initSelectionPastCircle(labelSet) {
+      let pastCircle = {};
+      let gPastCircle = svg.append("g")
+        .attr("class", "pastCircle");
+      labelSet.forEach(label => pastCircle[label] = {
+        ele: gPastCircle.append("g")
+          .attr("class", `pastCircle-${label}`),
+        data: [],
+      });
+
+      return pastCircle;
+    }
+
+    function initSelectionPastLine(labelSet) {
+      let pastLine = {};
+      let gPastLine = svg.append("g")
+        .attr("class", "pastLine");
+      labelSet.forEach(label => pastLine[label] = {
+        ele: gPastLine.append("g")
+          .attr("class", `pastLine-${label}`),
+        data: [],
+      });
+
+      return pastLine;
+    }
+
+    function updatePast(selector, currentDate, timeline) {
+      let label = selector.attr("name");
+
+      if (selector.property("checked")) {
+        pastTimeline[label] = timeline.slice()
+        let targetTimeline = pastTimeline[label];
+        while (targetTimeline.length > 0 && targetTimeline[0] <= currentDate) {
+          targetTimeline.shift();
+        }
+
+        let targetCircle = d3.select(`.dot[data-label=${label}]`);
+        pastCircle[label]["data"].push({
+          cx: targetCircle.attr("cx"),
+          cy: targetCircle.attr("cy"),
+          r: targetCircle.attr("r"),
+          fill: targetCircle.style("fill"),
+        });
+        pastCircle[label]["ele"].append("circle")
+              .attr("id", `pastCircle-${label}-${currentDate}`)
+              .attr("cx", targetCircle.attr("cx"))
+              .attr("cy", targetCircle.attr("cy"))
+              .attr("r", targetCircle.attr("r"))
+              .style("fill", targetCircle.style("fill"))
+              .style("stroke", targetCircle.style("stroke"));
+
+        pastLine[label]["data"].push({
+          x: targetCircle.attr("cx"),
+          y: targetCircle.attr("cy"),
+          r: targetCircle.attr("r"),
+          stroke: targetCircle.style("stroke"),
+        });
+      } else {
+        pastTimeline[label] = [];
+
+        pastCircle[label]["ele"].selectAll("*").remove();
+        pastCircle[label]["data"] = [];
+
+        pastLine[label]["ele"].selectAll("*").remove();
+        pastLine[label]["data"] = [];
+      }
+    }
+
+  });
+</script>
+</html>
