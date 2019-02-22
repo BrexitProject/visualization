@@ -17,18 +17,12 @@ function freword() {
                     list:[],
                     id:'country'
                 },
-                'control':{
-                    data:[],
-                    list:[],
-                    id:'control'
-                },
                 'free':{
                     data:[],
                     list:[],
                     id:'free'
                 }
             };
-            drawxlable(categorys,xScale);
            data.map(d=>{
                if(d.fre!=0){
                scales[d.word].data.push(d.fre);
@@ -41,20 +35,14 @@ function freword() {
                        .domain([d3.min(scales[d].data), d3.max(scales[d].data)])
            })
            transition.append('g').attr('class','circle')
-           drawarrow(xScale);
            drawlegend(xScale);
            Object.keys(scales).forEach(function(key,i){
-            // key,scales[key]
-            // if(i===0){
-            //     split(scales[key],xScale);
-            // }
-            // if(i!==0){
-                setTimeout( () => {
-                    drawcircle(scales[key],xScale,i);
-                },second*7*i);
-            // }
-            d3.select('.cells')
-            .remove()
+            setTimeout( () => {
+                 drawcircle(scales[key],xScale,i);
+            },second*7*i);
+                d3.select('.cells')
+                .remove()
+                d3.selectAll('.axis').select('line').remove()
             });
             resolve(scales['free']);
            });
@@ -108,23 +96,39 @@ setTimeout(()=>{
         .attr('transform',`translate(0,${50*(j+1)})`)
     },second*6)
 }
-function drawxlable(categorys,xScale){
-    let xlable = transition.append('g')
-    .attr('class','axis')
-    xlable.selectAll("text")
-    .data(categorys)
-    .enter()
-    .append("text")
-    .transition()
-    .duration((d,i)=>200*i)
+function drawxlable(data,xScale){
+    var t = d3.transition()
+      .duration(750);
+    var xlable = axis.selectAll("text")
+    .data(data,function(d) { return d; })
+
+    xlable.exit()
+    .transition(t)
+      .attr("x", (d)=>{
+          console.log(d);
+          return 999;
+        })
+      .remove();
+
+    xlable.transition(t)
+    .attr('x',(d)=>xScale(d)+ xScale.bandwidth()/2 + paddingleft)
+
+    xlable.enter().append("text")
+    .transition(t)
     .attr('x',(d)=>xScale(d)+ xScale.bandwidth()/2 + paddingleft)
     .attr('y',height / 2 + 40)
-    .text((d)=>d)
+    .text((d)=>{
+        return d;
+    })
     //原来的线移掉
-    d3.selectAll('.axis').select('line').remove()
+    // d3.selectAll('.axis').select('line').remove()
 }
 
 function drawarrow(xScale) {
+    g.append('text')
+    .attr('id','title')
+    .style('font-size','20px')
+    .text('拉夫堡大学媒体研究中心排序')
     let arrow = transition.append('g').attr('class','arrow')
     let line = arrow.append("line")
     .attr("x1",width / 2 + 10)

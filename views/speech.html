@@ -27,7 +27,7 @@
     d3.csv('public/data/churchill.csv').then(function(data) {
         // console.log(data);
         let words = [];
-        for (var i = 0; i < 300; i++) {
+        for (var i = 0; i < 200; i++) {
             words.push([data[i].word, parseInt(data[i].fre)])
         }
         var option = {
