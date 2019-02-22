@@ -252,73 +252,77 @@
     }
     return now[2];
   }
-  function position(dot){
-    dot.attr('cx',d=>x(d.forward + 1)+margin.left)
-      .attr('cy',d=>{
-        return y(d.freq + 1)+margin.top;
-      })
-      .attr('r',d=>{
-      return r(d.trend);})
-      .style("fill", function(d) { return color(d.trend); })
-      .style("stroke",function(d) { return color(d.trend); })
-      .style("display", function(d) {
-        if (d.freq<50&&d.forward<2) {
-          d3.select(`#row-${d.label.slice(1)}`)
-            .classed("disabled", true);
-          d3.select(`#input-${d.label.slice(1)}`).property("disabled", true);
-          return 'none';
-        } else {
-          d3.select(`#row-${d.label.slice(1)}`)
-          .classed("disabled", false);
-          d3.select(`#input-${d.label.slice(1)}`).property("disabled", false);
-          return "block";
-        }
-      });
-  }
+  // function position(dot){
+  //   dot.attr('cx',d=>x(d.forward + 1)+margin.left)
+  //     .attr('cy',d=>{
+  //       return y(d.freq + 1)+margin.top;
+  //     })
+  //     .attr('r',d=>{
+  //     return r(d.trend);})
+  //     .style("fill", function(d) { return color(d.trend); })
+  //     .style("stroke",function(d) { return color(d.trend); })
+  //     .style("display", function(d) {
+  //       if (d.freq<50&&d.forward<2) {
+  //         d3.select(`#row-${d.label.slice(1)}`)
+  //           .classed("disabled", true);
+  //         d3.select(`#input-${d.label.slice(1)}`)
+  //           .property("disabled", true)
+  //           .property("checked", false);
+  //         updatePast(d3.select(`#input-${d.label.slice(1)}`));
+  //         return 'none';
+  //       } else {
+  //         d3.select(`#row-${d.label.slice(1)}`)
+  //           .classed("disabled", false);
+  //         d3.select(`#input-${d.label.slice(1)}`)
+  //           .property("disabled", false);
+  //         return "block";
+  //       }
+  //     });
+  // }
 
-  function horCursorPosition(line) {
-    line.attr("x1", margin.left)
-      .attr("y1", d => y(d.freq + 1) + margin.top)
-      .attr("x2", d => x(d.forward + 1) + margin.left - r(d.trend))
-      .attr("y2", d => y(d.freq + 1) + margin.top)
-      // .style("display", d => {
-      //   if (d.freq < 50 && d.forward < 2) {
-      //     return "none";
-      //   }
-      // });
-  }
+  // function horCursorPosition(line) {
+  //   line.attr("x1", margin.left)
+  //     .attr("y1", d => y(d.freq + 1) + margin.top)
+  //     .attr("x2", d => x(d.forward + 1) + margin.left - r(d.trend))
+  //     .attr("y2", d => y(d.freq + 1) + margin.top)
+  //     // .style("display", d => {
+  //     //   if (d.freq < 50 && d.forward < 2) {
+  //     //     return "none";
+  //     //   }
+  //     // });
+  // }
 
-  function verCursorPosition(line) {
-    line.attr("x1", d => x(d.forward + 1) + margin.left)
-      .attr("y1", d => y(d.freq + 1) + margin.top + r(d.trend))
-      .attr("x2", d => x(d.forward + 1) + margin.left)
-      .attr("y2", y.range()[0] + margin.top)
-      // .style("display", d => {
-      //   if (d.freq < 50 && d.forward < 2) {
-      //     return "none";
-      //   }
-      // });
-  }
+  // function verCursorPosition(line) {
+  //   line.attr("x1", d => x(d.forward + 1) + margin.left)
+  //     .attr("y1", d => y(d.freq + 1) + margin.top + r(d.trend))
+  //     .attr("x2", d => x(d.forward + 1) + margin.left)
+  //     .attr("y2", y.range()[0] + margin.top)
+  //     // .style("display", d => {
+  //     //   if (d.freq < 50 && d.forward < 2) {
+  //     //     return "none";
+  //     //   }
+  //     // });
+  // }
 
-  function horTextPosition(text) {
-    text.attr("transform", d => `translate(${margin.left}, ${y(d.freq + 1) + margin.top})`)
-      .text(d => parseInt(d.freq) + 1)
-      // .style("display", d => {
-      //   if (d.freq < 50 && d.forward < 2) {
-      //     return "none";
-      //   }
-      // });
-  }
+  // function horTextPosition(text) {
+  //   text.attr("transform", d => `translate(${margin.left}, ${y(d.freq + 1) + margin.top})`)
+  //     .text(d => parseInt(d.freq) + 1)
+  //     // .style("display", d => {
+  //     //   if (d.freq < 50 && d.forward < 2) {
+  //     //     return "none";
+  //     //   }
+  //     // });
+  // }
 
-  function verTextPosition(text) {
-    text.attr("transform", d => `translate(${x(d.forward + 1) + margin.left}, ${y.range()[0] + margin.top})`)
-      .text(d => parseInt(d.forward) + 1)
-      // .style("display", d => {
-      //   if (d.freq < 50 && d.forward < 2) {
-      //     return "none";
-      //   }
-      // });
-  }
+  // function verTextPosition(text) {
+  //   text.attr("transform", d => `translate(${x(d.forward + 1) + margin.left}, ${y.range()[0] + margin.top})`)
+  //     .text(d => parseInt(d.forward) + 1)
+  //     // .style("display", d => {
+  //     //   if (d.freq < 50 && d.forward < 2) {
+  //     //     return "none";
+  //     //   }
+  //     // });
+  // }
 
   var dataArray=[];
   d3.csv('public/data/hashtag_bubble_new.csv').then(function(data) {
@@ -411,8 +415,11 @@
             if(d.freq<50&&d.forward<2){
             return 'none';}});
     
+    let timeline = generateTimeline(dataArray);
+    let pastTimeline = initSelectionTimeline(labelSet);
     let pastCircle = initSelectionPastCircle(labelSet);
     let pastLine = initSelectionPastLine(labelSet);
+
     let timer = svg.append("svg:text")
       .attr("T", 0)
       .text("");
@@ -439,13 +446,87 @@
     dot.on("mouseover", mouseOverHandler);
     dot.on("mouseout", mouseOutHandler);
 
-    function checkedHandler() {
-      let selection = d3.selectAll("input[type='checkbox']:checked");
+    function position(dot) {
+      dot.attr('cx',d=>x(d.forward + 1)+margin.left)
+        .attr('cy',d=>{
+          return y(d.freq + 1)+margin.top;
+        })
+        .attr('r',d=>{
+        return r(d.trend);})
+        .style("fill", function(d) { return color(d.trend); })
+        .style("stroke",function(d) { return color(d.trend); })
+        .style("display", function(d) {
+          if (d.freq<50&&d.forward<2) {
+            d3.select(`#row-${d.label.slice(1)}`)
+              .classed("disabled", true);
+            d3.select(`#input-${d.label.slice(1)}`)
+              .property("disabled", true)
+              .property("checked", false);
 
-      let selectedLabel = [];
-      selection.each(d => selectedLabel.push(d));
+            updatePast(d3.select(`#input-${d.label.slice(1)}`));
+            updateMask(getSelectedLabel());
+            return 'none';
+          } else {
+            d3.select(`#row-${d.label.slice(1)}`)
+              .classed("disabled", false);
+            d3.select(`#input-${d.label.slice(1)}`)
+              .property("disabled", false);
+            return "block";
+          }
+        });
+    }
+
+    function horCursorPosition(line) {
+      line.attr("x1", margin.left)
+        .attr("y1", d => y(d.freq + 1) + margin.top)
+        .attr("x2", d => x(d.forward + 1) + margin.left - r(d.trend))
+        .attr("y2", d => y(d.freq + 1) + margin.top)
+        // .style("display", d => {
+        //   if (d.freq < 50 && d.forward < 2) {
+        //     return "none";
+        //   }
+        // });
+    }
+
+    function verCursorPosition(line) {
+      line.attr("x1", d => x(d.forward + 1) + margin.left)
+        .attr("y1", d => y(d.freq + 1) + margin.top + r(d.trend))
+        .attr("x2", d => x(d.forward + 1) + margin.left)
+        .attr("y2", y.range()[0] + margin.top)
+        // .style("display", d => {
+        //   if (d.freq < 50 && d.forward < 2) {
+        //     return "none";
+        //   }
+        // });
+    }
+
+    function horTextPosition(text) {
+      text.attr("transform", d => `translate(${margin.left}, ${y(d.freq + 1) + margin.top})`)
+        .text(d => parseInt(d.freq) + 1)
+        // .style("display", d => {
+        //   if (d.freq < 50 && d.forward < 2) {
+        //     return "none";
+        //   }
+        // });
+    }
+
+    function verTextPosition(text) {
+      text.attr("transform", d => `translate(${x(d.forward + 1) + margin.left}, ${y.range()[0] + margin.top})`)
+        .text(d => parseInt(d.forward) + 1)
+        // .style("display", d => {
+        //   if (d.freq < 50 && d.forward < 2) {
+        //     return "none";
+        //   }
+        // });
+    }
+
+    function checkedHandler() {
+      let selectedLabel = getSelectedLabel();
+      let currentTime = getTime();
+      let currentDate = dateScale.invert(currentTime);
+
       updateMask(selectedLabel);
-      updatePast(d3.select(this));
+      updatePast(d3.select(this), currentDate, timeline);
       console.log(selectedLabel);
     }
 
@@ -524,11 +605,9 @@
     }
 
     function mouseOverHandler() {
-      let label = d3.select(this).attr("data-label")
+      let label = d3.select(this).attr("data-label");
+      let selectedLabel = getSelectedLabel();
 
-      let selection = d3.selectAll("input[type='checkbox']:checked");
-      let selectedLabel = [];
-      selection.each(d => selectedLabel.push(d));
       d3.selectAll(".dot")
         .filter(function(d, i) {
           let testLabel = d.label.slice(1);
@@ -576,9 +655,7 @@
     function mouseOutHandler() {
       let label = d3.select(this).attr("data-label")
 
-      let selection = d3.selectAll("input[type='checkbox']:checked");
-      let selectedLabel = [];
-      selection.each(d => selectedLabel.push(d));
+      let selectedLabel = getSelectedLabel();
       updateMask(selectedLabel);
 
       if (!buttonPlay) {
@@ -640,12 +717,16 @@
 
     function tweenYear(year) {
       dot.data(getDataByMonth(dataArray,year)).call(position);
+
+      updateTraj(year);
+
       horizontalCursor.data(getDataByMonth(dataArray,year)).call(horCursorPosition);
       verticalCursor.data(getDataByMonth(dataArray,year)).call(verCursorPosition);
       horizontalText.data(getDataByMonth(dataArray,year)).call(horTextPosition);
       verticalText.data(getDataByMonth(dataArray,year)).call(verTextPosition);
       textPosition(getDataByMonth(dataArray,year));
-      if(year<=new Date(2018,11)){
+
+      if (year <= new Date(2018,11)) {
         let tmpYear = new Date(year);
         year.setMonth(year.getMonth() + 1);
         if (+year === +new Date(2019, 0)) {
@@ -656,6 +737,86 @@
       }
       let tmpYear = new Date(year);
       updateVideoAnchor(tmpYear);
+    }
+
+    function updateTraj(currentDate) {
+      let selectedLabel = getSelectedLabel();
+
+      selectedLabel.forEach(label => {
+        let targetTimeline = pastTimeline[label];
+        let targetPastCircle = pastCircle[label];
+        let targetPastLine = pastLine[label];
+
+        if (targetTimeline.length > 0 && currentDate >= targetTimeline[0]) {
+          // let circleEle = targetPastCircle["ele"];
+          // let circleData = targetPastCircle["data"];
+          // if (circleData.length > 0) {
+          //   let datum = circleData[circleData.length - 1];
+          //   circleEle.append("circle")
+          //     .attr("id", `pastCircle-${label}-${currentDate}`)
+          //     .attr("cx", datum.cx)
+          //     .attr("cy", datum.cy)
+          //     .attr("r", datum.r)
+          //     .style("fill", datum.fill)
+          //     .style("stroke", datum.fill);
+          // }
+
+          let targetCircle = d3.select(`.dot[data-label=${label}]`);
+
+          let circleEle = targetPastCircle["ele"];
+          circleEle.append("circle")
+            .attr("id", `pastCircle-${label}-${currentDate}`)
+            .attr("cx", targetCircle.attr("cx"))
+            .attr("cy", targetCircle.attr("cy"))
+            .attr("r", targetCircle.attr("r"))
+            .style("fill", targetCircle.style("fill"))
+            .style("stroke", targetCircle.style("stroke"));
+
+          let lineEle = targetPastLine["ele"];
+          let lineData = targetPastLine["data"];
+          if (lineData.length > 0) {
+            let datum = lineData[lineData.length - 1];
+            let lineCoord = computeCoord(datum.x, datum.y, datum.r, targetCircle.attr("cx"), targetCircle.attr("cy"), targetCircle.attr("r"));
+            lineEle.append("line")
+              .attr("id", `pastLine-${label}-${currentDate}`)
+              .attr("x1", lineCoord.x1)
+              .attr("y1", lineCoord.y1)
+              .attr("x2", lineCoord.x2)
+              .attr("y2", lineCoord.y2)
+              .style("stroke", datum.stroke);
+          }
+
+          pastCircle[label]["data"].push({
+            cx: targetCircle.attr("cx"),
+            cy: targetCircle.attr("cy"),
+            r: targetCircle.attr("r"),
+            fill: targetCircle.style("fill"),
+          });
+          pastLine[label]["data"].push({
+            x: targetCircle.attr("cx"),
+            y: targetCircle.attr("cy"),
+            r: targetCircle.attr("r"),
+            stroke: targetCircle.style("stroke"),
+          });
+
+          targetTimeline.shift();
+        }
+      });
+    }
+
+    function computeCoord(x1, y1, r1, x2, y2, r2) {
+      x1 = parseFloat(x1); y1 = parseFloat(y1); r1 = parseFloat(r1);
+      x2 = parseFloat(x2); y2 = parseFloat(y2); r2 = parseFloat(r2);
+      let dist = Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2);
+
+      let lineCoord = {
+        x1: x1 + (x2 - x1) * r1 / dist,
+        y1: y1 + (y2 - y1) * r1 / dist,
+        x2: x2 + (x1 - x2) * r2 / dist,
+        y2: y2 + (y1 - y2) * r2 / dist,
+      };
+
+      return lineCoord;
     }
 
     function updateVideoAnchor(date) {
@@ -800,6 +961,28 @@
       verticalText.style("display", "none");
     }
 
+    function getSelectedLabel() {
+      let selection = d3.selectAll("input[type='checkbox']:checked");
+
+      let selectedLabel = [];
+      selection.each(d => selectedLabel.push(d));
+
+      return selectedLabel;
+    }
+
+    function generateTimeline(dataArray) {
+      let timeline = dataArray[0]["value"].map(d => d[0]);
+      return timeline;
+    }
+
+    function initSelectionTimeline(labelSet) {
+      let pastTimeline = {};
+
+      labelSet.forEach(label => pastTimeline[label] = []);
+
+      return pastTimeline;
+    }
+
     function initSelectionPastCircle(labelSet) {
       let pastCircle = {};
       let gPastCircle = svg.append("g")
@@ -826,12 +1009,40 @@
       return pastLine;
     }
 
-    function updatePast(selector) {
+    function updatePast(selector, currentDate, timeline) {
       let label = selector.attr("name");
 
       if (selector.property("checked")) {
+        pastTimeline[label] = timeline.slice()
+        let targetTimeline = pastTimeline[label];
+        while (targetTimeline.length > 0 && targetTimeline[0] <= currentDate) {
+          targetTimeline.shift();
+        }
 
+        let targetCircle = d3.select(`.dot[data-label=${label}]`);
+        pastCircle[label]["data"].push({
+          cx: targetCircle.attr("cx"),
+          cy: targetCircle.attr("cy"),
+          r: targetCircle.attr("r"),
+          fill: targetCircle.style("fill"),
+        });
+        pastCircle[label]["ele"].append("circle")
+              .attr("id", `pastCircle-${label}-${currentDate}`)
+              .attr("cx", targetCircle.attr("cx"))
+              .attr("cy", targetCircle.attr("cy"))
+              .attr("r", targetCircle.attr("r"))
+              .style("fill", targetCircle.style("fill"))
+              .style("stroke", targetCircle.style("stroke"));
+
+        pastLine[label]["data"].push({
+          x: targetCircle.attr("cx"),
+          y: targetCircle.attr("cy"),
+          r: targetCircle.attr("r"),
+          stroke: targetCircle.style("stroke"),
+        });
       } else {
+        pastTimeline[label] = [];
+
         pastCircle[label]["ele"].selectAll("*").remove();
         pastCircle[label]["data"] = [];
 
