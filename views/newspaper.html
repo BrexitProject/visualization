@@ -47,21 +47,21 @@ function draw(words){
             })
             .attr("text-anchor", "middle")
             .style('font-size', 1)
-            .transition()
-            .duration(1000)
-            .style("font-size", function(d) { return d.size + "px"; })
             .attr("transform", function(d) {
                     return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
                 })
+            .transition()
+            .duration(1000)
+            .style("font-size", function(d) { return d.size + "px"; })
             .style("fill-opacity", 1)
             .text(function(d) { return d.text; });
         //Entering and existing words
-        cloud.transition()
-                .duration(1000)
-                .style("font-size", function(d) { return d.size + "px"; })
-                .attr("transform", function(d) {
+        cloud.attr("transform", function(d) {
                     return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
                 })
+                .transition()
+                .duration(1000)
+                .style("font-size", function(d) { return d.size + "px"; })
                 .style("fill", function(d, i) { 
                   return d.id==0?'black':color(d.category);  
                 })
