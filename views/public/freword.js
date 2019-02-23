@@ -105,7 +105,7 @@ function drawxlable(data,xScale){
     xlable.exit()
     .transition(t)
       .attr("x", (d)=>{
-          console.log(d);
+        //   console.log(d);
           return 999;
         })
       .remove();
