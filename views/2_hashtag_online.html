@@ -77,12 +77,18 @@
     }
 
     .container {
-      display: flex;
-      flex-direction: row;
+      width: 1320px;
+      height: 720px;
+      /* flex-direction: row; */
+    }
+
+    svg {
+      display: inline-block;
     }
 
     .aside {
       /* border: 1px solid black; */
+      display: inline-block;
       overflow-y: auto;
     }
 
@@ -94,6 +100,15 @@
     div.labelRow.disabled {
       background-color: rgba(144, 144, 153, 0.1);
     }
+
+    .pastTime {
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'Helvetica Neue';
+      fill: #909099;
+      fill-opacity: 0.9;
+      text-anchor: middle;
+    }
   </style>
   <script src="public/d3.min.js"></script>
   <script src="public/labeler.js"></script>
@@ -103,9 +118,9 @@
   </div>
 </body>
 <script>
-  var margin = {top: 20, bottom: 100, left: 120, right: 60};
-  var svgWidth = 1240;
-  var svgHeight = 700;
+  var margin = {top: 20, bottom: 100, left: 80, right: 30};
+  var svgWidth = 1100;
+  var svgHeight = 750;
 
   var width=svgWidth - margin.left - margin.right;
   var height=svgHeight - margin.top - margin.bottom;
@@ -132,11 +147,11 @@
             .range([0,(width-30)/7,(width-30)*2/7,(width-30)*3/7,(width-30)*4/7,(width-30)*5/7,(width-30)*6/7,width-30,width])
             // .range([height,(height-30)*6/7+30,(height-30)*5/7+30,(height-30)*4/7+30,(height-30)*3/7+30,(height-30)*2/7+30,(height-30)/7+30, 30,0]);
   var r = d3.scaleLinear()
-            .domain([0, 0.365010869, 0.5, 2 / 3, 1])
-            .range([25, 20, 17, 20, 25]);
+            .domain([0, 0.365010869, (0.365010869 + 2 / 3) / 2, 2 / 3, 1])
+            .range([25, 7, 25, 7, 25]);
   var color = d3.scaleQuantile()
-                .domain([0, 0.365010869, 2 / 3, 1])
-                .range(["#1B6AA5", "#8A949B","#E8110F" ]);
+                .domain([0, 0.365010869, (0.365010869 + 2 / 3) / 2, 2 / 3, 1])
+                .range(["#1B6AA5", "#65869E", "#A9686C", "#E8110F" ]);
 
   // axises
   var xAxis = d3.axisBottom(x)
@@ -252,77 +267,6 @@
     }
     return now[2];
   }
-  // function position(dot){
-  //   dot.attr('cx',d=>x(d.forward + 1)+margin.left)
-  //     .attr('cy',d=>{
-  //       return y(d.freq + 1)+margin.top;
-  //     })
-  //     .attr('r',d=>{
-  //     return r(d.trend);})
-  //     .style("fill", function(d) { return color(d.trend); })
-  //     .style("stroke",function(d) { return color(d.trend); })
-  //     .style("display", function(d) {
-  //       if (d.freq<50&&d.forward<2) {
-  //         d3.select(`#row-${d.label.slice(1)}`)
-  //           .classed("disabled", true);
-  //         d3.select(`#input-${d.label.slice(1)}`)
-  //           .property("disabled", true)
-  //           .property("checked", false);
-  //         updatePast(d3.select(`#input-${d.label.slice(1)}`));
-  //         return 'none';
-  //       } else {
-  //         d3.select(`#row-${d.label.slice(1)}`)
-  //           .classed("disabled", false);
-  //         d3.select(`#input-${d.label.slice(1)}`)
-  //           .property("disabled", false);
-  //         return "block";
-  //       }
-  //     });
-  // }
-
-  // function horCursorPosition(line) {
-  //   line.attr("x1", margin.left)
-  //     .attr("y1", d => y(d.freq + 1) + margin.top)
-  //     .attr("x2", d => x(d.forward + 1) + margin.left - r(d.trend))
-  //     .attr("y2", d => y(d.freq + 1) + margin.top)
-  //     // .style("display", d => {
-  //     //   if (d.freq < 50 && d.forward < 2) {
-  //     //     return "none";
-  //     //   }
-  //     // });
-  // }
-
-  // function verCursorPosition(line) {
-  //   line.attr("x1", d => x(d.forward + 1) + margin.left)
-  //     .attr("y1", d => y(d.freq + 1) + margin.top + r(d.trend))
-  //     .attr("x2", d => x(d.forward + 1) + margin.left)
-  //     .attr("y2", y.range()[0] + margin.top)
-  //     // .style("display", d => {
-  //     //   if (d.freq < 50 && d.forward < 2) {
-  //     //     return "none";
-  //     //   }
-  //     // });
-  // }
-
-  // function horTextPosition(text) {
-  //   text.attr("transform", d => `translate(${margin.left}, ${y(d.freq + 1) + margin.top})`)
-  //     .text(d => parseInt(d.freq) + 1)
-  //     // .style("display", d => {
-  //     //   if (d.freq < 50 && d.forward < 2) {
-  //     //     return "none";
-  //     //   }
-  //     // });
-  // }
-
-  // function verTextPosition(text) {
-  //   text.attr("transform", d => `translate(${x(d.forward + 1) + margin.left}, ${y.range()[0] + margin.top})`)
-  //     .text(d => parseInt(d.forward) + 1)
-  //     // .style("display", d => {
-  //     //   if (d.freq < 50 && d.forward < 2) {
-  //     //     return "none";
-  //     //   }
-  //     // });
-  // }
 
   var dataArray=[];
   d3.csv('public/data/hashtag_bubble_new.csv').then(function(data) {
@@ -415,6 +359,7 @@
             if(d.freq<50&&d.forward<2){
             return 'none';}});
     
+    let mouseoverDot = null;
     let timeline = generateTimeline(dataArray);
     let pastTimeline = initSelectionTimeline(labelSet);
     let pastCircle = initSelectionPastCircle(labelSet);
@@ -464,7 +409,6 @@
               .property("checked", false);
 
             updatePast(d3.select(`#input-${d.label.slice(1)}`));
-            updateMask(getSelectedLabel());
             return 'none';
           } else {
             d3.select(`#row-${d.label.slice(1)}`)
@@ -474,6 +418,8 @@
             return "block";
           }
         });
+
+      updateMask(getSelectedLabel());
     }
 
     function horCursorPosition(line) {
@@ -608,33 +554,37 @@
       let label = d3.select(this).attr("data-label");
       let selectedLabel = getSelectedLabel();
 
-      d3.selectAll(".dot")
-        .filter(function(d, i) {
-          let testLabel = d.label.slice(1);
-          return testLabel !== label && selectedLabel.findIndex((k) => testLabel === k) < 0;
-        })
-        .attr("opacity", 0.1);
+      mouseoverDot = label;
 
-      d3.selectAll(".dot")
-        .filter(function(d, i) {
-          let testLabel = d.label.slice(1);
-          return testLabel === label || selectedLabel.findIndex((k) => testLabel === k) >= 0;
-        })
-        .attr("opacity", 1);
+      updateMask(selectedLabel);
 
-      d3.selectAll(".textLabel")
-        .filter(function(d, i) {
-          let testLabel = d.label.slice(1);
-          return testLabel !== label && selectedLabel.findIndex((k) => testLabel === k) < 0;
-        })
-        .text("");
+      // d3.selectAll(".dot")
+      //   .filter(function(d, i) {
+      //     let testLabel = d.label.slice(1);
+      //     return testLabel !== label && selectedLabel.findIndex((k) => testLabel === k) < 0;
+      //   })
+      //   .attr("opacity", 0.1);
 
-      d3.selectAll(".textLabel")
-        .filter(function(d, i) {
-          let testLabel = d.label.slice(1);
-          return testLabel === label || selectedLabel.findIndex((k) => testLabel === k) >= 0;
-        })
-        .text(d => d.label.slice(1));
+      // d3.selectAll(".dot")
+      //   .filter(function(d, i) {
+      //     let testLabel = d.label.slice(1);
+      //     return testLabel === label || selectedLabel.findIndex((k) => testLabel === k) >= 0;
+      //   })
+      //   .attr("opacity", 1);
+
+      // d3.selectAll(".textLabel")
+      //   .filter(function(d, i) {
+      //     let testLabel = d.label.slice(1);
+      //     return testLabel !== label && selectedLabel.findIndex((k) => testLabel === k) < 0;
+      //   })
+      //   .text("");
+
+      // d3.selectAll(".textLabel")
+      //   .filter(function(d, i) {
+      //     let testLabel = d.label.slice(1);
+      //     return testLabel === label || selectedLabel.findIndex((k) => testLabel === k) >= 0;
+      //   })
+      //   .text(d => d.label.slice(1));
 
       if (!buttonPlay) {
         d3.selectAll(".cursor")
@@ -653,7 +603,9 @@
     }
 
     function mouseOutHandler() {
-      let label = d3.select(this).attr("data-label")
+      let label = d3.select(this).attr("data-label");
+
+      mouseoverDot = null;
 
       let selectedLabel = getSelectedLabel();
       updateMask(selectedLabel);
@@ -741,6 +693,7 @@
 
     function updateTraj(currentDate) {
       let selectedLabel = getSelectedLabel();
+      let date = d3.timeFormat("%Y%m")(currentDate);
 
       selectedLabel.forEach(label => {
         let targetTimeline = pastTimeline[label];
@@ -748,29 +701,33 @@
         let targetPastLine = pastLine[label];
 
         if (targetTimeline.length > 0 && currentDate >= targetTimeline[0]) {
-          // let circleEle = targetPastCircle["ele"];
-          // let circleData = targetPastCircle["data"];
-          // if (circleData.length > 0) {
-          //   let datum = circleData[circleData.length - 1];
-          //   circleEle.append("circle")
-          //     .attr("id", `pastCircle-${label}-${currentDate}`)
-          //     .attr("cx", datum.cx)
-          //     .attr("cy", datum.cy)
-          //     .attr("r", datum.r)
-          //     .style("fill", datum.fill)
-          //     .style("stroke", datum.fill);
-          // }
-
           let targetCircle = d3.select(`.dot[data-label=${label}]`);
 
-          let circleEle = targetPastCircle["ele"];
-          circleEle.append("circle")
-            .attr("id", `pastCircle-${label}-${currentDate}`)
-            .attr("cx", targetCircle.attr("cx"))
-            .attr("cy", targetCircle.attr("cy"))
-            .attr("r", targetCircle.attr("r"))
-            .style("fill", targetCircle.style("fill"))
-            .style("stroke", targetCircle.style("stroke"));
+          if (targetTimeline.length > 1) {
+            let circleEle = targetPastCircle["ele"];
+            circleEle.append("text")
+              .attr("class", "pastTime")
+              .attr("id", `pastTime-${label}-${date}`)
+              .attr("x", targetCircle.attr("cx"))
+              .attr("y", targetCircle.attr("cy"))
+              .text(d3.timeFormat("%Y/%m")(currentDate))
+              .style("display", "none");
+            circleEle.append("circle")
+              .attr("id", `pastCircle-${label}-${date}`)
+              .attr("cx", targetCircle.attr("cx"))
+              .attr("cy", targetCircle.attr("cy"))
+              .attr("r", targetCircle.attr("r"))
+              .style("fill", targetCircle.style("fill"))
+              .style("stroke", targetCircle.style("stroke"))
+              .on("mouseover", function() {
+                d3.select(`#pastTime-${label}-${d3.select(this).attr("id").split("-")[2]}`)
+                  .style("display", "block");
+              })
+              .on("mouseout", function() {
+                d3.select(`#pastTime-${label}-${d3.select(this).attr("id").split("-")[2]}`)
+                  .style("display", "none");
+              });
+          }
 
           let lineEle = targetPastLine["ele"];
           let lineData = targetPastLine["data"];
@@ -778,7 +735,7 @@
             let datum = lineData[lineData.length - 1];
             let lineCoord = computeCoord(datum.x, datum.y, datum.r, targetCircle.attr("cx"), targetCircle.attr("cy"), targetCircle.attr("r"));
             lineEle.append("line")
-              .attr("id", `pastLine-${label}-${currentDate}`)
+              .attr("id", `pastLine-${label}-${date}`)
               .attr("x1", lineCoord.x1)
               .attr("y1", lineCoord.y1)
               .attr("x2", lineCoord.x2)
@@ -860,7 +817,7 @@
     }
 
     function createAsidePanel(labelSet) {
-      let asideWidth = 250;
+      let asideWidth = 220;
       let aside = d3.select(".container")
         .append("div")
         .attr("class", "aside")
@@ -891,34 +848,52 @@
     function updateMask(selectedLabel) {
       if (selectedLabel.length === 0) {
         d3.selectAll(".dot")
+          .filter(function(d, i) {
+            return mouseoverDot === null || d.label.slice(1) === mouseoverDot;
+          })
           .attr("opacity", 1);
 
+        d3.selectAll(".dot")
+          .filter(function(d, i) {
+            return mouseoverDot !== null && d.label.slice(1) !== mouseoverDot;
+          })
+          .attr("opacity", 0.1);
+
         d3.selectAll(".textLabel")
+          .filter(function(d, i) {
+            return mouseoverDot === null || d.label.slice(1) !== mouseoverDot;
+          })
           .text("");
+
+        d3.selectAll(".textLabel")
+          .filter(function(d, i) {
+            return mouseoverDot !== null && d.label.slice(1) === mouseoverDot;
+          })
+          .text(d => d.label.slice(1));
         return;
       }
 
       d3.selectAll(".dot")
         .filter(function(d, i) {
-          return selectedLabel.findIndex((label) => label === d3.select(this).attr("data-label")) < 0;
+          return selectedLabel.findIndex((label) => label === d3.select(this).attr("data-label")) < 0 && (mouseoverDot === null || d.label.slice(1) !== mouseoverDot);
         })
         .attr("opacity", 0.1);
 
       d3.selectAll(".dot")
         .filter(function(d, i) {
-          return selectedLabel.findIndex((label) => label === d3.select(this).attr("data-label")) >= 0;
+          return selectedLabel.findIndex((label) => label === d3.select(this).attr("data-label")) >= 0 || (mouseoverDot !== null && d.label.slice(1) === mouseoverDot);
         })
         .attr("opacity", 1);
 
       d3.selectAll(".textLabel")
         .filter(function(d, i) {
-          return selectedLabel.findIndex((label) => label === d3.select(this).attr("data-label")) < 0;
+          return selectedLabel.findIndex((label) => label === d3.select(this).attr("data-label")) < 0 && (mouseoverDot === null || d.label.slice(1) !== mouseoverDot);
         })
         .text("");
 
       d3.selectAll(".textLabel")
         .filter(function(d, i) {
-          return selectedLabel.findIndex((label) => label === d3.select(this).attr("data-label")) >= 0;
+          return selectedLabel.findIndex((label) => label === d3.select(this).attr("data-label")) >= 0 || (mouseoverDot !== null && d.label.slice(1) === mouseoverDot);
         })
         .text(d => d.label.slice(1));
     }
@@ -1011,6 +986,7 @@
 
     function updatePast(selector, currentDate, timeline) {
       let label = selector.attr("name");
+      let date = d3.timeFormat("%Y%m")(currentDate);
 
       if (selector.property("checked")) {
         pastTimeline[label] = timeline.slice()
@@ -1026,13 +1002,28 @@
           r: targetCircle.attr("r"),
           fill: targetCircle.style("fill"),
         });
+        pastCircle[label]["ele"].append("text")
+              .attr("class", "pastTime")
+              .attr("id", `pastTime-${label}-${date}`)
+              .attr("x", targetCircle.attr("cx"))
+              .attr("y", targetCircle.attr("cy"))
+              .text(d3.timeFormat("%Y/%m")(currentDate))
+              .style("display", "none");
         pastCircle[label]["ele"].append("circle")
-              .attr("id", `pastCircle-${label}-${currentDate}`)
+              .attr("id", `pastCircle-${label}-${date}`)
               .attr("cx", targetCircle.attr("cx"))
               .attr("cy", targetCircle.attr("cy"))
               .attr("r", targetCircle.attr("r"))
               .style("fill", targetCircle.style("fill"))
-              .style("stroke", targetCircle.style("stroke"));
+              .style("stroke", targetCircle.style("stroke"))
+              .on("mouseover", function() {
+                d3.select(`#pastTime-${label}-${d3.select(this).attr("id").split("-")[2]}`)
+                  .style("display", "block");
+              })
+              .on("mouseout", function() {
+                d3.select(`#pastTime-${label}-${d3.select(this).attr("id").split("-")[2]}`)
+                  .style("display", "none");
+              });
 
         pastLine[label]["data"].push({
           x: targetCircle.attr("cx"),
