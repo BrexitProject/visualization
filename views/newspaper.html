@@ -12,60 +12,74 @@
         align-items: center;
     }
     .chart{
-      width:900px;
-      height: 700px;
+      width:500px;
+      height: 500px;
       display: flex;
       justify-content: center;
       align-items: center;
       flex-wrap:wrap
     }
-    .wordcloud{
-      height: 268px;
-      /* background-color: blanchedalmond; */
-    }
-    .tree{
-      width:500px;
-      height: 500px;
-      background-color: blueviolet;
-    }
-    /* .we{
-      fill:black
-    }
-    .people{
-      fill:black
-    }
-    .country{
-      fill:black
-    }
-    .control{
-      fill:black
-    }
-    .great{
-      fill:black
-    } */
   </style>
   <script src="public/d3.min.js"></script>
-  <script src="public/js2wordcloud.js"></script>
+  <script src="public/d3.layout.cloud.js"></script>
 </head>
 <body>
   <div class="container">
     <div class='chart' >
-      <div id='express' class='wordcloud' style='width: 400px'></div>
-      <div id='dailymail' class='wordcloud' style='width: 400px'></div>
-      <div id='dailystar' class='wordcloud' style='width: 400px'></div>
-      <div id='sun' class='wordcloud' style='width: 400px'></div>
-      <div id='inews' class='wordcloud' style='width: 400px'></div>
-      <div id='guardian' class='wordcloud' style='width: 400px'></div>
-      <div id='ft' class='wordcloud' style='width: 400px'></div>
-      <div id='economist' class='wordcloud' style='width: 400px'></div>
+      <svg id='newspaper' width='100%' height='100%'>
+          <filter id="shadow">
+              <feGaussianBlur stdDeviation="1.2"></feGaussianBlur>
+            </filter>
+        </svg>
     </div>
-    <!-- <div class='tree'>
-    </div> -->
   </div>
 </body>
 <script>
+function draw(words){
+  var cloud = g.selectAll("text")
+                 .data(words)
+        //Entering words
+        cloud.enter()
+            .append("text")
+            .style("font-family", "Impact")
+            .style("fill", function(d, i) {
+                return d.id==0?'black':color(d.category); 
+            })
+            .attr("text-anchor", "middle")
+            .style('font-size', 1)
+            .transition()
+            .duration(1000)
+            .style("font-size", function(d) { return d.size + "px"; })
+            .attr("transform", function(d) {
+                    return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                })
+            .style("fill-opacity", 1)
+            .text(function(d) { return d.text; });
+        //Entering and existing words
+        cloud.transition()
+                .duration(1000)
+                .style("font-size", function(d) { return d.size + "px"; })
+                .attr("transform", function(d) {
+                    return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                })
+                .style("fill", function(d, i) { 
+                  return d.id==0?'black':color(d.category);  
+                })
+                .style("fill-opacity", 1)
+                .text(function(d) { return d.text; });
+        //Exiting words
+        cloud.exit()
+            .transition()
+                .duration(600)
+                .style('fill-opacity', 1e-6)
+                .attr('font-size', 1)
+                .remove();
+}
+let xScale = d3.scaleLinear()
+           .range([10,60]);
 let categorys =  ['express','dailymail','dailystar','sun','inews','guardian','ft','economist'];
 let color = d3.scaleOrdinal().domain(categorys).range(['#67000d', '#a50f15','#cb181d','rgb(238, 136, 136)','#6baed6','#2171b5','#08519c','#08306b'])
+let g = d3.select('#newspaper').append('g').attr("transform", "translate(250,250)");
 let promises = categorys.map(function (id) {
   return  new Promise(function (resolve, reject) {
       d3.csv(`public/data/newspaper/new_${(id)}.csv`).then(function(data) {
@@ -74,40 +88,31 @@ let promises = categorys.map(function (id) {
     })
 });
 Promise.all(promises).then(function (results) {
-  // console.log(results);
-  results.map((result,q)=>{
-    let words = [];
-      for (var i = 0; i < 220; i++) {
-          words.push([result.data[i].word, parseInt(result.data[i].fre)])
-      }
-  var option = {
-            tooltip: {
-                show: true,
-                formatter: function(item) {
-                    return item[0] + ': 跑得比较快' + item[1] + 'km/h<br>' + '词云图'
-                }
-            },
-            fontSizeFactor: 1 / 1,
-            list: words,
-            color: color(result.category),
-            maxFontSize:30,
-            // minFontSize:1,
-            id:result.category,
-            imageShape: './public/data/newspaper/images/mark.jpg',
-            ellipticity: 1
-        }
-        var wc = new Js2WordCloud(document.getElementById(result.category))
-        wc.setOption(option);
-        d3.select('#'+result.category).select('svg').append('image')
-                        .attr('xlink:href', 'public/data/newspaper/images/'+result.category+'.jpg')
-                        // .attr('x',0)
-                        // .attr('y',0)
-                        .attr("x", 116)
-                        .attr("y", 100)
-                        // .attr('width',500)
-                        // .attr('height',500)
+  results.map((result,i)=>{
+    let max = result.data[0];
+    let min = result.data[0];
+    result.data.map(d=>{
+        if(+d.fre > +max.fre)
+            max = d;
+        if(+d.fre < +min.fre)
+            min = d;
+        d.category = result.category;
+    })
+    // console.log(result.data,max);
+    xScale.domain([min.fre,max.fre])
+    setTimeout(function() { 
+      d3.layout.cloud().size([500, 500])
+                .words(result.data)
+                .rotate(function(d) {
+                  return d.id==0?0:~~(Math.random() * 2) * 90; 
+                })
+                .font("Impact")
+                .text(function(d) { return d.word; })
+                .fontSize(function(d) { return xScale(+d.fre); })
+                .on("end", draw)
+                .start();
+    }, 2000*i)
   });
 });
-// }
 </script>
 </html>
