@@ -9,7 +9,8 @@
     .textLabel{
       font-size: 14px;
       font-weight: 700;
-      font-family: 'Georgia'
+      font-family: 'Georgia';
+      dominant-baseline: middle;
     }
     circle{
       fill-opacity: 0.6;
@@ -151,7 +152,7 @@
             .range([25, 7, 25, 7, 25]);
   var color = d3.scaleQuantile()
                 .domain([0, 0.365010869, (0.365010869 + 2 / 3) / 2, 2 / 3, 1])
-                .range(["#1B6AA5", "#65869E", "#A9686C", "#E8110F" ]);
+                .range(["#1B6AA5", "#748C9D", "#9D7A7F", "#E8110F" ]);
 
   // axises
   var xAxis = d3.axisBottom(x)
@@ -709,8 +710,8 @@
               .attr("class", "pastTime")
               .attr("id", `pastTime-${label}-${date}`)
               .attr("x", targetCircle.attr("cx"))
-              .attr("y", targetCircle.attr("cy"))
-              .text(d3.timeFormat("%Y/%m")(currentDate))
+              .attr("y", parseFloat(targetCircle.attr("cy")) - parseFloat(targetCircle.attr("r")))
+              .text(d3.timeFormat("%Y.%m")(currentDate))
               .style("display", "none");
             circleEle.append("circle")
               .attr("id", `pastCircle-${label}-${date}`)
@@ -1006,8 +1007,8 @@
               .attr("class", "pastTime")
               .attr("id", `pastTime-${label}-${date}`)
               .attr("x", targetCircle.attr("cx"))
-              .attr("y", targetCircle.attr("cy"))
-              .text(d3.timeFormat("%Y/%m")(currentDate))
+              .attr("y", parseFloat(targetCircle.attr("cy")) - parseFloat(targetCircle.attr("r")))
+              .text(d3.timeFormat("%Y.%m")(currentDate))
               .style("display", "none");
         pastCircle[label]["ele"].append("circle")
               .attr("id", `pastCircle-${label}-${date}`)
