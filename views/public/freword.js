@@ -93,7 +93,7 @@ setTimeout(()=>{
     key.id!='free'&& d3.select('.tra')
         .transition()
         .duration(500)
-        .attr('transform',`translate(0,${50*(j+1)})`)
+        .attr('transform',`translate(0,${70*(j+1)})`)
     },second*6)
 }
 function drawxlable(data,xScale){
@@ -104,14 +104,13 @@ function drawxlable(data,xScale){
 
     xlable.exit()
     .transition(t)
-      .attr("x", (d)=>{
-        //   console.log(d);
-          return 999;
-        })
+      .attr("opacity", 0)
       .remove();
 
-    xlable.transition(t)
-    .attr('x',(d)=>xScale(d)+ xScale.bandwidth()/2 + paddingleft)
+    xlable.attr('x',(d)=>xScale(d)+ xScale.bandwidth()/2 + paddingleft)
+    .attr("opacity", 0)
+    .transition(t)
+    .attr("opacity", 1)
 
     xlable.enter().append("text")
     .transition(t)

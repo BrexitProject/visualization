@@ -59,6 +59,7 @@ function draw(words){
         cloud.attr("transform", function(d) {
                     return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
                 })
+                // .style("font-size", 1)
                 .transition()
                 .duration(1000)
                 .style("font-size", function(d) { return d.size + "px"; })

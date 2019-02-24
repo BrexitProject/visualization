@@ -216,7 +216,7 @@ function frewordstatic(){
     },second*2)
 }
 drawarrow(xScale);
-drawxlable(['express','dailymail','dailystar','sun','mine','dailymirror','guardian','economist'],d3.scaleBand().domain(['express','dailymail','dailystar','sun','mine','dailymirror','guardian','economist']).range([0,width - paddingleft * 2]));
+drawxlable(['express','dailymail','dailystar','sun','inews','dailymirror','guardian','economist'],d3.scaleBand().domain(['express','dailymail','dailystar','sun','inews','dailymirror','guardian','economist']).range([0,width - paddingleft * 2]));
 // setTimeout(()=>{drawxlable(categorys,xScale);},second*3);
 setTimeout(()=>{
     // editorial().then(function(d){
