@@ -7,15 +7,15 @@ function freword() {
                     list:[],
                     id:'we'
                 },
-                'people':{        
-                    data:[],
-                    list:[],
-                    id:'people'
-                },
                 'country':{
                     data:[],
                     list:[],
                     id:'country'
+                },
+                'people':{        
+                    data:[],
+                    list:[],
+                    id:'people'
                 },
                 'free':{
                     data:[],
@@ -72,7 +72,7 @@ function drawcircle(key,xScale,j) {
         let tie = `M${cx - 1} ${cy+r} L ${cx - 1} ${cy+r} Q ${cx} ${cy+r} ${cx} ${cy+r} L ${cx + 1} ${cy+r}`
         return `M${cx-r} ${cy} C ${cx-r} ${cy},  ${cx-r} ${cy+r},  ${cx} ${cy+r} C ${cx} ${cy+r},  ${cx+r} ${cy+r},  ${cx+r} ${cy} C ${cx+r} ${cy},  ${cx+r} ${cy-r},  ${cx} ${cy-r} C ${cx} ${cy-r},  ${cx-r} ${cy-r},  ${cx-r} ${cy}` + tie
     })
-    .attr('fill','rgb(158, 22, 42)')
+    .attr('fill','#FF7F0E')
 
     d3.select('.axis').append('line').attr('id',key.id)
           .attr('y1',height / 2 - j*100)
