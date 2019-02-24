@@ -78,8 +78,8 @@
     }
 
     .container {
-      width: 1320px;
-      height: 720px;
+      width: 1430px;
+      height: 900px;
     }
 
     svg {
@@ -109,6 +109,28 @@
       fill-opacity: 0.9;
       text-anchor: middle;
     }
+
+    .downside {
+      overflow-y: auto;
+    }
+
+    div.lifeCycleItem-label {
+      display: inline-block;
+      vertical-align: middle;
+      /* border: 1px solid red; */
+      word-break: break-all;
+      text-align: center;
+      box-sizing: border-box;
+      /* padding-left: 5px; */
+    }
+
+    div.lifeCycleItem-bar {
+      display: inline-block;
+      vertical-align: middle;
+      /* border: 1px solid red; */
+      background-color: #909099;
+      opacity: 0.3;
+    }
   </style>
   <script src="public/d3.min.js"></script>
   <script src="public/labeler.js"></script>
@@ -118,9 +140,10 @@
   </div>
 </body>
 <script>
-  var margin = {top: 20, bottom: 100, left: 80, right: 30};
-  var svgWidth = 1100;
-  var svgHeight = 750;
+  var margin = {top: 10, bottom: 80, left: 150, right: 30};
+  var svgWidth = 1170;
+  var svgHeight = 740;
+  // var svgHeight = 550;
 
   var width=svgWidth - margin.left - margin.right;
   var height=svgHeight - margin.top - margin.bottom;
@@ -171,12 +194,13 @@
   let buttonSize = 40;
   let buttonPlay = true;
   let videoYOffset = 30;
+  let buttonXOffset = -15;
   let button = svg.append("image")
     .attr("class", "video-button")                              
     .attr('width', buttonSize)                     
     .attr('height', buttonSize)  
     .attr("xlink:href", d => `public/data/bubble/${buttonPlay ? 'play' : 'pause'}.svg`)
-    .attr("transform", `translate(${margin.left - buttonSize - 15},${margin.top + height + videoYOffset})`);
+    .attr("transform", `translate(${margin.left - buttonSize + buttonXOffset},${margin.top + height + videoYOffset})`);
 
   let sliderHeight = 10;
   let borderRadius = 5;
@@ -288,6 +312,7 @@
 
     let labelSet = dataArray.map(d => d.label.slice(1)).sort();
     createAsidePanel(labelSet);
+    createDownsidePanel(labelSet);
 
     var monthText = svg.append('g')
                    .append('text')
@@ -843,6 +868,46 @@
         .html(d => d);
 
       document.querySelector("div.aside").style.overflow = "auto";
+    }
+
+    function createDownsidePanel(labelSet) {
+      let downsideHeight = 140;
+
+      let downside = d3.select(".container")
+        .append("div")
+        .attr("class", "downside");
+
+      let slider = d3.select(".video-slider");     
+
+      document.querySelector("div.downside").style.width = `${svgWidth}px`;
+      document.querySelector("div.downside").style.height = `${downsideHeight}px`;
+      // document.querySelector("div.downside").style.margin = `0 0 0 ${slider.attr("x")}px`;
+
+      let rows = downside.selectAll(".lifeCycleRow")
+        .data(labelSet)
+        .enter()
+        .append("div")
+        .attr("class", "lifeCycleRow");
+
+      rows.append("div")
+        .attr("class", "lifeCycleItem-label")
+        .attr("id", d => `lifeCycleItem-label-${d}`)
+        .attr("width", `${margin.left}px`)
+        .style("max-width", `${margin.left}px`)
+        .style("min-width", `${margin.left}px`)
+        .style("min-height", `${slider.attr("height")}px`)
+        .html(d => d);
+
+      rows.append("div")
+        .attr("class", "lifeCycleItem-bar")
+        .attr("id", d => `lifeCycleItem-bar-${d}`)
+        .attr("width", `${slider.attr("width")}px`)
+        .style("max-width", `${slider.attr("width")}px`)
+        .style("min-width", `${slider.attr("width")}px`)
+        .attr("height", `${slider.attr("height")}px`)
+        .style("min-height", `${slider.attr("height")}px`)
+        .style("border-radius", `${slider.attr("rx")}px`);
+        // .html("sdfadsf");
     }
 
     function updateMask(selectedLabel) {
