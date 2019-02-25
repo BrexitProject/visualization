@@ -13,9 +13,9 @@ let transition = g.append('g').attr('class','tra').attr('transform','translate(0
 let axis = transition.append('g').attr('class','axis')
 let color =d3.scaleSequential(d3.interpolateViridis).domain([-1,1]).interpolator(d3.interpolateRdBu);
 let categorys =  ['express','sun','dailystar','dailymail','inews','guardian','ft','economist'];
-let word = ['we','people','country','free'];
+let word = ['we','country','people','free'];
 let xScale = d3.scaleBand().domain(categorys).range([0,width - paddingleft * 2]);
-let yScale = d3.scaleLinear().range([height ,170]).domain([0,0.6]);
+let yScale = d3.scaleLinear().range([height ,110]).domain([0,0.6]);
 // Constants
 const CANVASBALLOON = {
     KAPPA: (4 * (Math.sqrt(2) - 1))/3,
@@ -37,13 +37,13 @@ function free(free){
 }
 function drawAxis(){
     let axis = g.append('g')
-                    .attr('class','axis').attr('transform','translate(0,-170)')
+                    .attr('class','axis').attr('transform','translate(10,-110)')
         axis.append("g")
             .transition()
             .call(d3.axisLeft(yScale).ticks(7).tickFormat(d3.format(".0%")))
         axis.append("text")
             .attr('x',0)
-            .attr('y',170)
+            .attr('y',110)
             .attr('text-anchor','start')
             .text("/自由");
 }

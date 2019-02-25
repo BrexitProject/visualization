@@ -7,15 +7,15 @@ function freword() {
                     list:[],
                     id:'we'
                 },
-                'people':{        
-                    data:[],
-                    list:[],
-                    id:'people'
-                },
                 'country':{
                     data:[],
                     list:[],
                     id:'country'
+                },
+                'people':{        
+                    data:[],
+                    list:[],
+                    id:'people'
                 },
                 'free':{
                     data:[],
@@ -72,7 +72,7 @@ function drawcircle(key,xScale,j) {
         let tie = `M${cx - 1} ${cy+r} L ${cx - 1} ${cy+r} Q ${cx} ${cy+r} ${cx} ${cy+r} L ${cx + 1} ${cy+r}`
         return `M${cx-r} ${cy} C ${cx-r} ${cy},  ${cx-r} ${cy+r},  ${cx} ${cy+r} C ${cx} ${cy+r},  ${cx+r} ${cy+r},  ${cx+r} ${cy} C ${cx+r} ${cy},  ${cx+r} ${cy-r},  ${cx} ${cy-r} C ${cx} ${cy-r},  ${cx-r} ${cy-r},  ${cx-r} ${cy}` + tie
     })
-    .attr('fill','rgb(158, 22, 42)')
+    .attr('fill','#FF7F0E')
 
     d3.select('.axis').append('line').attr('id',key.id)
           .attr('y1',height / 2 - j*100)
@@ -93,7 +93,7 @@ setTimeout(()=>{
     key.id!='free'&& d3.select('.tra')
         .transition()
         .duration(500)
-        .attr('transform',`translate(0,${50*(j+1)})`)
+        .attr('transform',`translate(0,${70*(j+1)})`)
     },second*6)
 }
 function drawxlable(data,xScale){
@@ -104,14 +104,13 @@ function drawxlable(data,xScale){
 
     xlable.exit()
     .transition(t)
-      .attr("x", (d)=>{
-        //   console.log(d);
-          return 999;
-        })
+      .attr("opacity", 0)
       .remove();
 
-    xlable.transition(t)
-    .attr('x',(d)=>xScale(d)+ xScale.bandwidth()/2 + paddingleft)
+    xlable.attr('x',(d)=>xScale(d)+ xScale.bandwidth()/2 + paddingleft)
+    .attr("opacity", 0)
+    .transition(t)
+    .attr("opacity", 1)
 
     xlable.enter().append("text")
     .transition(t)
