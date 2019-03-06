@@ -152,13 +152,13 @@ function drawarrow(xScale) {
         .attr("y",height /2 + 90)
         .attr('text-anchor','start')
         .style('font-size','15px')
-        .text('脱欧')
+        .text('脱欧(leave)')
     let text2 = arrow.append("text")
         .attr("x",width)
         .attr("y",height /2 + 90)
         .attr('text-anchor','end')
         .style('font-size','15px')
-        .text('留欧')
+        .text('留欧(remain)')
 }
 function drawlegend(xScale){
     let lable = g.append('g').attr('transform',`translate(${xScale('economist')+xScale.bandwidth() / 2 + 30},${-50})`).attr('class','legend')
