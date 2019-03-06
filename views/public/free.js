@@ -45,7 +45,7 @@ function drawAxis(){
             .attr('x',0)
             .attr('y',110)
             .attr('text-anchor','start')
-            .text("/自由");
+            .text("/自由(free)");
 }
 function draw(centerX,centerY,radius){
     let topLeftCurveStartX = centerX - radius;
