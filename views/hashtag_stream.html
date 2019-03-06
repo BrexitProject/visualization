@@ -95,8 +95,8 @@
   months: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
   shortMonths: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
   });
-  var margin = { top: 80, bottom: 80, left: 80, right: 120 };
-  var svgWidth = 1000;
+  var margin = { top: 80, bottom: 80, left: 80, right: 160 };
+  var svgWidth = 1040;
   var svgHeight = 600;
 
   var width = svgWidth - margin.left - margin.right;
@@ -307,14 +307,19 @@
           .attr("opacity", 1);
       })
 
-
+    let textMapping = {
+      "苏格兰": "苏格兰(Scotland)",
+      "贸易": "贸易(Trade)",
+      "移民": "移民(Immigration)",
+      "爱尔兰": "爱尔兰(Ireland)"
+    };
     svg2.selectAll(".label")
       .data(textData)
       .enter().append('text')
       .attr('class', 'label')
       .attr("x", width + margin.left + 30)
       .attr("y", (d,i) => -25*i + margin.top + 100+5)
-      .text(d => d.text)
+      .text(d => textMapping[d.text])
       .style('text-transform', 'capitalize')
       .style('fill', '#333333')
       .attr("font-family", "sans-serif")

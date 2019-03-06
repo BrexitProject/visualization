@@ -310,12 +310,12 @@ function updateYScale(yScale, domain, ofJuneFlag) {
 
 function renderAll(stackedData, areaGenerator, colorSet, selector) {
   let mapping = {
-    "what-is-eu": "什么是欧盟",
-    "what-is-brexit": "什么是脱欧",
-    "is-russia-in-the-eu": "俄罗斯是不是欧盟国家",
-    "what-is-article-50": "什么是脱欧法案",
-    "is-sweden-in-the-eu": "瑞典是不是欧盟国家",
-    "what-is-single-market": "什么是单一市场"
+    "what-is-eu": "什么是欧盟(what is eu)",
+    "what-is-brexit": "什么是脱欧(what is brexit)",
+    "is-russia-in-the-eu": "俄罗斯是不是欧盟国家(is russia in the eu)",
+    "what-is-article-50": "什么是脱欧法案(what is article 50)",
+    "is-sweden-in-the-eu": "瑞典是不是欧盟国家(is sweden in the eu)",
+    "what-is-single-market": "什么是单一市场(what is single market)"
   };
   // selector.selectAll('path')
   //   .data(bindedData)
