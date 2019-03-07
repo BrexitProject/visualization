@@ -238,14 +238,15 @@
     function tweenYear(year){
       dot.data(getDataByMonth(dataArray,year)).call(position);
       textPosition(getDataByMonth(dataArray,year));
-      if(year<=new Date(2018,11)){
-        let tmpYear = new Date(year);
-        year.setMonth(year.getMonth() + 1);
-        if (+year === +new Date(2019, 0)) {
-          monthText.text(tmpYear.getFullYear()+'/'+(tmpYear.getMonth()+1));
-        } else {
+      if (year <= new Date(2018,11)) {
+          // let tmpYear = new Date(year);
+          // year.setMonth(year.getMonth() + 1);
+          // if (+year === +new Date(2019, 0)) {
+          //   monthText.text(year.getFullYear()+'/'+(year.getMonth()+1));
+          // } else {
+          //   monthText.text(year.getFullYear()+'/'+(year.getMonth()+1));
+          // }
           monthText.text(year.getFullYear()+'/'+(year.getMonth()+1));
-        }
       }
     }
     function textPosition(textData){

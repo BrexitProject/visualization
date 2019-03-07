@@ -101,7 +101,7 @@
       background-color: rgba(144, 144, 153, 0.1);
     } */
 
-    .pastTime {
+    .pastTime, .textDateLabel {
       font-size: 14px;
       font-weight: 700;
       font-family: 'Helvetica Neue';
@@ -380,22 +380,31 @@
         .style("fill-opacity", 0);
 
       var text = svg.append("g")
-            .selectAll(".text")
-            .data(getDataByMonth(dataArray,new Date(2015,11)))
-            .enter().append("text")
-            .attr("class", "textLabel")
-            .attr("x", function(d) {
-              return d.x;
-            }).attr("y", function(d) {
-              return d.y;
-            })
-            .attr("data-label", d => d.label.slice(1))
-            .text("")
-            .style("text-anchor", "middle")
-            .style("fill", function(d) { return "#242424"; })
-            .style("display",function(d) {
-              if(d.freq<50&&d.forward<2){
-              return 'none';}});
+        .selectAll(".text")
+        .data(getDataByMonth(dataArray,new Date(2015,11)))
+        .enter().append("text")
+        .attr("class", "textLabel")
+        .attr("x", function(d) {
+          return d.x;
+        }).attr("y", function(d) {
+          return d.y;
+        })
+        .attr("data-label", d => d.label.slice(1))
+        .text("")
+        .style("text-anchor", "middle")
+        .style("fill", function(d) { return "#242424"; })
+        .style("display",function(d) {
+          if(d.freq<50&&d.forward<2){
+          return 'none';}});
+
+      let textDateLabel = svg.append("g")
+        .selectAll(".text")
+        .data(getDataByMonth(dataArray,new Date(2015,11)))
+        .enter()
+        .append("text")
+        .attr("class", "textDateLabel")
+        .attr("id", d => `textDateLabel-${d.label.slice(1)}`)
+        .style("display", "none");
 
       let mouseoverDot = null;
       let timeline = generateTimeline(dataArray);
@@ -509,6 +518,7 @@
               return r(d.trend);
             }
           })
+          .attr("data-date", d => d3.timeFormat("%y-%m-%d-%h-%m-%s")(d.time))
           .style("fill", function(d) { return color(d.trend); })
           .style("stroke",function(d) { return color(d.trend); })
           .style("display", function(d) {
@@ -517,6 +527,15 @@
               return "none";
             }
           });
+      }
+
+      function textDateLabelPosition(textDateLabel) {
+        textDateLabel
+          .attr("transform", d => `translate(${x(d.forward + 1) + margin.left}, ${(() => {
+            let radius = d.freq < 50 && d.forward < 2 ? 2 : r(d.trend);
+            return y(d.freq + 1)+margin.top - radius;
+          })()})`)
+          .text(d => d3.timeFormat("%Y.%m.%d")(d.time));
       }
 
       function horCursorPosition(line) {
@@ -642,6 +661,8 @@
 
         mouseoverDot = label;
 
+        d3.select(`#textDateLabel-${label}`).style("display", "block");
+
         updateMask(selectedLabel);
 
         d3.select(".header")
@@ -666,6 +687,8 @@
 
       function mouseOutHandler() {
         let label = d3.select(this).attr("data-label");
+
+        d3.select(`#textDateLabel-${label}`).style("display", "none");
 
         mouseoverDot = null;
 
@@ -733,6 +756,7 @@
         let dataset = getDataByMonth(dataArray,year);
 
         dot.data(dataset).call(position);
+        textDateLabel.data(dataset).call(textDateLabelPosition);
 
         updateTraj(year);
 
@@ -743,13 +767,14 @@
         textPosition(dataset);
 
         if (year <= new Date(2018,11)) {
-          let tmpYear = new Date(year);
-          year.setMonth(year.getMonth() + 1);
-          if (+year === +new Date(2019, 0)) {
-            monthText.text(tmpYear.getFullYear()+'/'+(tmpYear.getMonth()+1));
-          } else {
-            monthText.text(year.getFullYear()+'/'+(year.getMonth()+1));
-          }
+          // let tmpYear = new Date(year);
+          // year.setMonth(year.getMonth() + 1);
+          // if (+year === +new Date(2019, 0)) {
+          //   monthText.text(year.getFullYear()+'/'+(year.getMonth()+1));
+          // } else {
+          //   monthText.text(year.getFullYear()+'/'+(year.getMonth()+1));
+          // }
+          monthText.text(year.getFullYear()+'/'+(year.getMonth()+1));
         }
         let tmpYear = new Date(year);
         updateVideoAnchor(tmpYear);
