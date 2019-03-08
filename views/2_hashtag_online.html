@@ -97,10 +97,6 @@
       background-color: rgba(144, 144, 153, 0);
     }
 
-    /* div.labelRow.disabled {
-      background-color: rgba(144, 144, 153, 0.1);
-    } */
-
     .pastTime, .textDateLabel {
       font-size: 14px;
       font-weight: 700;
@@ -138,6 +134,22 @@
       border-radius: 15px;
       vertical-align: middle;
       text-align: center;
+    }
+
+    .pastCircle {
+      display: block;
+    }
+
+    .pastCircle.disabled {
+      display: none;
+    }
+
+    .pastLine {
+      display: block;
+    }
+
+    .pastLine.disabled {
+      display: none;
     }
   </style>
   <script src="public/d3.min.js"></script>
@@ -306,7 +318,7 @@
 
     var dataArray=[];
     d3.csv('public/data/hashtag_bubble_deleted.csv').then(function(data) {
-      console.log(data);
+
       data.forEach(d => {
         let tmp={};
         tmp.label=d.hashtag.trim();
@@ -320,7 +332,7 @@
         tmp.value.sort((a,b)=> a[0]-b[0]);
         dataArray.push(tmp);
       });
-      console.log(dataArray);
+
 
       let labelSet = dataArray.map(d => d.label.slice(1)).sort();
       createHeaderPanel();
@@ -408,9 +420,14 @@
 
       let mouseoverDot = null;
       let timeline = generateTimeline(dataArray);
-      let pastTimeline = initSelectionTimeline(labelSet);
+      // let pastTimeline = initSelectionTimeline(labelSet);
       let pastCircle = initSelectionPastCircle(labelSet);
       let pastLine = initSelectionPastLine(labelSet);
+
+      // pre-calculate path of all hashtag
+      preCalcSelectionPast(labelSet, timeline);
+
+
       window.timer = [];
       let timer = svg.append("svg:text")
         .attr("T", 0)
@@ -430,7 +447,7 @@
 
       let checkboxs = d3.selectAll("input");
 
-      checkboxs.on("change", checkedHandler)
+      checkboxs.on("change", checkedHandler);
       button.on("click", buttonClickedHandler);
       slider.on("click", sliderClickedHandler);
       anchor.call(d3.drag()
@@ -447,8 +464,7 @@
         let dateInterpolator = d3.interpolateDate(new Date(2015,11), new Date(2018,11));
         let formatter = d3.timeFormat("%Y-%m-%d-%H-%M-%S");
         let parser = d3.timeParse("%Y-%m-%d-%H-%M-%S");
-        let dateArray = tweenValue.map(t => 
-        formatter(dateInterpolator(t)));
+        let dateArray = tweenValue.map(t => formatter(dateInterpolator(t)));
         let dataset = dateArray.map(date => getDataByMonth(dataArray, parser(date)));
 
         let lifeCycle = {};
@@ -518,7 +534,6 @@
               return r(d.trend);
             }
           })
-          .attr("data-date", d => d3.timeFormat("%y-%m-%d-%h-%m-%s")(d.time))
           .style("fill", function(d) { return color(d.trend); })
           .style("stroke",function(d) { return color(d.trend); })
           .style("display", function(d) {
@@ -568,7 +583,7 @@
         let currentDate = dateScale.invert(currentTime);
 
         updateMask(selectedLabel);
-        updatePast(d3.select(this), currentDate, timeline);
+        updatePast(d3.select(this), currentDate);
         
         let checkbox = d3.select(this);
         let label = checkbox.attr("name");
@@ -618,6 +633,10 @@
         startTime(easeFunc, totalTime, totalTime - currentTime, dateScale);
         buttonPlay = true;
         button.attr("xlink:href", d => `public/data/bubble/${buttonPlay ? 'play' : 'pause'}.svg`);
+
+        // let selectedLabel = getSelectedLabel();
+        // let currentDate = dateScale.invert(currentTime);
+        // selectedLabel.forEach(label => updatePast(d3.select(`#input-${label}`), currentDate, true));
       }
 
       function dragStartedHandler() {
@@ -647,10 +666,16 @@
       }
 
       function dragendedHandler() {
+        let currentTime = getTime();
+
         buttonPlay = true;
         button.attr("xlink:href", d => `public/data/bubble/${buttonPlay ? 'play' : 'pause'}.svg`);
-        let timeTodo = totalTime - getTime();
+        let timeTodo = totalTime - currentTime;
         startTime(easeFunc, totalTime, timeTodo, dateScale);
+
+        // let selectedLabel = getSelectedLabel();
+        // let currentDate = dateScale.invert(currentTime);
+        // selectedLabel.forEach(label => updatePast(d3.select(`#input-${label}`), currentDate, true));
 
         button.on("click", buttonClickedHandler);
       }
@@ -767,13 +792,6 @@
         textPosition(dataset);
 
         if (year <= new Date(2018,11)) {
-          // let tmpYear = new Date(year);
-          // year.setMonth(year.getMonth() + 1);
-          // if (+year === +new Date(2019, 0)) {
-          //   monthText.text(year.getFullYear()+'/'+(year.getMonth()+1));
-          // } else {
-          //   monthText.text(year.getFullYear()+'/'+(year.getMonth()+1));
-          // }
           monthText.text(year.getFullYear()+'/'+(year.getMonth()+1));
         }
         let tmpYear = new Date(year);
@@ -785,75 +803,8 @@
         let date = d3.timeFormat("%Y%m%d")(currentDate);
 
         selectedLabel.forEach(label => {
-          let targetTimeline = pastTimeline[label];
-          let targetPastCircle = pastCircle[label];
-          let targetPastLine = pastLine[label];
-          let targetCircle = d3.select(`.dot[data-label=${label}]`);
-
-          let lineEle = targetPastLine["ele"];
-          let lineData = targetPastLine["data"];
-          let line = lineEle.select(`#pastLine-${label}-${targetPastCircle["data"][targetPastCircle["data"].length - 1]["date"]}`);
-          let datum = lineData[lineData.length - 1];
-          let lineCoord = computeCoord(datum.x, datum.y, datum.r, targetCircle.attr("cx"), targetCircle.attr("cy"), targetCircle.attr("r"));
-          line.attr("x1", lineCoord.x1)
-              .attr("y1", lineCoord.y1)
-              .attr("x2", lineCoord.x2)
-              .attr("y2", lineCoord.y2);
-
-          if (targetTimeline.length > 0 && currentDate >= targetTimeline[0]) {
-
-            if (targetTimeline.length > 1) {
-              let circleEle = targetPastCircle["ele"];
-              circleEle.append("text")
-                .attr("class", "pastTime")
-                .attr("id", `pastTime-${label}-${date}`)
-                .attr("x", targetCircle.attr("cx"))
-                .attr("y", parseFloat(targetCircle.attr("cy")) - parseFloat(targetCircle.attr("r")))
-                .text(d3.timeFormat("%Y.%m.%d")(currentDate))
-                .style("display", "none");
-              circleEle.append("circle")
-                .attr("id", `pastCircle-${label}-${date}`)
-                .attr("cx", targetCircle.attr("cx"))
-                .attr("cy", targetCircle.attr("cy"))
-                .attr("r", targetCircle.attr("r"))
-                .style("fill", targetCircle.style("fill"))
-                .style("stroke", targetCircle.style("stroke"))
-                .on("mouseover", function() {
-                  d3.select(`#pastTime-${label}-${d3.select(this).attr("id").split("-")[2]}`)
-                    .style("display", "block");
-                })
-                .on("mouseout", function() {
-                  d3.select(`#pastTime-${label}-${d3.select(this).attr("id").split("-")[2]}`)
-                    .style("display", "none");
-                });
-              
-              lineEle.append("line")
-                .attr("class", "pastLine")
-                .attr("id", `pastLine-${label}-${date}`)
-                .attr("x1", parseFloat(targetCircle.attr("cx")) + parseFloat(targetCircle.attr("r")))
-                .attr("y1", parseFloat(targetCircle.attr("cy")) + parseFloat(targetCircle.attr("r")))
-                .attr("x2", parseFloat(targetCircle.attr("cx")) + parseFloat(targetCircle.attr("r")))
-                .attr("y2", parseFloat(targetCircle.attr("cy")) + parseFloat(targetCircle.attr("r")))
-                .style("stroke", targetCircle.style("stroke"));
-            }
-
-            pastCircle[label]["data"].push({
-              cx: targetCircle.attr("cx"),
-              cy: targetCircle.attr("cy"),
-              r: targetCircle.attr("r"),
-              fill: targetCircle.style("fill"),
-              date: date,
-            });
-            pastLine[label]["data"].push({
-              x: targetCircle.attr("cx"),
-              y: targetCircle.attr("cy"),
-              r: targetCircle.attr("r"),
-              stroke: targetCircle.style("stroke"),
-              date: date,
-            });
-
-            targetTimeline.shift();
-          }
+          let selector = d3.select(`#input-${label}`);
+          updatePast(selector, currentDate);
         });
       }
 
@@ -914,7 +865,6 @@
           }).attr("y", function(d) {
             return d.y;
           })
-          // .text("")
           .style("text-anchor", "middle")
           .style("fill", function(d) { return "#242424"; })
           .style("display",function(d) {
@@ -977,7 +927,6 @@
 
         document.querySelector("div.downside").style.width = `${svgWidth}px`;
         document.querySelector("div.downside").style.height = `${downsideHeight}px`;
-        // document.querySelector("div.downside").style.margin = `0 0 0 ${slider.attr("x")}px`;
 
         let rows = downside.selectAll(".lifeCycleRow")
           .data(labelSet)
@@ -1116,15 +1065,8 @@
 
       function generateTimeline(dataArray) {
         let timeline = dataArray[0]["value"].map(d => d[0]);
+        timeline.splice(7, 1);
         return timeline;
-      }
-
-      function initSelectionTimeline(labelSet) {
-        let pastTimeline = {};
-
-        labelSet.forEach(label => pastTimeline[label] = []);
-
-        return pastTimeline;
       }
 
       function initSelectionPastCircle(labelSet) {
@@ -1153,73 +1095,166 @@
         return pastLine;
       }
 
-      function updatePast(selector, currentDate, timeline) {
-        let label = selector.attr("name");
-        let date = d3.timeFormat("%Y%m%d")(currentDate);
+      function preCalcSelectionPast(labelSet, timeline) {
+        let tweenValue = getTweenValue();
+        let dateInterpolator = d3.interpolateDate(new Date(2015,11), new Date(2018,11));
+        let formatter = d3.timeFormat("%Y-%m-%d-%H-%M-%S");
+        let parser = d3.timeParse("%Y-%m-%d-%H-%M-%S");
+        let dateArray = tweenValue.map(t => parser(formatter(dateInterpolator(t))));
 
-        if (selector.property("checked")) {
-          pastTimeline[label] = timeline.slice()
-          let targetTimeline = pastTimeline[label];
-          while (targetTimeline.length > 0 && targetTimeline[0] <= currentDate) {
-            targetTimeline.shift();
-          }
+        labelSet.forEach((label, index) => {
+          calcLabelPast(label, index, timeline.slice(), dateArray);
+        });
+      }
 
-          let targetCircle = d3.select(`.dot[data-label=${label}]`);
-          pastCircle[label]["data"].push({
-            cx: targetCircle.attr("cx"),
-            cy: targetCircle.attr("cy"),
-            r: targetCircle.attr("r"),
-            fill: targetCircle.style("fill"),
-            date: date,
-          });
-          pastCircle[label]["ele"].append("text")
-            .attr("class", "pastTime")
-            .attr("id", `pastTime-${label}-${date}`)
-            .attr("x", targetCircle.attr("cx"))
-            .attr("y", parseFloat(targetCircle.attr("cy")) - parseFloat(targetCircle.attr("r")))
-            .text(d3.timeFormat("%Y.%m.%d")(currentDate))
-            .style("display", "none");
-          pastCircle[label]["ele"].append("circle")
-            .attr("id", `pastCircle-${label}-${date}`)
-            .attr("cx", targetCircle.attr("cx"))
-            .attr("cy", targetCircle.attr("cy"))
-            .attr("r", targetCircle.attr("r"))
-            .style("fill", targetCircle.style("fill"))
-            .style("stroke", targetCircle.style("stroke"))
-            .on("mouseover", function() {
-              d3.select(`#pastTime-${label}-${d3.select(this).attr("id").split("-")[2]}`)
-                .style("display", "block");
-            })
-            .on("mouseout", function() {
-              d3.select(`#pastTime-${label}-${d3.select(this).attr("id").split("-")[2]}`)
-                .style("display", "none");
+      function calcLabelPast(label, index, timeline, dateArray) {
+        let targetPastCircle = pastCircle[label];
+        let targetPastLine = pastLine[label];
+
+        dateArray.forEach(currentDate => {
+          if (currentDate >= timeline[0]) {
+            let data = getDataByMonth(dataArray, currentDate)[index]; 
+            let cx = x(data.forward + 1) + margin.left;
+            let cy = y(data.freq + 1) + margin.top;
+            let radius = data.freq < 50 && data.forward < 2 ? 2 : r(data.trend);
+            let fill = color(data.trend);
+            let date = d3.timeFormat("%Y%m%d%H")(currentDate);
+
+            targetPastCircle["ele"].append("text")
+              .attr("class", "pastTime")
+              .classed(`pastTime-${label}`, true)
+              .attr("id", `pastTime-${label}-${date}`)
+              .attr("x", cx)
+              .attr("y", cy - radius)
+              .text(d3.timeFormat("%Y.%m.%d")(currentDate))
+              .style("display", "none");
+            targetPastCircle["ele"].append("circle")
+              .attr("class", "pastCircle")
+              .attr("id", `pastCircle-${label}-${date}`)
+              .attr("cx", cx)
+              .attr("cy", cy)
+              .attr("r", radius)
+              .style("fill", fill)
+              .style("stroke", fill)
+              .classed("disabled", true)
+              .on("mouseover", function() {
+                d3.select(`#pastTime-${label}-${d3.select(this).attr("id").split("-")[2]}`)
+                  .style("display", "block");
+              })
+              .on("mouseout", function() {
+                d3.select(`#pastTime-${label}-${d3.select(this).attr("id").split("-")[2]}`)
+                  .style("display", "none");
+              });
+
+            
+            if (targetPastLine["data"].length > 0) {
+              let length = targetPastLine["data"].length;
+              let prevData = targetPastLine["data"][length - 1];
+              let prevDate = prevData["date"];
+              let prevLine = targetPastLine["ele"].select(`#pastLine-${label}-${prevData["date"]}`);
+              let lineCoord = computeCoord(prevData.cx, prevData.cy, prevData.r, cx, cy, radius);
+              prevLine.attr("x1", lineCoord.x1)
+                  .attr("y1", lineCoord.y1)
+                  .attr("x2", lineCoord.x2)
+                  .attr("y2", lineCoord.y2);
+            }
+            targetPastLine["ele"].append("line")
+              .attr("class", "pastLine")
+              .classed("disabled", true)
+              .attr("id", `pastLine-${label}-${date}`)
+              .attr("x1", cx + radius)
+              .attr("y1", cy + radius)
+              .attr("x2", cx + radius)
+              .attr("y2", cy + radius)
+              .style("stroke", fill);
+
+            targetPastCircle["data"].push({
+              cx, cy, r: radius, fill, date,
             });
-          pastLine[label]["ele"].append("line")
-            .attr("class", "pastLine")
-            .attr("id", `pastLine-${label}-${date}`)
-            .attr("x1", parseFloat(targetCircle.attr("cx")) + parseFloat(targetCircle.attr("r")))
-            .attr("y1", parseFloat(targetCircle.attr("cy")) + parseFloat(targetCircle.attr("r")))
-            .attr("x2", parseFloat(targetCircle.attr("cx")) + parseFloat(targetCircle.attr("r")))
-            .attr("y2", parseFloat(targetCircle.attr("cy")) + parseFloat(targetCircle.attr("r")))
-            .style("stroke", targetCircle.style("stroke"));
-              
+            targetPastLine["data"].push({
+              cx, cy, r: radius, stroke: fill, date,
+            });
 
-          pastLine[label]["data"].push({
-            x: targetCircle.attr("cx"),
-            y: targetCircle.attr("cy"),
-            r: targetCircle.attr("r"),
-            stroke: targetCircle.style("stroke"),
-            date: date,
-          });
-        } else {
-          pastTimeline[label] = [];
+            timeline.shift();
+          }
+        });
+      }
 
-          pastCircle[label]["ele"].selectAll("*").remove();
-          pastCircle[label]["data"] = [];
+      function updatePast(selector, currentDate, reRenderLine = false) {
+        let label = selector.attr("name");
+        let date = d3.timeFormat("%Y%m%d%H")(currentDate);
 
-          pastLine[label]["ele"].selectAll("*").remove();
-          pastLine[label]["data"] = [];
+        let targetPastCircle = pastCircle[label];
+        let targetPastLine = pastLine[label];
+
+        // if input is unchecked, we just disable all of them
+        if (!selector.property("checked")) {
+          targetPastCircle["ele"].selectAll("circle").classed("disabled", true);
+          targetPastLine["ele"].selectAll("line").classed("disabled", true);
+          return;
         }
+        // else we filter elements by currentDate
+        targetPastCircle["ele"].selectAll("circle")
+          .filter(function() {
+            return d3.select(this).attr("id").split("-")[2] < date;
+          })
+          .classed("disabled", false);
+
+        targetPastCircle["ele"].selectAll("circle")
+          .filter(function() {
+            return d3.select(this).attr("id").split("-")[2] >= date;
+          })
+          .classed("disabled", true);
+
+        targetPastLine["ele"].selectAll("line")
+          .filter(function() {
+            return d3.select(this).attr("id").split("-")[2] < date;
+          })
+          .classed("disabled", false);
+
+        targetPastLine["ele"].selectAll("line")
+          .filter(function() {
+            return d3.select(this).attr("id").split("-")[2] >= date;
+          })
+          .classed("disabled", true);
+        // we update the newest line
+        let index = -1;
+        if (targetPastLine["data"].length > 0) {
+          let prevData = targetPastLine["data"].find((d, i) => {
+            if (d["date"] < date) {
+              if (i < targetPastLine["data"].length - 1 && targetPastLine["data"][i + 1]["date"] >= date) {
+                index = i;
+                return true;
+              } else if (i === targetPastLine["data"].length - 1) {
+                index = i;
+                return true;
+              }
+            }
+            return false;
+          });
+          let targetCircle = d3.select(`.dot[data-label = ${label}]`);
+          let prevLine = targetPastLine["ele"].select(`#pastLine-${label}-${prevData["date"]}`);
+          let lineCoord = computeCoord(prevData.cx, prevData.cy, prevData.r, targetCircle.attr("cx"), targetCircle.attr("cy"), targetCircle.attr("r"));
+
+          prevLine.attr("x1", lineCoord.x1)
+            .attr("y1", lineCoord.y1)
+            .attr("x2", lineCoord.x2)
+            .attr("y2", lineCoord.y2);
+        }
+
+        // rerender line when roll-back or fast-forward happens
+        // if (reRenderLine && index > -1) {
+        //   for (let i = 0; i < index; i += 1) {
+        //     let data1 = targetPastLine["data"][i];
+        //     let data2 = targetPastLine["data"][i + 1];
+        //     let ptrLine = targetPastLine["ele"].select(`#pastLine-${label}-${data1["date"]}`);
+        //     let lineCoord = computeCoord(data1.cx, data1.cy, data1.r, data2.cx, data2.cy, data2.r);
+        //     ptrLine.attr("x1", lineCoord.x1)
+        //       .attr("y1", lineCoord.y1)
+        //       .attr("x2", lineCoord.x2)
+        //       .attr("y2", lineCoord.y2);
+        //   }
+        // }
       }
 
     });
