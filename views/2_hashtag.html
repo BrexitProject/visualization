@@ -226,11 +226,14 @@
           .style("display",function(d) {
             if(d.freq<50&&d.forward<2){
             return 'none';}});
+
+    window.timer = [];
     svg.transition()
-       .duration(150000)
+       .duration(120000)
        .ease(d3.easeLinear)
        .tween('time',()=>{
         return function(t) {
+          window.timer.push(t);
           var month = d3.interpolateDate(new Date(2015,11),new Date(2018,11))
           tweenYear(month(t));
         }
