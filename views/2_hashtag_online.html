@@ -144,11 +144,11 @@
       display: none;
     }
 
-    .pastLine {
+    .pastLine, .pastLineMotion {
       display: block;
     }
 
-    .pastLine.disabled {
+    .pastLine.disabled, .pastLineMotion.disabled {
       display: none;
     }
   </style>
@@ -1089,6 +1089,8 @@
         labelSet.forEach(label => pastLine[label] = {
           ele: gPastLine.append("g")
             .attr("class", `pastLine-${label}`),
+          eleMotion: gPastLine.append("g")
+            .attr("class", `pastLineMotion-${label}`),
           data: [],
         });
 
@@ -1167,6 +1169,15 @@
               .attr("x2", cx + radius)
               .attr("y2", cy + radius)
               .style("stroke", fill);
+            targetPastLine["eleMotion"].append("line")
+              .attr("class", "pastLineMotion")
+              .classed("disabled", true)
+              .attr("id", `pastLineMotion-${label}-${date}`)
+              .attr("x1", cx + radius)
+              .attr("y1", cy + radius)
+              .attr("x2", cx + radius)
+              .attr("y2", cy + radius)
+              .style("stroke", fill);
 
             targetPastCircle["data"].push({
               cx, cy, r: radius, fill, date,
@@ -1191,6 +1202,7 @@
         if (!selector.property("checked")) {
           targetPastCircle["ele"].selectAll("circle").classed("disabled", true);
           targetPastLine["ele"].selectAll("line").classed("disabled", true);
+          targetPastLine["eleMotion"].selectAll("line").classed("disabled", true);
           return;
         }
         // else we filter elements by currentDate
@@ -1208,53 +1220,52 @@
 
         targetPastLine["ele"].selectAll("line")
           .filter(function() {
-            return d3.select(this).attr("id").split("-")[2] < date;
+            let nxSibling = d3.select(this.nextSibling);
+            let node = d3.select(this);
+            return node.attr("id").split("-")[2] < date && nxSibling.attr("id").split("-")[2] < date;
           })
           .classed("disabled", false);
 
         targetPastLine["ele"].selectAll("line")
           .filter(function() {
-            return d3.select(this).attr("id").split("-")[2] >= date;
+            let nxSibling = d3.select(this.nextSibling);
+            let node = d3.select(this);
+            return node.attr("id").split("-")[2] >= date || node.attr("id").split("-")[2] < date && nxSibling.attr("id").split("-")[2] >= date;
           })
           .classed("disabled", true);
-        // we update the newest line
-        let index = -1;
-        if (targetPastLine["data"].length > 0) {
-          let prevData = targetPastLine["data"].find((d, i) => {
-            if (d["date"] < date) {
-              if (i < targetPastLine["data"].length - 1 && targetPastLine["data"][i + 1]["date"] >= date) {
-                index = i;
-                return true;
-              } else if (i === targetPastLine["data"].length - 1) {
-                index = i;
-                return true;
-              }
-            }
-            return false;
-          });
-          let targetCircle = d3.select(`.dot[data-label = ${label}]`);
-          let prevLine = targetPastLine["ele"].select(`#pastLine-${label}-${prevData["date"]}`);
-          let lineCoord = computeCoord(prevData.cx, prevData.cy, prevData.r, targetCircle.attr("cx"), targetCircle.attr("cy"), targetCircle.attr("r"));
 
-          prevLine.attr("x1", lineCoord.x1)
+        let index = -1;
+        targetPastLine["eleMotion"].selectAll("line")
+          .filter(function(_, i) {
+            let nxSibling = d3.select(this.nextSibling);
+            let node = d3.select(this);
+            if (node.attr("id").split("-")[2] < date && nxSibling.attr("id").split("-")[2] >= date) {
+              index = i;
+              return true;
+            } 
+            return false;
+          })
+          .classed("disabled", false);
+
+        targetPastLine["eleMotion"].selectAll("line")
+          .filter(function() {
+            let nxSibling = d3.select(this.nextSibling);
+            let node = d3.select(this);
+            return node.attr("id").split("-")[2] >= date || nxSibling.attr("id").split("-")[2] < date; 
+          })
+          .classed("disabled", true);
+
+        if (index >= 0) {
+          let data = targetPastLine["data"][index];
+          let line = targetPastLine["eleMotion"].select(`#pastLineMotion-${label}-${data.date}`);
+          let targetCircle = d3.select(`.dot[data-label = ${label}]`);
+          let lineCoord = computeCoord(data.cx, data.cy, data.r, targetCircle.attr("cx"), targetCircle.attr("cy"), targetCircle.attr("r"));
+          line.attr("x1", lineCoord.x1)
             .attr("y1", lineCoord.y1)
             .attr("x2", lineCoord.x2)
             .attr("y2", lineCoord.y2);
         }
-
-        // rerender line when roll-back or fast-forward happens
-        // if (reRenderLine && index > -1) {
-        //   for (let i = 0; i < index; i += 1) {
-        //     let data1 = targetPastLine["data"][i];
-        //     let data2 = targetPastLine["data"][i + 1];
-        //     let ptrLine = targetPastLine["ele"].select(`#pastLine-${label}-${data1["date"]}`);
-        //     let lineCoord = computeCoord(data1.cx, data1.cy, data1.r, data2.cx, data2.cy, data2.r);
-        //     ptrLine.attr("x1", lineCoord.x1)
-        //       .attr("y1", lineCoord.y1)
-        //       .attr("x2", lineCoord.x2)
-        //       .attr("y2", lineCoord.y2);
-        //   }
-        // }
+        
       }
 
     });
