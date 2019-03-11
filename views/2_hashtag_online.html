@@ -435,7 +435,6 @@
       preCalcSelectionPast(labelSet, timeline);
 
 
-      window.timer = [];
       let timer = svg.append("svg:text")
         .attr("T", 0)
         .text("");
@@ -618,9 +617,12 @@
       }
 
       function sliderClickedHandler() {
-        buttonPlay = false;
-        button.attr("xlink:href", d => `public/data/bubble/${buttonPlay ? 'play' : 'pause'}.svg`);
-        stopTime();
+        if (buttonPlay) {
+          buttonPlay = false;
+          button.attr("xlink:href", d => `public/data/bubble/${buttonPlay ? 'play' : 'pause'}.svg`);
+          stopTime();
+          return;
+        }
 
         let anchorScale = d3.scaleLinear()
           .domain([0, width])
@@ -756,7 +758,6 @@
         .tween('time', () => {
           return function(t) {
             var month = d3.interpolateDate(dateScale.invert(totalTime - timeTodo), new Date(2018,11));
-            window.timer.push(t);
             tweenYear(month(t));
           }
         });
