@@ -130,6 +130,7 @@
     }
 
     .header {
+      box-sizing: border-box;
       overflow-y: auto;
       border: 1px solid white;
       border-radius: 15px;
@@ -139,9 +140,11 @@
       font-family: 'Noto Sans TC';
     }
 
-    ::-webkit-scrollbar {
+    .header::-webkit-scrollbar {
       width: 0px;
     }
+
+    /* .aside */
 
     .pastCircle {
       display: block;
