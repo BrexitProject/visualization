@@ -144,7 +144,31 @@
       width: 0px;
     }
 
-    /* .aside */
+    .aside::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .aside::-webkit-scrollbar-button {
+      width: 8px;
+      height:5px;
+    }
+
+    .aside::-webkit-scrollbar-track {
+      background:#eee;
+      border: thin solid lightgray;
+      box-shadow: 0px 0px 3px #dfdfdf inset;
+      border-radius:10px;
+    }
+
+    .aside::-webkit-scrollbar-thumb {
+      background-color: rgba(144, 144, 153, 0.5);
+      border: thin solid rgba(144, 144, 153, 0.5);
+      border-radius:10px;
+    }
+
+    .aside::-webkit-scrollbar-thumb:hover {
+      background-color:rgba(144, 144, 153, 1);
+    } 
 
     .pastCircle {
       display: block;
