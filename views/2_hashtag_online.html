@@ -91,11 +91,26 @@
       /* border: 1px solid black; */
       display: inline-block;
       overflow-y: auto;
+      line-height: 24px;
     }
 
     div.labelRow {
-      margin: 5px 3px, 5px, 4px;
-      background-color: rgba(144, 144, 153, 0);
+      /* margin: 5px 3px, 5px, 4px; */
+      /* background-color: rgba(144, 144, 153, 0); */
+      /* color: #1DA1F2; */
+      font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+      display: flex;
+      align-items: center;
+      font-size: 16px;
+    }
+
+    input[type=checkbox] {
+      transform: scale(1.5);
+      margin: 10px;
+    }
+
+    label {
+      color: #1DA1F2;
     }
 
     .pastTime, .textDateLabel {
@@ -369,6 +384,7 @@
 
 
       let labelSet = dataArray.map(d => d.label.slice(1)).sort();
+      let twitterCapital = getTwitterCapital();
       createHeaderPanel();
       createAsidePanel(labelSet);
       createDownsidePanel(labelSet);
@@ -939,7 +955,7 @@
         rows.append("label")
           .attr("id", d => `label-${d}`)
           .attr("for", d => d)
-          .html(d => d);
+          .html(d => `#${twitterCapital[d]}`);
 
         document.querySelector("div.aside").style.overflow = "auto";
       }
@@ -1315,6 +1331,67 @@
     dataset.forEach(d => en2ch[d.en] = d.ch);
 
     return en2ch;
+  }
+
+  function getTwitterCapital() {
+    return {
+      abtv: "ABTV",
+      article50: "article50",
+      betteroffout: "BetterOffOut",
+      bremain: "Bremain",
+      brexitshambles: "BrexitShambles",
+      chequers: "Chequers", 
+      corbyn: "Corbyn",
+      daxit: "daxit",
+      election2016: "election2016",
+      euwithdrawalbill: "EUWithdrawalBill",
+      fbpe: "FBPE",
+      finalsay: "FinalSay",
+      florencespeech: "FlorenceSpeech",
+      frexit: "Frexit",
+      ge17: "GE17",
+      indyref2: "indyref2",
+      ireland: "Ireland",
+      labour: "Labour",
+      leave: "Leave",
+      leaveeu: "LeaveEU",
+      leavewatch: "LeaveWatch ",
+      maga: "MAGA",
+      maymustgo: "MayMustGo",
+      merkel: "Merkel",
+      nexit: "Nexit",
+      nhs: "NHS",
+      nigelfarage: "NigelFarage",
+      no2eu: "No2EU",
+      nobrexit: "NoBrexit",
+      nodealbrexit: "NoDealBrexit",
+      nowaymay: "NoWayMay",
+      obama: "Obama",
+      peoplesvote: "PeoplesVote",
+      peoplesvotemarch: "PeoplesVoteMarch",
+      projectfear: "ProjectFear",
+      racism: "racism",
+      regrexit: "REGREXIT",
+      remain: "Remain",
+      remainernow: "RemainerNow",
+      scotland: "Scotland",
+      standup4brexit: "StandUp4Brexit",
+      stopbrexit: "StopBrexit",
+      stoptheeu: "StopTheEU",
+      strongerin: "StrongerIn",
+      supremecourt: "SupremeCourt",
+      takecontrol: "TakeControl",
+      theresamay: "TheresaMay",
+      tories: "Tories",
+      trump: "Trump",
+      ttip: "TTIP",
+      voteleave: "VoteLeave",
+      voteout: "VoteOut",
+      voteremain: "VoteRemain",
+      waton: "WATON",
+      windrush: "Windrush",
+      yeseu: "YesEU",
+    };
   }
 
   function getTweenValue() {
