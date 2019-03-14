@@ -10,7 +10,8 @@
     .textLabel{
       font-size: 14px;
       font-weight: 700;
-      font-family: 'Georgia';
+      /* font-family: 'Georgia'; */
+      font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
       dominant-baseline: middle;
     }
     circle{
@@ -109,6 +110,10 @@
       margin: 10px;
     }
 
+    input[type=checkbox]:hover {
+      cursor: pointer;
+    }
+
     label {
       color: #1DA1F2;
     }
@@ -124,7 +129,35 @@
 
     .downside {
       overflow-y: auto;
+      font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+      line-height: 30px;
     }
+
+    .downside::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .downside::-webkit-scrollbar-button {
+      width: 8px;
+      height:5px;
+    }
+
+    .downside::-webkit-scrollbar-track {
+      background:#eee;
+      border: thin solid lightgray;
+      box-shadow: 0px 0px 3px #dfdfdf inset;
+      border-radius:10px;
+    }
+
+    .downside::-webkit-scrollbar-thumb {
+      background-color: rgba(144, 144, 153, 0.5);
+      border: thin solid rgba(144, 144, 153, 0.5);
+      border-radius:10px;
+    }
+
+    .downside::-webkit-scrollbar-thumb:hover {
+      background-color:rgba(144, 144, 153, 1);
+    } 
 
     div.lifeCycleItem-label {
       display: inline-block;
@@ -384,7 +417,10 @@
 
 
       let labelSet = dataArray.map(d => d.label.slice(1)).sort();
-      let twitterCapital = getTwitterCapital();
+      let lang = "en";
+      let twitterEnglish = gettwitterEnglish();
+      let twitterChinese = getTwitterChinese();
+      let twitterText = lang === "ch" ? twitterChinese : twitterEnglish;
       createHeaderPanel();
       createAsidePanel(labelSet);
       createDownsidePanel(labelSet);
@@ -955,13 +991,13 @@
         rows.append("label")
           .attr("id", d => `label-${d}`)
           .attr("for", d => d)
-          .html(d => `#${twitterCapital[d]}`);
+          .html(d => `#${twitterText[d]}`);
 
         document.querySelector("div.aside").style.overflow = "auto";
       }
 
       function createDownsidePanel(labelSet) {
-        let downsideHeight = 140;
+        let downsideHeight = 170;
 
         let downside = d3.select(".container")
           .append("div")
@@ -993,7 +1029,7 @@
           .style("max-width", `${margin.left}px`)
           .style("min-width", `${margin.left}px`)
           .style("min-height", `${slider.attr("height")}px`)
-          .html(d => d);
+          .html(d => twitterText[d]);
 
         rows.append("div")
           .attr("class", "lifeCycleItem-bar")
@@ -1035,7 +1071,7 @@
             .filter(function(d, i) {
               return mouseoverDot !== null && d.label.slice(1) === mouseoverDot;
             })
-            .text(d => d.label.slice(1));
+            .text(d => twitterText[d.label.slice(1)]);
           return;
         }
 
@@ -1061,7 +1097,7 @@
           .filter(function(d, i) {
             return selectedLabel.findIndex((label) => label === d3.select(this).attr("data-label")) >= 0 || (mouseoverDot !== null && d.label.slice(1) === mouseoverDot);
           })
-          .text(d => d.label.slice(1));
+          .text(d => twitterText[d.label.slice(1)]);
       }
 
       function enableCursor() {
@@ -1333,7 +1369,7 @@
     return en2ch;
   }
 
-  function getTwitterCapital() {
+  function gettwitterEnglish() {
     return {
       abtv: "ABTV",
       article50: "article50",
@@ -1355,7 +1391,7 @@
       labour: "Labour",
       leave: "Leave",
       leaveeu: "LeaveEU",
-      leavewatch: "LeaveWatch ",
+      leavewatch: "LeaveWatch",
       maga: "MAGA",
       maymustgo: "MayMustGo",
       merkel: "Merkel",
@@ -1391,6 +1427,67 @@
       waton: "WATON",
       windrush: "Windrush",
       yeseu: "YesEU",
+    };
+  }
+
+  function getTwitterChinese() {
+    return {
+      abtv: "投给留欧政党",
+      article50: "里斯本第50条",
+      betteroffout: "离开会更好",
+      bremain: "英国留下",
+      brexitshambles: "脱欧一团乱",
+      chequers: "契克斯方案", 
+      corbyn: "科尔宾",
+      daxit: "丹麦脱欧",
+      election2016: "美国2016大选",
+      euwithdrawalbill: "脱欧法案",
+      fbpe: "支持欧盟的就回粉",
+      finalsay: "最终决定权",
+      florencespeech: "佛罗伦萨演讲",
+      frexit: "法国脱欧",
+      ge17: "英国2017大选",
+      indyref2: "苏格兰二次独立公投",
+      ireland: "爱尔兰",
+      labour: "工党",
+      leave: "离开",
+      leaveeu: "脱离欧盟",
+      leavewatch: "脱欧监督",
+      maga: "让美国再次伟大",
+      maymustgo: "梅必须走",
+      merkel: "默克尔",
+      nexit: "荷兰脱欧",
+      nhs: "英国国家医疗服务体系",
+      nigelfarage: "法拉奇",
+      no2eu: "对欧盟说不",
+      nobrexit: "不脱欧",
+      nodealbrexit: "无协议脱欧",
+      nowaymay: "特蕾莎梅没门",
+      obama: "奥巴马",
+      peoplesvote: "人民的投票",
+      peoplesvotemarch: "人民的投票的游行",
+      projectfear: "恐吓计划",
+      racism: "种族主义",
+      regrexit: "后悔脱欧",
+      remain: "留下",
+      remainernow: "现在是留欧者",
+      scotland: "苏格兰",
+      standup4brexit: "起来！为了脱欧",
+      stopbrexit: "停止脱欧",
+      stoptheeu: "阻止欧盟",
+      strongerin: "留下更强大",
+      supremecourt: "最高法院",
+      takecontrol: "拿回控制权",
+      theresamay: "特蕾莎梅",
+      tories: "保守党",
+      trump: "特朗普",
+      ttip: "跨大西洋贸易与投资伙伴关系协定",
+      voteleave: "投票离开",
+      voteout: "投给走",
+      voteremain: "投给留",
+      waton: "我们现在是反对派了",
+      windrush: "疾风号",
+      yeseu: "对欧盟说是",
     };
   }
 
