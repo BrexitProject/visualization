@@ -399,7 +399,7 @@
     }
 
     var dataArray=[];
-    d3.csv('public/data/hashtag_bubble_deleted.csv').then(function(data) {
+    d3.csv('public/data/hashtag_bubble_deleted0309.csv').then(function(data) {
 
       data.forEach(d => {
         let tmp={};
@@ -521,7 +521,7 @@
       let durationTime = 500;
       let easeFunc = d3.easeLinear;
       let dateScale = d3.scaleTime()
-        .domain([new Date(2015,11), new Date(2018,11)])
+        .domain([new Date(2015,11), new Date(2019,1)])
         .range([0, totalTime]);
 
       let lifeCycleGradient = calcLifeCycle(labelSet);
@@ -547,7 +547,7 @@
 
       function calcLifeCycle(labelSet) {
         let tweenValue = getTweenValue();
-        let dateInterpolator = d3.interpolateDate(new Date(2015,11), new Date(2018,11));
+        let dateInterpolator = d3.interpolateDate(new Date(2015,11), new Date(2019,1));
         let formatter = d3.timeFormat("%Y-%m-%d-%H-%M-%S");
         let parser = d3.timeParse("%Y-%m-%d-%H-%M-%S");
         let dateArray = tweenValue.map(t => formatter(dateInterpolator(t)));
@@ -836,7 +836,7 @@
         .ease(easeFunc)
         .tween('time', () => {
           return function(t) {
-            var month = d3.interpolateDate(dateScale.invert(totalTime - timeTodo), new Date(2018,11));
+            var month = d3.interpolateDate(dateScale.invert(totalTime - timeTodo), new Date(2019,1));
             tweenYear(month(t));
           }
         });
@@ -871,7 +871,7 @@
         verticalText.data(dataset).call(verTextPosition);
         textPosition(dataset);
 
-        if (year <= new Date(2018,11)) {
+        if (year <= new Date(2019,1)) {
           monthText.text(year.getFullYear()+'/'+(year.getMonth()+1));
         }
         let tmpYear = new Date(year);
@@ -916,7 +916,7 @@
       function updateVideoAnchor(date) {
         let width = d3.select(".video-slider").attr("width");
         let timeScale = d3.scaleTime()
-          .domain([new Date(2015, 11), new Date(2018, 11)])
+          .domain([new Date(2015, 11), new Date(2019, 1)])
           .range([0, width]);
         let pos = parseFloat(timeScale(date));
         pos = Math.min(pos, width);
@@ -1183,7 +1183,7 @@
 
       function preCalcSelectionPast(labelSet, timeline) {
         let tweenValue = getTweenValue();
-        let dateInterpolator = d3.interpolateDate(new Date(2015,11), new Date(2018,11));
+        let dateInterpolator = d3.interpolateDate(new Date(2015,11), new Date(2019,1));
         let formatter = d3.timeFormat("%Y-%m-%d-%H-%M-%S");
         let parser = d3.timeParse("%Y-%m-%d-%H-%M-%S");
         let dateArray = tweenValue.map(t => parser(formatter(dateInterpolator(t))));
@@ -1432,62 +1432,62 @@
 
   function getTwitterChinese() {
     return {
-      abtv: "投给留欧政党",
+      abtv: "投给留欧派吧亲",
       article50: "里斯本第50条",
-      betteroffout: "离开会更好",
+      betteroffout: "离开更棒",
       bremain: "英国留下",
       brexitshambles: "脱欧一团乱",
-      chequers: "契克斯方案", 
+      chequers: "梅的脱欧方案", 
       corbyn: "科尔宾",
       daxit: "丹麦脱欧",
-      election2016: "美国2016大选",
+      election2016: "2016年美国大选",
       euwithdrawalbill: "脱欧法案",
-      fbpe: "支持欧盟的就回粉",
-      finalsay: "最终决定权",
-      florencespeech: "佛罗伦萨演讲",
+      fbpe: "支持欧盟就回粉",
+      finalsay: "最后拍板",
+      florencespeech: "梅佛罗伦萨演讲",
       frexit: "法国脱欧",
       ge17: "英国2017大选",
       indyref2: "苏格兰二次独立公投",
       ireland: "爱尔兰",
       labour: "工党",
-      leave: "离开",
-      leaveeu: "脱离欧盟",
-      leavewatch: "脱欧监督",
-      maga: "让美国再次伟大",
-      maymustgo: "梅必须走",
-      merkel: "默克尔",
+      leave: "离开吧亲",
+      leaveeu: "离开欧盟",
+      leavewatch: "盯着脱欧派",
+      maga: "美国再次伟大",
+      maymustgo: "梅，走你",
+      merkel: "默克尔：德国总理",
       nexit: "荷兰脱欧",
-      nhs: "英国国家医疗服务体系",
+      nhs: "医疗服务体系",
       nigelfarage: "法拉奇",
       no2eu: "对欧盟说不",
-      nobrexit: "不脱欧",
-      nodealbrexit: "无协议脱欧",
-      nowaymay: "特蕾莎梅没门",
+      nobrexit: "绝不脱欧",
+      nodealbrexit: "无协议也要硬脱",
+      nowaymay: "没门儿！梅",
       obama: "奥巴马",
       peoplesvote: "人民的投票",
       peoplesvotemarch: "人民的投票的游行",
-      projectfear: "恐吓计划",
-      racism: "种族主义",
+      projectfear: "阴谋恐吓",
+      racism: "种族仇视",
       regrexit: "后悔脱欧",
-      remain: "留下",
-      remainernow: "现在是留欧者",
+      remain: "留下吧亲",
+      remainernow: "前脱现留",
       scotland: "苏格兰",
-      standup4brexit: "起来！为了脱欧",
-      stopbrexit: "停止脱欧",
-      stoptheeu: "阻止欧盟",
-      strongerin: "留下更强大",
+      standup4brexit: "起来！脱欧派！",
+      stopbrexit: "脱欧停下！",
+      stoptheeu: "拦住欧盟",
+      strongerin: "留下会更强",
       supremecourt: "最高法院",
-      takecontrol: "拿回控制权",
+      takecontrol: "拿回控制权吧",
       theresamay: "特蕾莎梅",
       tories: "保守党",
       trump: "特朗普",
       ttip: "跨大西洋贸易与投资伙伴关系协定",
       voteleave: "投票离开",
-      voteout: "投给走",
-      voteremain: "投给留",
-      waton: "我们现在是反对派了",
+      voteout: "投走",
+      voteremain: "投留",
+      waton: "轮我们造反",
       windrush: "疾风号",
-      yeseu: "对欧盟说是",
+      yeseu: "我要欧盟",
     };
   }
 
