@@ -233,6 +233,12 @@
     .pastLine.disabled, .pastLineMotion.disabled {
       display: none;
     }
+
+    .showupText {
+      text-anchor: middle;
+      dominant-baseline: middle;
+      font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    }
   </style>
   <script src="public/d3.min.js"></script>
   <script src="public/labeler.js"></script>
@@ -431,10 +437,11 @@
                     .attr('y',margin.top+160)
                     .attr('class','monthText');
       // Add a dot per state. Initialize the data at 1950, and set the colors.
+      let dataset = getDataByMonth(dataArray,new Date(2015,11));
       var dot = svg.append("g")
             .attr("class", "dots")
             .selectAll(".dot")
-            .data(getDataByMonth(dataArray,new Date(2015,11)))
+            .data(dataset)
             .enter().append("circle")
             .attr("class", "dot")
             .attr("data-label", d => d.label.slice(1));
@@ -442,14 +449,14 @@
       let cursorLines = svg.append("g")
         .attr("class", "cursor")
       let horizontalCursor = cursorLines.selectAll(".horizontal")
-        .data(getDataByMonth(dataArray,new Date(2015,11)))
+        .data(dataset)
         .enter()
         .append("line")
         .attr("class", "horizontal")
         .attr("data-label", d => d.label.slice(1))
         .attr("stroke-opacity", 0);
       let verticalCursor = cursorLines.selectAll(".vertical")
-        .data(getDataByMonth(dataArray,new Date(2015,11)))
+        .data(dataset)
         .enter()
         .append("line")
         .attr("class", "vertical")
@@ -459,7 +466,7 @@
       let cursorText = svg.append("g")
         .attr("class", "cursor-text")
       let horizontalText = cursorText.selectAll(".horizontal")
-        .data(getDataByMonth(dataArray,new Date(2015,11)))
+        .data(dataset)
         .enter()
         .append("text")
         .attr("class", "horizontal")
@@ -468,7 +475,7 @@
         .attr("dominant-baseline", "baseline")
         .style("fill-opacity", 0);
       let verticalText = cursorText.selectAll(".vertical")
-        .data(getDataByMonth(dataArray,new Date(2015,11)))
+        .data(dataset)
         .enter()
         .append("text")
         .attr("class", "vertical")
@@ -479,7 +486,7 @@
 
       var text = svg.append("g")
         .selectAll(".text")
-        .data(getDataByMonth(dataArray,new Date(2015,11)))
+        .data(dataset)
         .enter().append("text")
         .attr("class", "textLabel")
         .attr("x", function(d) {
@@ -495,9 +502,18 @@
           if(d.freq<50&&d.forward<2){
           return 'none';}});
 
+      let showupText = svg.append("g")
+        .selectAll(".showupText")
+        .data(dataset)
+        .enter()
+        .append("text")
+        .attr("class", "showupText")
+        .text(d => twitterText[d.label.slice(1)])
+        .style("fill-opacity", 0);
+
       let textDateLabel = svg.append("g")
         .selectAll(".text")
-        .data(getDataByMonth(dataArray,new Date(2015,11)))
+        .data(dataset)
         .enter()
         .append("text")
         .attr("class", "textDateLabel")
@@ -524,7 +540,8 @@
         .domain([new Date(2015,11), new Date(2019,1)])
         .range([0, totalTime]);
 
-      let lifeCycleGradient = calcLifeCycle(labelSet);
+      let { lifeCycle, lifeCycleGradient } = calcLifeCycle(labelSet);
+      let showupLifeCycle = calcShowup(lifeCycle);
       renderDownsideWithLifeCycle(lifeCycleGradient);
 
       initTime();
@@ -558,7 +575,20 @@
 
         let lifeCycleGradient = transformLifeCycleToGradient(lifeCycle);
 
-        return lifeCycleGradient;
+        return {
+          lifeCycle, 
+          lifeCycleGradient,
+        };
+      }
+
+      function calcShowup(lifeCycle) {
+        let showupLifeCycle = {};
+
+        Object.keys(lifeCycle).forEach(key => {
+          showupLifeCycle[key] = lifeCycle[key].filter(d => d[1] === true);
+        });
+
+        return showupLifeCycle;
       }
 
       function calcLifeCycleByLabel(data) {
@@ -862,6 +892,8 @@
 
         dot.data(dataset).call(position);
         textDateLabel.data(dataset).call(textDateLabelPosition);
+        
+        updateShowupText(year, dataset, showupText, showupLifeCycle);
 
         updateTraj(year);
 
@@ -876,6 +908,31 @@
         }
         let tmpYear = new Date(year);
         updateVideoAnchor(tmpYear);
+      }
+
+      function updateShowupText(year, dataset, showupText, showupLifeCycle) {
+        if (getSelectedLabel().length === 0) {
+          let formatter = d3.timeFormat("%Y-%m-%d");
+          let trueText = Object.keys(showupLifeCycle).filter(key => {
+            let cycle = showupLifeCycle[key];
+            for (let timestamp of cycle) {
+              if (formatter(timestamp[0]) === formatter(year)) {
+                return true;
+              }
+            }
+            return false;
+          });
+
+          // console.log(trueText);
+
+          showupText.data(dataset)
+            .attr("transform", d => `translate(${x(d.forward + 1)+margin.left}, ${y(d.freq + 1)+margin.top})`)
+            .filter(d => trueText.findIndex(text => text === d.label.slice(1)) >= 0 || (d.forward + 1 >= 600 && d.freq + 1 >= 50000))
+            .style("fill-opacity", 1)
+            .transition()
+            .duration(3000)
+            .style("fill-opacity", 0);
+        }
       }
 
       function updateTraj(currentDate) {
@@ -1433,12 +1490,12 @@
   function getTwitterChinese() {
     return {
       abtv: "投给留欧派吧亲",
-      article50: "里斯本第50条",
+      article50: "脱欧程序启动",
       betteroffout: "离开更棒",
       bremain: "英国留下",
       brexitshambles: "脱欧一团乱",
       chequers: "梅的脱欧方案", 
-      corbyn: "科尔宾",
+      corbyn: "科尔宾，反对党工党领袖",
       daxit: "丹麦脱欧",
       election2016: "2016年美国大选",
       euwithdrawalbill: "脱欧法案",
@@ -1455,15 +1512,15 @@
       leavewatch: "盯着脱欧派",
       maga: "美国再次伟大",
       maymustgo: "梅，走你",
-      merkel: "默克尔：德国总理",
+      merkel: "默克尔，德国总理",
       nexit: "荷兰脱欧",
       nhs: "医疗服务体系",
-      nigelfarage: "法拉奇",
+      nigelfarage: "法拉奇，脱欧运动领导者",
       no2eu: "对欧盟说不",
       nobrexit: "绝不脱欧",
       nodealbrexit: "无协议也要硬脱",
       nowaymay: "没门儿！梅",
-      obama: "奥巴马",
+      obama: "奥巴马，美国前总统",
       peoplesvote: "人民的投票",
       peoplesvotemarch: "人民的投票的游行",
       projectfear: "阴谋恐吓",
@@ -1478,9 +1535,9 @@
       strongerin: "留下会更强",
       supremecourt: "最高法院",
       takecontrol: "拿回控制权吧",
-      theresamay: "特蕾莎梅",
+      theresamay: "特蕾莎梅，英国首相",
       tories: "保守党",
-      trump: "特朗普",
+      trump: "特朗普，美国总统",
       ttip: "跨大西洋贸易与投资伙伴关系协定",
       voteleave: "投票离开",
       voteout: "投走",
