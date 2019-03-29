@@ -252,6 +252,8 @@
   (async () => {
     let en2ch = await getExplanation();
 
+    let lang = "ch";
+
     var margin = {top: 10, bottom: 80, left: 150, right: 30};
     var svgWidth = 1170;
     var svgHeight = 740;
@@ -344,7 +346,7 @@
               "translate(" + (width-140) + " ," + 
                             (height + margin.top-10) + ")")
         .style("text-anchor", "start")
-        .text("Tweet")
+        .text(lang === "en" ? "Tweet" : "新推特量")
         .attr('class','xLabel');
     svg.append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`)
@@ -356,7 +358,7 @@
         .attr("transform",
               "rotate(270)")
         .style("text-anchor", "end")
-        .text("Retweet")
+        .text(lang === "en" ? "Retweet" : "转发量")
         .attr('class','xLabel');
 
     var bisect = d3.bisector(function(d) { return d[0]; });
@@ -405,7 +407,7 @@
     }
 
     var dataArray=[];
-    d3.csv('public/data/hashtag_bubble_deleted0309.csv').then(function(data) {
+    d3.csv('public/data/hashtag_bubble_deleted0329.csv').then(function(data) {
 
       data.forEach(d => {
         let tmp={};
@@ -423,7 +425,6 @@
 
 
       let labelSet = dataArray.map(d => d.label.slice(1)).sort();
-      let lang = "ch";
       let twitterEnglish = gettwitterEnglish();
       let twitterChinese = getTwitterChinese();
       let twitterText = lang === "ch" ? twitterChinese : twitterEnglish;
@@ -706,6 +707,10 @@
         if (checkbox.property("checked")) {
           d3.select(`#lifeCycleRow-${label}`)
             .style("display", "block");
+
+          d3.select(".header")
+            .style("border-color", "#909099")
+            .html(`${label}: ${en2ch[label]}`);
         } else {
           d3.select(`#lifeCycleRow-${label}`)
             .style("display", "none");
@@ -927,7 +932,7 @@
 
           showupText.data(dataset)
             .attr("transform", d => `translate(${x(d.forward + 1)+margin.left}, ${y(d.freq + 1)+margin.top})`)
-            .filter(d => trueText.findIndex(text => text === d.label.slice(1)) >= 0 || (d.forward + 1 >= 600 && d.freq + 1 >= 50000))
+            .filter(d => trueText.findIndex(text => text === d.label.slice(1)) >= 0 || (d.forward + 1 >= 50 && d.freq + 1 >= 7000))
             .style("fill-opacity", 1)
             .transition()
             .duration(3000)
@@ -1048,7 +1053,7 @@
         rows.append("label")
           .attr("id", d => `label-${d}`)
           .attr("for", d => d)
-          .html(d => `#${twitterText[d]}`);
+          .html(d => `${twitterText[d]}`);
 
         document.querySelector("div.aside").style.overflow = "auto";
       }
@@ -1429,34 +1434,39 @@
   function gettwitterEnglish() {
     return {
       abtv: "ABTV",
-      article50: "article50",
       betteroffout: "BetterOffOut",
-      bremain: "Bremain",
+      brexitchaos: "BrexitChaos", 
       brexitshambles: "BrexitShambles",
+      brexitvote: "BrexitVotes",
       chequers: "Chequers", 
       corbyn: "Corbyn",
       daxit: "daxit",
+      dup: "DUP",
       election2016: "election2016",
-      euwithdrawalbill: "EUWithdrawalBill",
+      farage: "Farage",
       fbpe: "FBPE",
       finalsay: "FinalSay",
-      florencespeech: "FlorenceSpeech",
       frexit: "Frexit",
       ge17: "GE17",
+      gowto: "goWTO",
+      gtto: "GTTO",
+      honda: "Honda",
       indyref2: "indyref2",
       ireland: "Ireland",
       labour: "Labour",
       leave: "Leave",
       leaveeu: "LeaveEU",
+      leavemeansleave: "LeaveMeansLeave",
       leavewatch: "LeaveWatch",
       maga: "MAGA",
       maymustgo: "MayMustGo",
       merkel: "Merkel",
       nexit: "Nexit",
       nhs: "NHS",
-      nigelfarage: "NigelFarage",
       no2eu: "No2EU",
       nobrexit: "NoBrexit",
+      noconfidence: "Noconfidence",
+      nodeal: "NoDeal",
       nodealbrexit: "NoDealBrexit",
       nowaymay: "NoWayMay",
       obama: "Obama",
@@ -1467,17 +1477,16 @@
       regrexit: "REGREXIT",
       remain: "Remain",
       remainernow: "RemainerNow",
+      revokea50: "RevokeA50",
       scotland: "Scotland",
       standup4brexit: "StandUp4Brexit",
       stopbrexit: "StopBrexit",
       stoptheeu: "StopTheEU",
       strongerin: "StrongerIn",
-      supremecourt: "SupremeCourt",
       takecontrol: "TakeControl",
       theresamay: "TheresaMay",
       tories: "Tories",
       trump: "Trump",
-      ttip: "TTIP",
       voteleave: "VoteLeave",
       voteout: "VoteOut",
       voteremain: "VoteRemain",
@@ -1489,62 +1498,67 @@
 
   function getTwitterChinese() {
     return {
-      abtv: "投给留欧派吧亲",
-      article50: "脱欧程序启动",
-      betteroffout: "离开更棒",
-      bremain: "英国留下",
-      brexitshambles: "脱欧一团乱",
-      chequers: "梅的脱欧方案", 
-      corbyn: "科尔宾，反对党工党领袖",
-      daxit: "丹麦脱欧",
+      abtv: "投给留欧派吧亲！",
+      betteroffout: "离开更棒！", 
+      brexitchaos: "脱欧混乱",
+      brexitshambles: "脱欧跌跌撞撞",
+      brexitvote: "脱欧协议投票",
+      chequers: "梅的脱欧方案",
+      corbyn: "科尔宾",
+      daxit: "丹麦也脱欧",
+      dup: "北爱尔兰民主统一党",
       election2016: "2016年美国大选",
-      euwithdrawalbill: "脱欧法案",
-      fbpe: "支持欧盟就回粉",
-      finalsay: "最后拍板",
-      florencespeech: "梅佛罗伦萨演讲",
-      frexit: "法国脱欧",
+      farage: "法拉奇",
+      fbpe: "支持欧盟就回粉！",
+      finalsay: "要最后定夺！",
+      frexit: "法国也脱欧",
       ge17: "英国2017大选",
+      gowto: "直接WTO！",
+      gtto: "保守党滚蛋！",
+      honda: "本田汽车",
       indyref2: "苏格兰二次独立公投",
       ireland: "爱尔兰",
       labour: "工党",
-      leave: "离开吧亲",
-      leaveeu: "离开欧盟",
+      leave: "脱！",
+      leaveeu: "脱欧！",
+      leavemeansleave: "脱就是脱！",
       leavewatch: "盯着脱欧派",
-      maga: "美国再次伟大",
-      maymustgo: "梅，走你",
-      merkel: "默克尔，德国总理",
-      nexit: "荷兰脱欧",
-      nhs: "医疗服务体系",
-      nigelfarage: "法拉奇，脱欧运动领导者",
-      no2eu: "对欧盟说不",
-      nobrexit: "绝不脱欧",
-      nodealbrexit: "无协议也要硬脱",
+      maga: "让美国再次伟大",
+      maymustgo: "梅得下台！",
+      merkel: "默克尔",
+      nexit: "荷兰也脱欧",
+      nhs: "医疗系统",
+      no2eu: "对欧盟说不！",
+      nobrexit: "绝不脱欧！",
+      noconfidence: "不信任投票",
+      nodeal: "无协议！",
+      nodealbrexit: "无协议脱欧",
+      notbuyingit: "我不买帐！",
       nowaymay: "没门儿！梅",
-      obama: "奥巴马，美国前总统",
+      obama: "奥巴马",
       peoplesvote: "人民的投票",
       peoplesvotemarch: "人民的投票的游行",
-      projectfear: "阴谋恐吓",
+      projectfear: "恐吓阴招",
       racism: "种族仇视",
       regrexit: "后悔脱欧",
-      remain: "留下吧亲",
-      remainernow: "前脱现留",
+      remain: "留！",
+      remainernow: "曾脱现留",
+      revokea50: "撤销脱欧！",
       scotland: "苏格兰",
-      standup4brexit: "起来！脱欧派！",
-      stopbrexit: "脱欧停下！",
-      stoptheeu: "拦住欧盟",
-      strongerin: "留下会更强",
-      supremecourt: "最高法院",
-      takecontrol: "拿回控制权吧",
-      theresamay: "特蕾莎梅，英国首相",
+      standup4brexit: "坚持脱欧！",
+      stopbrexit: "停下脱欧！",
+      stoptheeu: "挡住欧盟！",
+      strongerin: "留下会更强！",
+      takecontrol: "拿回控制权！",
+      theresamay: "特蕾莎梅",
       tories: "保守党",
-      trump: "特朗普，美国总统",
-      ttip: "跨大西洋贸易与投资伙伴关系协定",
-      voteleave: "投票离开",
-      voteout: "投走",
-      voteremain: "投留",
-      waton: "轮我们造反",
-      windrush: "疾风号",
-      yeseu: "我要欧盟",
+      trump: "特朗普",
+      voteleave: "投脱！",
+      voteout: "投走！",
+      voteremain: "投留！",
+      waton: "轮我们反对！",
+      windrush: "疾风号轮船",
+      yeseu: "对欧盟说是！",
     };
   }
 
