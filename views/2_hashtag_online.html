@@ -509,6 +509,7 @@
         .enter()
         .append("text")
         .attr("class", "showupText")
+        .attr("data-label", d => d.label.slice(1))
         .text(d => twitterText[d.label.slice(1)])
         .style("fill-opacity", 0);
 
@@ -560,6 +561,8 @@
         .on("end", dragendedHandler));
       text.on("mouseover", mouseOverHandler);
       text.on("mouseout", mouseOutHandler);
+      showupText.on("mouseover", mouseOverHandler);
+      showupText.on("mouseout", mouseOutHandler);
       dot.on("mouseover", mouseOverHandler);
       dot.on("mouseout", mouseOutHandler);
 
