@@ -439,6 +439,17 @@
                     .attr('class','monthText');
       // Add a dot per state. Initialize the data at 1950, and set the colors.
       let dataset = getDataByMonth(dataArray,new Date(2015,11));
+
+      let showupText = svg.append("g")
+        .selectAll(".showupText")
+        .data(dataset)
+        .enter()
+        .append("text")
+        .attr("class", "showupText")
+        .attr("data-label", d => d.label.slice(1))
+        .text(d => twitterText[d.label.slice(1)])
+        .style("fill-opacity", 0);
+
       var dot = svg.append("g")
             .attr("class", "dots")
             .selectAll(".dot")
@@ -503,15 +514,15 @@
           if(d.freq<50&&d.forward<2){
           return 'none';}});
 
-      let showupText = svg.append("g")
-        .selectAll(".showupText")
-        .data(dataset)
-        .enter()
-        .append("text")
-        .attr("class", "showupText")
-        .attr("data-label", d => d.label.slice(1))
-        .text(d => twitterText[d.label.slice(1)])
-        .style("fill-opacity", 0);
+      // let showupText = svg.append("g")
+      //   .selectAll(".showupText")
+      //   .data(dataset)
+      //   .enter()
+      //   .append("text")
+      //   .attr("class", "showupText")
+      //   .attr("data-label", d => d.label.slice(1))
+      //   .text(d => twitterText[d.label.slice(1)])
+      //   .style("fill-opacity", 0);
 
       let textDateLabel = svg.append("g")
         .selectAll(".text")
@@ -561,8 +572,8 @@
         .on("end", dragendedHandler));
       text.on("mouseover", mouseOverHandler);
       text.on("mouseout", mouseOutHandler);
-      showupText.on("mouseover", mouseOverHandler);
-      showupText.on("mouseout", mouseOutHandler);
+      // showupText.on("mouseover", mouseOverHandler);
+      // showupText.on("mouseout", mouseOutHandler);
       dot.on("mouseover", mouseOverHandler);
       dot.on("mouseout", mouseOutHandler);
 
@@ -938,7 +949,7 @@
             .filter(d => trueText.findIndex(text => text === d.label.slice(1)) >= 0 || (d.forward + 1 >= 50 && d.freq + 1 >= 7000))
             .style("fill-opacity", 1)
             .transition()
-            .duration(3000)
+            .duration(2000)
             .style("fill-opacity", 0);
         }
       }
