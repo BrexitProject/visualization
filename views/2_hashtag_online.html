@@ -946,7 +946,7 @@
 
           showupText.data(dataset)
             .attr("transform", d => `translate(${x(d.forward + 1)+margin.left}, ${y(d.freq + 1)+margin.top})`)
-            .filter(d => trueText.findIndex(text => text === d.label.slice(1)) >= 0 || (d.forward + 1 >= 50 && d.freq + 1 >= 7000))
+            .filter(d => trueText.findIndex(text => text === d.label.slice(1)) >= 0 || (d.forward + 1 >= 50 || d.freq + 1 >= 7000))
             .style("fill-opacity", 1)
             .transition()
             .duration(2000)
