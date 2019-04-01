@@ -1231,7 +1231,7 @@
 
       function generateTimeline(dataArray) {
         let timeline = dataArray[0]["value"].map(d => d[0]);
-        timeline.splice(7, 1);
+        // timeline.splice(7, 1);
         return timeline;
       }
 
@@ -1294,7 +1294,13 @@
               .attr("id", `pastTime-${label}-${date}`)
               .attr("x", cx)
               .attr("y", cy - radius)
-              .text(d3.timeFormat("%Y.%m.%d")(currentDate))
+              .text(() => {
+                let text = d3.timeFormat("%Y.%m.%d")(currentDate);
+                if (text !== "2016.06.23") {
+                  return text.slice(0, 7);
+                }
+                return text;
+              })
               .style("display", "none");
             targetPastCircle["ele"].append("circle")
               .attr("class", "pastCircle")
