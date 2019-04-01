@@ -1231,7 +1231,7 @@
 
       function generateTimeline(dataArray) {
         let timeline = dataArray[0]["value"].map(d => d[0]);
-        // timeline.splice(7, 1);
+        timeline.splice(7, 1);
         return timeline;
       }
 
@@ -1296,10 +1296,7 @@
               .attr("y", cy - radius)
               .text(() => {
                 let text = d3.timeFormat("%Y.%m.%d")(currentDate);
-                if (text !== "2016.06.23") {
-                  return text.slice(0, 7);
-                }
-                return text;
+                return text.slice(0, 7);
               })
               .style("display", "none");
             targetPastCircle["ele"].append("circle")
