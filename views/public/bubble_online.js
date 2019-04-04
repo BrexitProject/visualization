@@ -156,7 +156,7 @@
   }
 
   var dataArray=[];
-  d3.csv('public/data/hashtag_bubble_deleted0329.csv').then(function(data) {
+  d3.csv('public/data/hashtag_bubble_deleted0401.csv').then(function(data) {
 
     data.forEach(d => {
       let tmp={};
@@ -174,7 +174,7 @@
 
 
     let labelSet = dataArray.map(d => d.label.slice(1)).sort();
-    let twitterEnglish = gettwitterEnglish();
+    let twitterEnglish = getTwitterEnglish();
     let twitterChinese = getTwitterChinese();
     let twitterText = lang === "ch" ? twitterChinese : twitterEnglish;
     createHeaderPanel();
@@ -1196,16 +1196,19 @@ async function getExplanation() {
   return en2ch;
 }
 
-function gettwitterEnglish() {
+function getTwitterEnglish() {
   return {
     abtv: "ABTV",
     betteroffout: "BetterOffOut",
-    brexitchaos: "BrexitChaos", 
+    brexitbetrayal: "BrexitBetrayal",
+    brexitchaos: "BrexitChaos",
+    brexitmayhem: "BrexitMayhem",
     brexitshambles: "BrexitShambles",
     brexitvote: "BrexitVotes",
     chequers: "Chequers", 
     corbyn: "Corbyn",
     daxit: "daxit",
+    dc: "dc",
     dup: "DUP",
     election2016: "election2016",
     farage: "Farage",
@@ -1265,12 +1268,15 @@ function getTwitterChinese() {
   return {
     abtv: "投给留欧派吧亲！",
     betteroffout: "离开更棒！", 
+    brexitbetrayal: "背叛了脱欧！",
     brexitchaos: "脱欧混乱",
+    brexitmayhem: "脱欧暴乱",
     brexitshambles: "脱欧跌跌撞撞",
     brexitvote: "脱欧协议投票",
     chequers: "梅的脱欧方案",
     corbyn: "科尔宾",
     daxit: "丹麦也脱欧",
+    dc: "华盛顿",
     dup: "北爱尔兰民主统一党",
     election2016: "2016年美国大选",
     farage: "法拉奇",
