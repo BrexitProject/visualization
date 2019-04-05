@@ -17,21 +17,15 @@
             .attr('height', svgHeight);
   // scale
   var y = d3.scaleLinear()
-            // .domain([1, 400000])
-            // .range([height, 0])
-            // .base(5);
-            // .domain([0,100,200,500,1000,2000,5000,10000,50000,100000,150000,160000])
-            // .domain([0, 100, 250, 500, 1000, 5000, 10000, 50000, 100000, 240000, 380000, 400000])
-            .domain([0, 100, 250, 500, 1000, 4000, 7000, 10000, 50000, 100000, 380000, 400000])
-            // .range([0,(width-30)/10,(width-30)*2/10,(width-30)*3/10,(width-30)*4/10,(width-30)*5/10,(width-30)*6/10,(width-30)*7/10,(width-30)*8/10,(width-30)*9/10,width-30,width]);
+            .domain([1000, 2000, 4000, 8000, 10000, 20000, 40000, 80000, 100000, 200000, 300000, 400000])
+            // .domain([0, 100, 250, 500, 1000, 4000, 7000, 10000, 50000, 100000, 380000, 400000])
             .range([height,(height-30)*9/10+30,(height-30)*8/10+30,(height-30)*7/10+30,(height-30)*6/10+30,(height-30)*5/10+30,(height-30)*4/10+30,(height-30)*3/10+30,(height-30)*2/10+30,(height-30)/10+30, 30,0]);
+
   var x = d3.scaleLinear()
-            // .domain([1, 4096])
-            // .range([0, width])
-            // .base(2);
-            .domain([0, 10, 50, 75, 100, 600, 1200, 2400])
+            // .domain([0, 10, 50, 75, 100, 600, 1200, 2400])
+            .domain([100, 200, 400, 800, 1600, 2000, 2400, 2900])
             .range([0,(width-30)/7,(width-30)*2/7,(width-30)*3/7,(width-30)*4/7,(width-30)*5/7,(width-30)*6/7,width-30,width])
-            // .range([height,(height-30)*6/7+30,(height-30)*5/7+30,(height-30)*4/7+30,(height-30)*3/7+30,(height-30)*2/7+30,(height-30)/7+30, 30,0]);
+
   var r = d3.scaleLinear()
             .domain([0, 0.365010869, (0.365010869 + 2 / 3) / 2, 2 / 3, 1])
             .range([25, 7, 25, 7, 25]);
@@ -42,18 +36,14 @@
   // axises
   var xAxis = d3.axisBottom(x)
                 .tickSize(-height)
-                // .tickValues([0, 10, 25, 50, 100, 500, 1000, 2400]);
-                .tickValues([0, 10, 50, 75, 100, 600, 1200, 2400]);
-                // .tickValues([0,5,20,50,100,200,500,1000]); 
-                // .tickValues([0,50,100,200,500,1000,2000,5000,10000,100000,150000]);
+                .tickValues([100, 200, 400, 800, 1600, 2000, 2400, 2900]);
+                // .tickValues([0, 10, 50, 75, 100, 600, 1200, 2400]);
 
   var yAxis = d3.axisLeft(y)
                 .tickSize(-width)
-                .tickValues([0, 250, 1000, 7000, 50000, 380000])
-                // .tickValues([1, 5, 25, 125, 625, 3125, 15625, 78125, 390625]);
-                // .tickValues([0, 100, 250, 500, 1000, 4000, 7000, 10000, 50000, 100000, 380000]);
-                // .tickValues([0,5,10,20,50,100,200,1000]); 
-                // .tickValues([0,100,200,500,1000,2000,5000,10000,50000,100000,150000]);
+                .tickValues([1000, 4000, 10000, 40000, 100000, 300000]);
+                // .tickValues([0, 250, 1000, 7000, 50000, 380000])
+
   let buttonSize = 40;
   let buttonPlay = true;
   let videoYOffset = 30;
@@ -189,7 +179,18 @@
     // Add a dot per state. Initialize the data at 1950, and set the colors.
     let dataset = getDataByMonth(dataArray,new Date(2015,11));
 
-    let showupText = svg.append("g")
+    let clipPath = svg.append("clipPath")
+      .attr("id", "chart-area")
+      .append("rect")
+      .attr("x", margin.left)
+      .attr("y", margin.top)
+      .attr("height", height)
+      .attr("width", width);
+    let svgChart = svg.append("g")
+      .attr("id", "chart")
+      .attr("clip-path", "url(#chart-area)");
+
+    let showupText = svgChart.append("g")
       .selectAll(".showupText")
       .data(dataset)
       .enter()
@@ -199,7 +200,7 @@
       .text(d => twitterText[d.label.slice(1)])
       .style("fill-opacity", 0);
 
-    var dot = svg.append("g")
+    var dot = svgChart.append("g")
           .attr("class", "dots")
           .selectAll(".dot")
           .data(dataset)
@@ -245,7 +246,7 @@
       .attr("dominant-baseline", "hanging")
       .style("fill-opacity", 0);
 
-    var text = svg.append("g")
+    var text = svgChart.append("g")
       .selectAll(".text")
       .data(dataset)
       .enter().append("text")
@@ -260,20 +261,10 @@
       .style("text-anchor", "middle")
       .style("fill", function(d) { return "#242424"; })
       .style("display",function(d) {
-        if(d.freq<50&&d.forward<2){
+        if(!isVisible(d)){
         return 'none';}});
 
-    // let showupText = svg.append("g")
-    //   .selectAll(".showupText")
-    //   .data(dataset)
-    //   .enter()
-    //   .append("text")
-    //   .attr("class", "showupText")
-    //   .attr("data-label", d => d.label.slice(1))
-    //   .text(d => twitterText[d.label.slice(1)])
-    //   .style("fill-opacity", 0);
-
-    let textDateLabel = svg.append("g")
+    let textDateLabel = svgChart.append("g")
       .selectAll(".text")
       .data(dataset)
       .enter()
@@ -371,7 +362,7 @@
     }
 
     function isVisible(dataItem) {
-      return dataItem.freq >= 50 || dataItem.forward >= 2;
+      return dataItem.freq >= 1000 || dataItem.forward >= 75;
     }
 
     function transformLifeCycleToGradient(lifeCycle) {
@@ -408,7 +399,7 @@
       dot.attr('cx',d=>x(d.forward + 1)+margin.left)
         .attr('cy',d=>y(d.freq + 1)+margin.top)
         .attr('r',d => {
-          if (d.freq < 50 && d.forward < 2) {
+          if (!isVisible(d)) {
             return 2;
           } else {
             return r(d.trend);
@@ -418,7 +409,7 @@
         .style("stroke",function(d) { return color(d.trend); })
         .style("display", function(d) {
           let selectedLabel = getSelectedLabel();
-          if (d.freq < 50 && d.forward < 2 && selectedLabel.findIndex(label => label === d.label.slice(1)) === -1) {
+          if ((!isVisible(d)) && selectedLabel.findIndex(label => label === d.label.slice(1)) === -1) {
             return "none";
           }
         });
@@ -427,7 +418,7 @@
     function textDateLabelPosition(textDateLabel) {
       textDateLabel
         .attr("transform", d => `translate(${x(d.forward + 1) + margin.left}, ${(() => {
-          let radius = d.freq < 50 && d.forward < 2 ? 2 : r(d.trend);
+          let radius = (!isVisible(d)) ? 2 : r(d.trend);
           return y(d.freq + 1)+margin.top - radius;
         })()})`)
         .text(d => d3.timeFormat("%Y.%m.%d")(d.time));
@@ -697,7 +688,7 @@
 
         showupText.data(dataset)
           .attr("transform", d => `translate(${x(d.forward + 1)+margin.left}, ${y(d.freq + 1)+margin.top})`)
-          .filter(d => trueText.findIndex(text => text === d.label.slice(1)) >= 0 || (d.forward + 1 >= 75 || d.freq + 1 >= 7000))
+          .filter(d => trueText.findIndex(text => text === d.label.slice(1)) >= 0 || (d.forward + 1 >= 800 || d.freq + 1 >= 40000))
           .style("fill-opacity", 1)
           .transition()
           .duration(2000)
@@ -775,7 +766,7 @@
         .style("text-anchor", "middle")
         .style("fill", function(d) { return "#242424"; })
         .style("display",function(d) {
-          if(d.freq<50&&d.forward<2){
+          if(!isVisible(d)){
             return 'none';}});
     }
 
@@ -929,28 +920,28 @@
 
     function enableCursor() {
       horizontalCursor.style("display", d => {
-        if (d.freq < 50 && d.forward < 2) {
+        if (!isVisible(d)) {
           return "none";
         } else {
           return "block";
         }
       });
       verticalCursor.style("display", d => {
-        if (d.freq < 50 && d.forward < 2) {
+        if (!isVisible(d)) {
           return "none";
         } else {
           return "block";
         }
       });
       horizontalText.style("display", d => {
-        if (d.freq < 50 && d.forward < 2) {
+        if (!isVisible(d)) {
           return "none";
         } else {
           return "block";
         }
       });
       verticalText.style("display", d => {
-        if (d.freq < 50 && d.forward < 2) {
+        if (!isVisible(d)) {
           return "none";
         } else {
           return "block";
@@ -982,7 +973,7 @@
 
     function initSelectionPastCircle(labelSet) {
       let pastCircle = {};
-      let gPastCircle = svg.append("g")
+      let gPastCircle = svgChart.append("g")
         .attr("class", "pastCircle");
       labelSet.forEach(label => pastCircle[label] = {
         ele: gPastCircle.append("g")
@@ -995,7 +986,7 @@
 
     function initSelectionPastLine(labelSet) {
       let pastLine = {};
-      let gPastLine = svg.append("g")
+      let gPastLine = svgChart.append("g")
         .attr("class", "pastLine");
       labelSet.forEach(label => pastLine[label] = {
         ele: gPastLine.append("g")
@@ -1029,7 +1020,7 @@
           let data = getDataByMonth(dataArray, currentDate)[index]; 
           let cx = x(data.forward + 1) + margin.left;
           let cy = y(data.freq + 1) + margin.top;
-          let radius = data.freq < 50 && data.forward < 2 ? 2 : r(data.trend);
+          let radius = (!isVisible(data)) ? 2 : r(data.trend);
           let fill = color(data.trend);
           let date = d3.timeFormat("%Y%m%d%H")(currentDate);
 
