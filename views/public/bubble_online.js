@@ -473,7 +473,7 @@
 
         d3.select(".header")
           .style("border-color", "#909099")
-          .html(`${label}: ${en2ch[label]}`);
+          .html(`${label}, ${en2ch[label]}`);
       } else {
         d3.select(`#lifeCycleRow-${label}`)
           .style("display", "none");
@@ -569,9 +569,11 @@
 
       updateMask(selectedLabel);
 
-      d3.select(".header")
-        .style("border-color", "#909099")
-        .html(`${label}: ${en2ch[label]}`);
+      if (selectedLabel.length === 0) {
+        d3.select(".header")
+          .style("border-color", "#909099")
+          .html(`${label}, ${en2ch[label]}`);
+      }
 
       if (!buttonPlay) {
         d3.selectAll(".cursor")
