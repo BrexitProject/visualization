@@ -698,7 +698,7 @@
 
     function updateTraj(currentDate) {
       let selectedLabel = getSelectedLabel();
-      let date = d3.timeFormat("%Y%m%d")(currentDate);
+      // let date = d3.timeFormat("%Y%m%d")(currentDate);
 
       selectedLabel.forEach(label => {
         let selector = d3.select(`#input-${label}`);
