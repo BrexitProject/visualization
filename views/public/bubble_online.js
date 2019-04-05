@@ -976,7 +976,7 @@
 
     function generateTimeline(dataArray) {
       let timeline = dataArray[0]["value"].map(d => d[0]);
-      timeline.splice(7, 1);
+      // timeline.splice(7, 1);
       return timeline;
     }
 
