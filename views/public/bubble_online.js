@@ -23,7 +23,7 @@
 
   var x = d3.scaleLinear()
             // .domain([0, 10, 50, 75, 100, 600, 1200, 2400])
-            .domain([100, 200, 400, 800, 1600, 2000, 2400, 2900])
+            .domain([60, 200, 400, 800, 1600, 2000, 2400, 2900])
             .range([0,(width-30)/7,(width-30)*2/7,(width-30)*3/7,(width-30)*4/7,(width-30)*5/7,(width-30)*6/7,width-30,width])
 
   var r = d3.scaleLinear()
@@ -36,12 +36,12 @@
   // axises
   var xAxis = d3.axisBottom(x)
                 .tickSize(-height)
-                .tickValues([100, 200, 400, 800, 1600, 2000, 2400, 2900]);
+                .tickValues([60, 200, 400, 800, 1600, 2000, 2400, 2900]);
                 // .tickValues([0, 10, 50, 75, 100, 600, 1200, 2400]);
 
   var yAxis = d3.axisLeft(y)
                 .tickSize(-width)
-                .tickValues([1000, 4000, 10000, 40000, 100000, 300000]);
+                .tickValues([1000, 4000, 10000, 40000, 100000, 380000]);
                 // .tickValues([0, 250, 1000, 7000, 50000, 380000])
 
   let buttonSize = 40;
@@ -177,7 +177,9 @@
                   .attr('y',margin.top+160)
                   .attr('class','monthText');
     // Add a dot per state. Initialize the data at 1950, and set the colors.
-    let dataset = getDataByMonth(dataArray,new Date(2016,0));
+    let startDate = new Date(2016, 0);
+    let endDate = new Date(2019, 2, 31, 23, 59, 59);
+    let dataset = getDataByMonth(dataArray, startDate);
 
     let clipPath = svg.append("clipPath")
       .attr("id", "chart-area")
@@ -282,7 +284,6 @@
     // pre-calculate path of all hashtag
     preCalcSelectionPast(labelSet, timeline);
 
-
     let timer = svg.append("svg:text")
       .attr("T", 0)
       .text("");
@@ -290,7 +291,7 @@
     let durationTime = 500;
     let easeFunc = d3.easeLinear;
     let dateScale = d3.scaleTime()
-      .domain([new Date(2016,0), new Date(2019,3)])
+      .domain([startDate, endDate])
       .range([0, totalTime]);
 
     let { lifeCycle, lifeCycleGradient } = calcLifeCycle(labelSet);
@@ -319,7 +320,7 @@
 
     function calcLifeCycle(labelSet) {
       let tweenValue = getTweenValue();
-      let dateInterpolator = d3.interpolateDate(new Date(2016,0), new Date(2019,3));
+      let dateInterpolator = d3.interpolateDate(startDate, endDate);
       let formatter = d3.timeFormat("%Y-%m-%d-%H-%M-%S");
       let parser = d3.timeParse("%Y-%m-%d-%H-%M-%S");
       let dateArray = tweenValue.map(t => formatter(dateInterpolator(t)));
@@ -627,7 +628,7 @@
       .ease(easeFunc)
       .tween('time', () => {
         return function(t) {
-          var month = d3.interpolateDate(dateScale.invert(totalTime - timeTodo), new Date(2019,3));
+          var month = d3.interpolateDate(dateScale.invert(totalTime - timeTodo), endDate);
           tweenYear(month(t));
         }
       });
@@ -664,7 +665,7 @@
       verticalText.data(dataset).call(verTextPosition);
       textPosition(dataset);
 
-      if (year <= new Date(2019,3)) {
+      if (year <= endDate) {
         monthText.text(year.getFullYear()+'/'+(year.getMonth()+1));
       }
       let tmpYear = new Date(year);
@@ -691,7 +692,7 @@
           .filter(d => trueText.findIndex(text => text === d.label.slice(1)) >= 0 || (d.forward + 1 >= 800 || d.freq + 1 >= 40000))
           .style("fill-opacity", 1)
           .transition()
-          .duration(2000)
+          .duration(1000)
           .style("fill-opacity", 0);
       }
     }
@@ -734,7 +735,7 @@
     function updateVideoAnchor(date) {
       let width = d3.select(".video-slider").attr("width");
       let timeScale = d3.scaleTime()
-        .domain([new Date(2016, 0), new Date(2019, 3)])
+        .domain([startDate, endDate])
         .range([0, width]);
       let pos = parseFloat(timeScale(date));
       pos = Math.min(pos, width);
@@ -1001,7 +1002,7 @@
 
     function preCalcSelectionPast(labelSet, timeline) {
       let tweenValue = getTweenValue();
-      let dateInterpolator = d3.interpolateDate(new Date(2016,0), new Date(2019,3));
+      let dateInterpolator = d3.interpolateDate(startDate, endDate);
       let formatter = d3.timeFormat("%Y-%m-%d-%H-%M-%S");
       let parser = d3.timeParse("%Y-%m-%d-%H-%M-%S");
       let dateArray = tweenValue.map(t => parser(formatter(dateInterpolator(t))));
