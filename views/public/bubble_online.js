@@ -17,7 +17,8 @@
             .attr('height', svgHeight);
   // scale
   var y = d3.scaleLinear()
-            .domain([1000, 2000, 4000, 8000, 10000, 20000, 40000, 80000, 100000, 200000, 300000, 400000])
+            .domain([2000, 4000, 8000, 10000, 20000, 40000, 80000, 100000, 200000, 300000, 400000])
+            // .domain([1000, 2000, 4000, 8000, 10000, 20000, 40000, 80000, 100000, 200000, 300000, 400000])
             // .domain([0, 100, 250, 500, 1000, 4000, 7000, 10000, 50000, 100000, 380000, 400000])
             .range([height,(height-30)*9/10+30,(height-30)*8/10+30,(height-30)*7/10+30,(height-30)*6/10+30,(height-30)*5/10+30,(height-30)*4/10+30,(height-30)*3/10+30,(height-30)*2/10+30,(height-30)/10+30, 30,0]);
 
@@ -41,7 +42,7 @@
 
   var yAxis = d3.axisLeft(y)
                 .tickSize(-width)
-                .tickValues([1000, 4000, 10000, 40000, 100000, 380000]);
+                .tickValues([2000, 8000, 20000, 80000, 200000, 400000]);
                 // .tickValues([0, 250, 1000, 7000, 50000, 380000])
 
   let buttonSize = 40;
@@ -689,7 +690,7 @@
 
         showupText.data(dataset)
           .attr("transform", d => `translate(${x(d.forward + 1)+margin.left}, ${y(d.freq + 1)+margin.top})`)
-          .filter(d => trueText.findIndex(text => text === d.label.slice(1)) >= 0 || (d.forward + 1 >= 800 || d.freq + 1 >= 40000))
+          .filter(d => trueText.findIndex(text => text === d.label.slice(1)) >= 0 || (d.forward + 1 >= 800 || d.freq + 1 >= 50000))
           .style("fill-opacity", 1)
           .transition()
           .duration(1000)
