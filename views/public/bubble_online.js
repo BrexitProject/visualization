@@ -278,6 +278,7 @@
       .style("display", "none");
 
     let mouseoverDot = null;
+    let isKeyUp = true;
     let timeline = generateTimeline(dataArray);
     // let pastTimeline = initSelectionTimeline(labelSet);
     let pastCircle = initSelectionPastCircle(labelSet);
@@ -319,6 +320,8 @@
     // showupText.on("mouseout", mouseOutHandler);
     dot.on("mouseover", mouseOverHandler);
     dot.on("mouseout", mouseOutHandler);
+    document.onkeydown = keyDownHandler;
+    document.onkeyup = keyUpHandler;
 
     function calcLifeCycle(labelSet) {
       let tweenValue = getTweenValue();
@@ -490,6 +493,21 @@
         let timeTodo = totalTime - getTime();
         startTime(easeFunc, totalTime, timeTodo, dateScale);
         disableCursor();
+      }
+    }
+
+    function keyDownHandler(event) {
+      if (event.keyCode === 32) {
+        if (isKeyUp) {
+          isKeyUp = false;
+          buttonClickedHandler();
+        }
+      }
+    }
+
+    function keyUpHandler(event) {
+      if (event.keyCode === 32) {
+        isKeyUp = true;
       }
     }
 
