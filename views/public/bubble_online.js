@@ -812,7 +812,7 @@
     }
 
     function createHeaderPanel() {
-      let headerHeight = 50;
+      // let headerHeight = 50;
 
       let slider = d3.select(".video-slider");
 
@@ -821,9 +821,9 @@
         .style("width", `${slider.attr("width")}px`)
         .style("min-width", `${slider.attr("width")}px`)
         .style("max-width", `${slider.attr("width")}px`)
-        .style("height", `${headerHeight}px`)
-        .style("min-height", `${headerHeight}px`)
-        .style("max-height", `${headerHeight}px`);
+        // .style("height", `${headerHeight}px`)
+        // .style("min-height", `${headerHeight}px`)
+        // .style("max-height", `${headerHeight}px`);
     }
 
     function createAsidePanel(labelSet) {
