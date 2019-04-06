@@ -1,7 +1,7 @@
 (async function main() {
   let en2ch = await getExplanation();
 
-  let lang = "en";
+  let lang = "ch";
 
   var margin = {top: 10, bottom: 80, left: 150, right: 30};
   var svgWidth = 1170;
@@ -31,9 +31,12 @@
             .range([7, 25]);
             // .domain([0, 0.365010869, (0.365010869 + 2 / 3) / 2, 2 / 3, 1])
             // .range([25, 7, 25, 7, 25]);
-  var color = d3.scaleQuantile()
-                .domain([0, 0.365010869, (0.365010869 + 2 / 3) / 2, 2 / 3, 1])
-                .range(["#1B6AA5", "#748C9D", "#9D7A7F", "#E8110F" ]);
+  // var color = d3.scaleQuantile()
+  //               .domain([0, 0.365010869, (0.365010869 + 2 / 3) / 2, 2 / 3, 1])
+  //               .range(["#1B6AA5", "#748C9D", "#9D7A7F", "#E8110F" ]);
+  let color = d3.scaleLinear()
+    .domain([0, 0.365010869, (0.365010869 + 2 / 3) / 2, 2 / 3, 1])
+    .range(["#1B6AA5", "#748C9D", "#8A949B", "#9D7A7F", "#E8110F"]);
 
   // axises
   var xAxis = d3.axisBottom(x)

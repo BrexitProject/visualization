@@ -467,7 +467,13 @@
 
         d3.select(".header")
           .style("border-color", "#909099")
-          .html(`${twitterEnglish[label]}, ${en2ch[label]}`);
+          .html(function() {
+            if (lang === "ch") {
+              return `${twitterChinese[label]}(#${twitterEnglish[label]}): ${en2ch[label]}`;
+            } else {
+
+            }
+          });
       } else {
         d3.select(`#lifeCycleRow-${label}`)
           .style("display", "none");
