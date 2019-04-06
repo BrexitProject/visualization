@@ -179,7 +179,8 @@
                   .attr('class','monthText');
     // Add a dot per state. Initialize the data at 1950, and set the colors.
     let startDate = new Date(2016, 0);
-    let endDate = new Date(2019, 2, 31, 23, 59, 59);
+    let limitDate = new Date(2019, 2, 31, 23, 59, 59);
+    let endDate = new Date(2019, 3);
     let dataset = getDataByMonth(dataArray, startDate);
 
     let clipPath = svg.append("clipPath")
@@ -466,7 +467,7 @@
 
         d3.select(".header")
           .style("border-color", "#909099")
-          .html(`${label}, ${en2ch[label]}`);
+          .html(`${twitterEnglish[label]}, ${en2ch[label]}`);
       } else {
         d3.select(`#lifeCycleRow-${label}`)
           .style("display", "none");
@@ -666,7 +667,7 @@
       verticalText.data(dataset).call(verTextPosition);
       textPosition(dataset);
 
-      if (year <= endDate) {
+      if (year <= limitDate) {
         monthText.text(year.getFullYear()+'/'+(year.getMonth()+1));
       }
       let tmpYear = new Date(year);

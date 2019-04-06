@@ -1,7 +1,7 @@
 (async function main() {
   let en2ch = await getExplanation();
 
-  let lang = "ch";
+  let lang = "en";
 
   var margin = {top: 10, bottom: 80, left: 150, right: 30};
   var svgWidth = 1170;
@@ -180,7 +180,8 @@
                   .attr('class','monthText');
     // Add a dot per state. Initialize the data at 1950, and set the colors.
     let startDate = new Date(2016, 0);
-    let endDate = new Date(2019, 2, 31, 23, 59, 59);
+    let limitDate = new Date(2019, 2, 31, 23, 59, 59);
+    let endDate = new Date(2019, 3);
     let dataset = getDataByMonth(dataArray, startDate);
 
     let clipPath = svg.append("clipPath")
@@ -277,15 +278,6 @@
       .attr("id", d => `textDateLabel-${d.label.slice(1)}`)
       .style("display", "none");
 
-    let mouseoverDot = null;
-    let timeline = generateTimeline(dataArray);
-    // let pastTimeline = initSelectionTimeline(labelSet);
-    let pastCircle = initSelectionPastCircle(labelSet);
-    let pastLine = initSelectionPastLine(labelSet);
-
-    // pre-calculate path of all hashtag
-    preCalcSelectionPast(labelSet, timeline);
-
     let timer = svg.append("svg:text")
       .attr("T", 0)
       .text("");
@@ -300,6 +292,15 @@
     r.domain(d3.extent(Object.keys(lifeCycleRadius).map(label => lifeCycleRadius[label])));
     let showupLifeCycle = calcShowup(lifeCycle);
     renderDownsideWithLifeCycle(lifeCycleGradient);
+
+    let mouseoverDot = null;
+    let timeline = generateTimeline(dataArray);
+    // let pastTimeline = initSelectionTimeline(labelSet);
+    let pastCircle = initSelectionPastCircle(labelSet);
+    let pastLine = initSelectionPastLine(labelSet);
+
+    // pre-calculate path of all hashtag
+    preCalcSelectionPast(labelSet, timeline);
 
     initTime();
     startTime(easeFunc, totalTime, totalTime, dateScale);
@@ -497,7 +498,7 @@
 
         d3.select(".header")
           .style("border-color", "#909099")
-          .html(`${label}, ${en2ch[label]}`);
+          .html(`${twitterEnglish[label]}, ${en2ch[label]}`);
       } else {
         d3.select(`#lifeCycleRow-${label}`)
           .style("display", "none");
@@ -697,7 +698,7 @@
       verticalText.data(dataset).call(verTextPosition);
       textPosition(dataset);
 
-      if (year <= endDate) {
+      if (year <= limitDate) {
         monthText.text(year.getFullYear()+'/'+(year.getMonth()+1));
       }
       let tmpYear = new Date(year);
@@ -1054,7 +1055,7 @@
           let data = getDataByMonth(dataArray, currentDate)[index]; 
           let cx = x(data.forward + 1) + margin.left;
           let cy = y(data.freq + 1) + margin.top;
-          let radius = (!isVisible(data)) ? 2 : r(data.trend);
+          let radius = (!isVisible(data)) ? 2 : r(lifeCycleRadius[data.label.slice(1)]);
           let fill = color(data.trend);
           let date = d3.timeFormat("%Y%m%d%H")(currentDate);
 
