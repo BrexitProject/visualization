@@ -279,6 +279,7 @@
 
     let mouseoverDot = null;
     let isKeyUp = true;
+    let isAnimationFinished = false;
     let timeline = generateTimeline(dataArray);
     // let pastTimeline = initSelectionTimeline(labelSet);
     let pastCircle = initSelectionPastCircle(labelSet);
@@ -490,9 +491,16 @@
         stopTime();
         enableCursor();
       } else {
-        let timeTodo = totalTime - getTime();
-        startTime(easeFunc, totalTime, timeTodo, dateScale);
-        disableCursor();
+        if (isAnimationFinished) {
+          resetTime();
+          startTime(easeFunc, totalTime, totalTime, dateScale);
+          disableCursor();
+          isAnimationFinished = false;
+        } else {
+          let timeTodo = totalTime - getTime();
+          startTime(easeFunc, totalTime, timeTodo, dateScale);
+          disableCursor();
+        }
       }
     }
 
@@ -650,14 +658,14 @@
         .attr("T", totalTime);
 
       svg.transition()
-      .duration(timeTodo)
-      .ease(easeFunc)
-      .tween('time', () => {
-        return function(t) {
-          var month = d3.interpolateDate(dateScale.invert(totalTime - timeTodo), endDate);
-          tweenYear(month(t));
-        }
-      });
+        .duration(timeTodo)
+        .ease(easeFunc)
+        .tween('time', () => {
+          return function(t) {
+            var month = d3.interpolateDate(dateScale.invert(totalTime - timeTodo), endDate);
+            tweenYear(month(t));
+          }
+        });
     }
 
     function stopTime() {
@@ -693,6 +701,11 @@
 
       if (year <= limitDate) {
         monthText.text(year.getFullYear()+'/'+(year.getMonth()+1));
+      } else {
+        isAnimationFinished = true;
+        buttonPlay = false;
+        button.attr("xlink:href", `public/data/bubble/pause.svg`);
+        enableCursor();
       }
       let tmpYear = new Date(year);
       updateVideoAnchor(tmpYear);
