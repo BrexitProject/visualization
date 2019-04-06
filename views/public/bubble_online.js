@@ -364,7 +364,7 @@
     }
 
     function isVisible(dataItem) {
-      return dataItem.freq >= 1000 || dataItem.forward >= 75;
+      return dataItem.freq >= 2000 || dataItem.forward >= 60;
     }
 
     function transformLifeCycleToGradient(lifeCycle) {
@@ -675,22 +675,23 @@
 
     function updateShowupText(year, dataset, showupText, showupLifeCycle) {
       if (getSelectedLabel().length === 0) {
-        let formatter = d3.timeFormat("%Y-%m-%d");
-        let trueText = Object.keys(showupLifeCycle).filter(key => {
-          let cycle = showupLifeCycle[key];
-          for (let timestamp of cycle) {
-            if (formatter(timestamp[0]) === formatter(year)) {
-              return true;
-            }
-          }
-          return false;
-        });
+        // let formatter = d3.timeFormat("%Y-%m-%d");
+        // let trueText = Object.keys(showupLifeCycle).filter(key => {
+        //   let cycle = showupLifeCycle[key];
+        //   for (let timestamp of cycle) {
+        //     if (formatter(timestamp[0]) === formatter(year)) {
+        //       return true;
+        //     }
+        //   }
+        //   return false;
+        // });
 
         // console.log(trueText);
 
         showupText.data(dataset)
           .attr("transform", d => `translate(${x(d.forward + 1)+margin.left}, ${y(d.freq + 1)+margin.top})`)
-          .filter(d => trueText.findIndex(text => text === d.label.slice(1)) >= 0 || (d.forward + 1 >= 800 || d.freq + 1 >= 50000))
+          // .filter(d => trueText.findIndex(text => text === d.label.slice(1)) >= 0 || (d.forward + 1 >= 800 || d.freq + 1 >= 50000))
+          .filter(isVisible)
           .style("fill-opacity", 1)
           .transition()
           .duration(1000)
