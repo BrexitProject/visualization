@@ -814,13 +814,13 @@
     function createHeaderPanel() {
       // let headerHeight = 50;
 
-      let slider = d3.select(".video-slider");
+      // let slider = d3.select(".video-slider");
 
-      d3.select(".header")
-        .style("margin-left", `${margin.left}px`)
-        .style("width", `${slider.attr("width")}px`)
-        .style("min-width", `${slider.attr("width")}px`)
-        .style("max-width", `${slider.attr("width")}px`)
+      // d3.select(".header")
+      //   .style("margin-left", `${margin.left}px`)
+        // .style("width", `${slider.attr("width")}px`)
+        // .style("min-width", `${slider.attr("width")}px`)
+        // .style("max-width", `${slider.attr("width")}px`)
         // .style("height", `${headerHeight}px`)
         // .style("min-height", `${headerHeight}px`)
         // .style("max-height", `${headerHeight}px`);

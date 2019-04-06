@@ -201,8 +201,24 @@
         text-align: center;
       }
 
-      .header {
+      .heading {
         box-sizing: border-box;
+        height: 50px;
+      }
+
+      .aside-title {
+        display: inline-block;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+         /* margin: auto; */
+        text-align: center;
+        vertical-align: middle;
+        width: 220px;
+      }
+
+      .header {
+        display: inline-block;
+        box-sizing: border-box;
+        width: 990px;
         height: 50px;
         min-height: 50px;
         max-height: 50px;
@@ -210,7 +226,8 @@
         border: 1px solid white;
         border-radius: 15px;
         vertical-align: middle;
-        /* text-align: center; */
+        margin-right: 30px;
+        margin-left: 150px;
         padding: 0 20px;
         font-family: 'Noto Sans TC';
       }
@@ -271,7 +288,10 @@
 
   <body>
     <div class = "title">英国人是怎么讨论脱欧的</div>
-    <div class = "header"></div>
+    <div class = "heading">
+      <div class = "header"></div>
+      <div class = "aside-title">社交网站最热门<br/>脱欧话题</div>
+    </div>
     <div class="container"></div>
 
     <script src="public/d3.min.js"></script>
