@@ -24,7 +24,8 @@
 
   var x = d3.scaleLinear()
             // .domain([0, 10, 50, 75, 100, 600, 1200, 2400])
-            .domain([60, 200, 400, 800, 1600, 2000, 2400, 2900])
+            // .domain([60, 200, 400, 800, 1600, 2000, 2400, 2900])
+            .domain([50, 200, 400, 800, 1200, 1600, 2000, 2900])
             .range([0,(width-30)/7,(width-30)*2/7,(width-30)*3/7,(width-30)*4/7,(width-30)*5/7,(width-30)*6/7,width-30,width])
 
   var r = d3.scaleLinear()
@@ -37,7 +38,8 @@
   // axises
   var xAxis = d3.axisBottom(x)
                 .tickSize(-height)
-                .tickValues([60, 200, 400, 800, 1600, 2000, 2400, 2900]);
+                .tickValues([50, 200, 400, 800, 1200, 1600, 2000, 2900]);
+                // .tickValues([60, 200, 400, 800, 1600, 2000, 2400, 2900]);
                 // .tickValues([0, 10, 50, 75, 100, 600, 1200, 2400]);
 
   var yAxis = d3.axisLeft(y)
@@ -375,7 +377,7 @@
     }
 
     function isVisible(dataItem) {
-      return dataItem.freq >= 2000 || dataItem.forward >= 60;
+      return dataItem.freq >= 2000 || dataItem.forward >= 50;
     }
 
     function transformLifeCycleToGradient(lifeCycle) {
