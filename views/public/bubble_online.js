@@ -283,6 +283,7 @@
     let isKeyUp = true;
     let isAnimationFinished = false;
     let timeline = generateTimeline(dataArray);
+
     // let pastTimeline = initSelectionTimeline(labelSet);
     let pastCircle = initSelectionPastCircle(labelSet);
     let pastLine = initSelectionPastLine(labelSet);
@@ -1093,7 +1094,6 @@
       let formatter = d3.timeFormat("%Y-%m-%d-%H-%M-%S");
       let parser = d3.timeParse("%Y-%m-%d-%H-%M-%S");
       let dateArray = tweenValue.map(t => parser(formatter(dateInterpolator(t))));
-
       labelSet.forEach((label, index) => {
         calcLabelPast(label, index, timeline.slice(), dateArray);
       });
@@ -1102,8 +1102,12 @@
     function calcLabelPast(label, index, timeline, dateArray) {
       let targetPastCircle = pastCircle[label];
       let targetPastLine = pastLine[label];
-
+      // console.log(dateArray);
       dateArray.forEach(currentDate => {
+        // let dateIndex = dateArray.indexOf(currentDate);
+        // if (!(dateIndex < dateArray.length - 1 && currentDate.getMonth() !== dateArray[dateIndex + 1].getMonth())) {
+        //   return;
+        // }
         if (currentDate >= timeline[0]) {
           let data = getDataByMonth(dataArray, currentDate)[index]; 
           let cx = x(data.forward + 1) + margin.left;
@@ -1119,7 +1123,15 @@
             .attr("x", cx)
             .attr("y", cy - radius)
             .text(() => {
-              let text = d3.timeFormat("%Y.%m.%d")(currentDate);
+              let year = currentDate.getFullYear();
+              let month = currentDate.getMonth();
+              if (month === 0) {
+                month = 11;
+                year -= 1;
+              } else {
+                month -= 1;
+              }
+              let text = d3.timeFormat("%Y.%m.%d")(new Date(year, month));
               return text.slice(0, 7);
             })
             .style("display", "none");
