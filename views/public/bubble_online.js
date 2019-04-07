@@ -306,9 +306,11 @@
     startTime(easeFunc, totalTime, totalTime, dateScale);
     disableCursor();
 
-    let checkboxs = d3.selectAll("input");
+    let checkboxs = d3.selectAll("div.labelRow input");
+    let checkAll = d3.select("input#input-all");
 
     checkboxs.on("change", checkedHandler);
+    checkAll.on("change", checkedAllHandler);
     button.on("click", buttonClickedHandler);
     slider.on("click", sliderClickedHandler);
     anchor.call(d3.drag()
@@ -471,17 +473,40 @@
 
         d3.select(".header")
           .style("border-color", "#909099")
-          .html(function() {
-            if (lang === "ch") {
-              return `${twitterChinese[label]}(#${twitterEnglish[label]}): ${en2ch[label]}`;
-            } else {
+          .html(`${twitterEnglish[label]}, ${en2ch[label]}`);
 
-            }
-          });
+        if (selectedLabel.length === labelSet.length) {
+          d3.select("input#input-all")
+            .property("checked", true);
+        }
       } else {
         d3.select(`#lifeCycleRow-${label}`)
           .style("display", "none");
       }
+    }
+
+    function checkedAllHandler() {
+      let checkbox = d3.select("#input-all");
+
+      if (checkbox.property("checked")) {
+        d3.selectAll("div.labelRow input")
+          .property("checked", true);
+
+        d3.selectAll("div.lifeCycleRow")
+          .style("display", "block");
+      } else {
+        d3.selectAll("div.labelRow input")
+          .property("checked", false);
+        
+        d3.selectAll("div.lifeCycleRow")
+          .style("display", "none");
+      }
+
+      let currentTime = getTime();
+      let currentDate = dateScale.invert(currentTime);
+      let selectedLabel = getSelectedLabel();
+      updateMask(selectedLabel);
+      labelSet.forEach(label => updatePast(d3.select(`#input-${label}`), currentDate));
     }
 
     function buttonClickedHandler() {
@@ -828,14 +853,32 @@
 
     function createAsidePanel(labelSet) {
       let asideWidth = 220;
+      let lineHeight = 24; // 和css联动
       let aside = d3.select(".container")
         .append("div")
-        .attr("class", "aside")
-      document.querySelector("div.aside").style.width = `${asideWidth}px`;
-      document.querySelector("div.aside").style.height = `${anchor.attr("cy")}px`;
-      document.querySelector("div.aside").style.margin = `${margin.top}px 0 ${svgHeight - anchor.attr("cy")}px 0`;
+        .attr("id", "aside")
+      document.querySelector("div#aside").style.width = `${asideWidth}px`;
+      // document.querySelector("div#aside").style.height = `${anchor.attr("cy")}px`;
+      // document.querySelector("div#aside").style.margin = `${margin.top}px 0 ${svgHeight - anchor.attr("cy")}px 0`;
 
-      let rows = aside.selectAll(".labelRow")
+      let eleOfAllNnone = aside.append("div")
+        .attr("id", "eleOfAllNnone");
+      let eleOfLabelRow = aside.append("div")
+        .attr("id", "eleOfLabelRow")
+        .style("max-height", `${2 * anchor.attr("cy") - lineHeight - svgHeight}px`);
+
+      let eleOfAll = eleOfAllNnone.append("div")
+        .attr("class", "allNnone");
+      eleOfAll.append("input")
+        .attr("type", "checkbox")
+        .attr("name", "all")
+        .attr("id", 'input-all');
+      eleOfAll.append("label")
+        .attr("id", "label-all")
+        .attr("for", "all")
+        .html(lang === "ch" ? "全选" : "all");
+
+      let rows = eleOfLabelRow.selectAll(".labelRow")
         .data(labelSet)
         .enter()
         .append("div")
@@ -852,11 +895,11 @@
         .attr("for", d => d)
         .html(d => `${twitterText[d]}`);
 
-      document.querySelector("div.aside").style.overflow = "auto";
+      document.querySelector("div#eleOfLabelRow").style.overflow = "auto";
     }
 
     function createDownsidePanel(labelSet) {
-      let downsideHeight = 170;
+      let downsideHeight = 135;
 
       let downside = d3.select(".container")
         .append("div")
@@ -998,7 +1041,7 @@
     }
 
     function getSelectedLabel() {
-      let selection = d3.selectAll("input[type='checkbox']:checked");
+      let selection = d3.selectAll("div.labelRow input[type='checkbox']:checked");
 
       let selectedLabel = [];
       selection.each(d => selectedLabel.push(d));

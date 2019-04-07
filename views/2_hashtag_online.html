@@ -95,20 +95,33 @@
       }
 
       .container {
+        box-sizing: border-box;
         width: 1430px;
         height: 900px;
+        padding: 0;
+        border: 0;
+        vertical-align: top;
+        position: relative;
       }
 
       svg {
         display: inline-block;
       }
 
-      .aside {
+      #aside {
         /* border: 1px solid black; */
         display: inline-block;
-        overflow-y: auto;
-        line-height: 24px;
+        height: 700px;
+        width: 220px;
+        position: relative;
+        top: -24px;
+        /* overflow-y: auto; */
+        /* line-height: 24px; */
       }
+
+      /* #eleOfLabelRow {
+
+      } */
 
       div.labelRow {
         /* margin: 5px 3px, 5px, 4px; */
@@ -204,6 +217,7 @@
       .heading {
         box-sizing: border-box;
         height: 50px;
+        width: 1470px;
       }
 
       .aside-title {
@@ -237,29 +251,29 @@
         width: 0px;
       }
 
-      .aside::-webkit-scrollbar {
+      #eleOfLabelRow::-webkit-scrollbar {
         width: 8px;
       }
 
-      .aside::-webkit-scrollbar-button {
+      #eleOfLabelRow::-webkit-scrollbar-button {
         width: 8px;
         height:5px;
       }
 
-      .aside::-webkit-scrollbar-track {
+      #eleOfLabelRow::-webkit-scrollbar-track {
         background:#eee;
         border: thin solid lightgray;
         box-shadow: 0px 0px 3px #dfdfdf inset;
         border-radius:10px;
       }
 
-      .aside::-webkit-scrollbar-thumb {
+      #eleOfLabelRow::-webkit-scrollbar-thumb {
         background-color: rgba(144, 144, 153, 0.5);
         border: thin solid rgba(144, 144, 153, 0.5);
         border-radius:10px;
       }
 
-      .aside::-webkit-scrollbar-thumb:hover {
+      #eleOfLabelRow::-webkit-scrollbar-thumb:hover {
         background-color:rgba(144, 144, 153, 1);
       } 
 
