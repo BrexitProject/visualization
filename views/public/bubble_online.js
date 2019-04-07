@@ -291,11 +291,15 @@
     let timer = svg.append("svg:text")
       .attr("T", 0)
       .text("");
-    let totalTime = 120000;
-    let durationTime = 500;
+    const totalTime = 120000;
+    const durationTime = 500;
     let easeFunc = d3.easeLinear;
-    let dateScale = d3.scaleTime()
+
+    const dateScale = d3.scaleTime()
       .domain([startDate, endDate])
+      .range([0, totalTime]);
+    const anchorScale = d3.scaleLinear()
+      .domain([0, width])
       .range([0, totalTime]);
 
     let { lifeCycle, lifeCycleGradient } = calcLifeCycle(labelSet);
@@ -546,48 +550,42 @@
       }
     }
 
-    function sliderClickedHandler() {
-      if (buttonPlay) {
-        buttonPlay = false;
-        button.attr("xlink:href", d => `public/data/bubble/${buttonPlay ? 'play' : 'pause'}.svg`);
-        stopTime();
-        return;
-      }
-
-      let anchorScale = d3.scaleLinear()
-        .domain([0, width])
-        .range([0, totalTime]);
+    function sliderClickedHandler(event) {
+      // if (buttonPlay) {
+      //   buttonPlay = false;
+      //   button.attr("xlink:href", `public/data/bubble/pause.svg`);
+      //   stopTime();
+      //   return;
+      // }
+      let hyperParam = 0;
+      stopTime();
 
       let offset = parseFloat(d3.select(".video-slider").attr("x"));
       let minCXPos = offset + anchorScale.domain()[0];
       let maxCXPos = offset + anchorScale.domain()[1];
-      let currentCXPos = Math.max(minCXPos, d3.event.x);
+      let currentCXPos = Math.max(minCXPos, d3.event.x + hyperParam);
       currentCXPos = Math.min(maxCXPos, currentCXPos);
 
-      d3.select(".video-anchor")
-        .attr("cx", currentCXPos);
+      let anchor = d3.select(".video-anchor");
+      anchor.attr("cx", currentCXPos);
 
       let currentTime = anchorScale(currentCXPos - offset);
       setTime(currentTime);
 
       startTime(easeFunc, totalTime, totalTime - currentTime, dateScale);
       buttonPlay = true;
-      button.attr("xlink:href", d => `public/data/bubble/${buttonPlay ? 'play' : 'pause'}.svg`);
+      button.attr("xlink:href", `public/data/bubble/play.svg`);
     }
 
     function dragStartedHandler() {
       button.on("click", null);
 
       buttonPlay = false;
-      button.attr("xlink:href", d => `public/data/bubble/${buttonPlay ? 'play' : 'pause'}.svg`);
+      button.attr("xlink:href", `public/data/bubble/pause.svg`);
       stopTime();
     }
 
     function draggedHandler() {
-      let anchorScale = d3.scaleLinear()
-        .domain([0, width])
-        .range([0, totalTime]);
-
       let offset = parseFloat(d3.select(".video-slider").attr("x"));
       let minCXPos = offset + anchorScale.domain()[0];
       let maxCXPos = offset + anchorScale.domain()[1];
@@ -605,7 +603,7 @@
       let currentTime = getTime();
 
       buttonPlay = true;
-      button.attr("xlink:href", d => `public/data/bubble/${buttonPlay ? 'play' : 'pause'}.svg`);
+      button.attr("xlink:href", `public/data/bubble/play.svg`);
       let timeTodo = totalTime - currentTime;
       startTime(easeFunc, totalTime, timeTodo, dateScale);
 
@@ -696,10 +694,12 @@
     }
 
     function stopTime() {
-      timer.transition()
-        .duration(0);
-      svg.transition()
-        .duration(0);
+      // timer.transition()
+      //   .duration(0);
+      // svg.transition()
+      //   .duration(0);
+      timer.interrupt();
+      svg.interrupt();
     }
 
     function getTime() {
