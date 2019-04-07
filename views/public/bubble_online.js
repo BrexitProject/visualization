@@ -531,6 +531,7 @@
 
     function keyDownHandler(event) {
       if (event.keyCode === 32) {
+        event.preventDefault();
         if (isKeyUp) {
           isKeyUp = false;
           buttonClickedHandler();
@@ -540,6 +541,7 @@
 
     function keyUpHandler(event) {
       if (event.keyCode === 32) {
+        event.preventDefault();
         isKeyUp = true;
       }
     }
