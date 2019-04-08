@@ -480,7 +480,7 @@
 
         d3.select(".header")
           .style("border-color", "#909099")
-          .html(`${twitterEnglish[label]}, ${en2ch[label]}`);
+          .html(`${twitterChinese[label]}(#${twitterEnglish[label]}): ${en2ch[label]}`);
 
         if (selectedLabel.length === labelSet.length) {
           d3.select("input#input-all")
@@ -626,7 +626,7 @@
       if (selectedLabel.length === 0) {
         d3.select(".header")
           .style("border-color", "#909099")
-          .html(`${label}, ${en2ch[label]}`);
+          .html(`${twitterChinese[label]}(#${twitterEnglish[label]}): ${en2ch[label]}`);
       }
 
       if (!buttonPlay) {
