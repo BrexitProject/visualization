@@ -913,18 +913,32 @@
     }
 
     function createDownsidePanel(labelSet) {
-      let downsideHeight = 135;
+      let downsideBlockHeight = 135;
+      let downsideTitleHeight = 30;
+      let downsideHeight = downsideBlockHeight + downsideTitleHeight;
 
       let downside = d3.select(".container")
         .append("div")
         .attr("class", "downside");
+
+      downside.append("div")
+        .attr("id", "downside-title")
+        .style("width", `${svgWidth}px`)
+        .style("height", `${downsideTitleHeight}px`)
+        .text("话题寿命")
+        .style("text-align", "center");
 
       let slider = d3.select(".video-slider");     
 
       document.querySelector("div.downside").style.width = `${svgWidth}px`;
       document.querySelector("div.downside").style.height = `${downsideHeight}px`;
 
-      let rows = downside.selectAll(".lifeCycleRow")
+      let downsideBlock = downside.append("div")
+        .attr("id", "downside-block");
+
+      document.querySelector("div#downside-block").style.height = `${downsideBlockHeight}px`;
+
+      let rows = downsideBlock.selectAll(".lifeCycleRow")
         .data(labelSet)
         .enter()
         .append("div")
