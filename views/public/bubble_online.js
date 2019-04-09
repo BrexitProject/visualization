@@ -437,7 +437,16 @@
           let radius = (!isVisible(d)) ? 2 : r(d.trend);
           return y(d.freq + 1)+margin.top - radius;
         })()})`)
-        .text(d => d3.timeFormat("%Y.%m.%d")(d.time));
+        .text(d => {
+          let time;
+          if (d.time <= limitDate) {
+            time = d3.timeFormat("%Y.%m")(d.time);
+          } else {
+            time = d3.timeFormat("%Y.%m")(limitDate);
+          }
+
+          return time;
+        });
     }
 
     function horCursorPosition(line) {
