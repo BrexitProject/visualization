@@ -24,24 +24,24 @@
 
   var x = d3.scaleLinear()
             // .domain([0, 10, 50, 75, 100, 600, 1200, 2400])
-            .domain([60, 200, 400, 800, 1600, 2000, 2400, 2900])
+            // .domain([60, 200, 400, 800, 1600, 2000, 2400, 2900])
+            .domain([50, 200, 400, 800, 1200, 1600, 2000, 2900])
             .range([0,(width-30)/7,(width-30)*2/7,(width-30)*3/7,(width-30)*4/7,(width-30)*5/7,(width-30)*6/7,width-30,width])
 
   var r = d3.scaleLinear()
-            .range([7, 25]);
             // .domain([0, 0.365010869, (0.365010869 + 2 / 3) / 2, 2 / 3, 1])
-            // .range([25, 7, 25, 7, 25]);
-  // var color = d3.scaleQuantile()
-  //               .domain([0, 0.365010869, (0.365010869 + 2 / 3) / 2, 2 / 3, 1])
-  //               .range(["#1B6AA5", "#748C9D", "#9D7A7F", "#E8110F" ]);
-  let color = d3.scaleLinear()
-    .domain([0, 0.365010869, (0.365010869 + 2 / 3) / 2, 2 / 3, 1])
-    .range(["#1B6AA5", "#748C9D", "#8A949B", "#9D7A7F", "#E8110F"]);
+            .domain([0, 0.401394874683146, 0.50448195659342, 0.592832046557058, 1])
+            .range([25, 7, 25, 7, 25]);
+  var color = d3.scaleQuantile()
+                // .domain([0, 0.365010869, (0.365010869 + 2 / 3) / 2, 2 / 3, 1])
+                .domain([0, 0.401394874683146, 0.50448195659342, 0.592832046557058, 1])
+                .range(["#1B6AA5", "#748C9D", "#9D7A7F", "#E8110F" ]);
 
   // axises
   var xAxis = d3.axisBottom(x)
                 .tickSize(-height)
-                .tickValues([60, 200, 400, 800, 1600, 2000, 2400, 2900]);
+                .tickValues([50, 200, 400, 800, 1200, 1600, 2000, 2900]);
+                // .tickValues([60, 200, 400, 800, 1600, 2000, 2400, 2900]);
                 // .tickValues([0, 10, 50, 75, 100, 600, 1200, 2400]);
 
   var yAxis = d3.axisLeft(y)
@@ -281,23 +281,11 @@
       .attr("id", d => `textDateLabel-${d.label.slice(1)}`)
       .style("display", "none");
 
-    let timer = svg.append("svg:text")
-      .attr("T", 0)
-      .text("");
-    let totalTime = 120000;
-    let durationTime = 500;
-    let easeFunc = d3.easeLinear;
-    let dateScale = d3.scaleTime()
-      .domain([startDate, endDate])
-      .range([0, totalTime]);
-
-    let { lifeCycle, lifeCycleGradient, lifeCycleRadius } = calcLifeCycle(labelSet);
-    r.domain(d3.extent(Object.keys(lifeCycleRadius).map(label => lifeCycleRadius[label])));
-    let showupLifeCycle = calcShowup(lifeCycle);
-    renderDownsideWithLifeCycle(lifeCycleGradient);
-
     let mouseoverDot = null;
+    let isKeyUp = true;
+    let isAnimationFinished = false;
     let timeline = generateTimeline(dataArray);
+
     // let pastTimeline = initSelectionTimeline(labelSet);
     let pastCircle = initSelectionPastCircle(labelSet);
     let pastLine = initSelectionPastLine(labelSet);
@@ -305,13 +293,33 @@
     // pre-calculate path of all hashtag
     preCalcSelectionPast(labelSet, timeline);
 
+    let timer = svg.append("svg:text")
+      .attr("T", 0)
+      .text("");
+    const totalTime = 120000;
+    const durationTime = 500;
+    let easeFunc = d3.easeLinear;
+
+    const dateScale = d3.scaleTime()
+      .domain([startDate, endDate])
+      .range([0, totalTime]);
+    const anchorScale = d3.scaleLinear()
+      .domain([0, width])
+      .range([0, totalTime]);
+
+    let { lifeCycle, lifeCycleGradient } = calcLifeCycle(labelSet);
+    let showupLifeCycle = calcShowup(lifeCycle);
+    renderDownsideWithLifeCycle(lifeCycleGradient);
+
     initTime();
     startTime(easeFunc, totalTime, totalTime, dateScale);
     disableCursor();
 
-    let checkboxs = d3.selectAll("input");
+    let checkboxs = d3.selectAll("div.labelRow input");
+    let checkAll = d3.select("input#input-all");
 
     checkboxs.on("change", checkedHandler);
+    checkAll.on("change", checkedAllHandler);
     button.on("click", buttonClickedHandler);
     slider.on("click", sliderClickedHandler);
     anchor.call(d3.drag()
@@ -324,6 +332,8 @@
     // showupText.on("mouseout", mouseOutHandler);
     dot.on("mouseover", mouseOverHandler);
     dot.on("mouseout", mouseOutHandler);
+    document.onkeydown = keyDownHandler;
+    document.onkeyup = keyUpHandler;
 
     function calcLifeCycle(labelSet) {
       let tweenValue = getTweenValue();
@@ -338,12 +348,9 @@
 
       let lifeCycleGradient = transformLifeCycleToGradient(lifeCycle);
 
-      let lifeCycleRadius = transformLifeCycleToRadius(lifeCycle);
-
       return {
         lifeCycle, 
         lifeCycleGradient,
-        lifeCycleRadius,
       };
     }
 
@@ -373,7 +380,7 @@
     }
 
     function isVisible(dataItem) {
-      return dataItem.freq >= 2000 || dataItem.forward >= 60;
+      return dataItem.freq >= 2000 || dataItem.forward >= 50;
     }
 
     function transformLifeCycleToGradient(lifeCycle) {
@@ -381,7 +388,7 @@
 
       let gradient = {};
       labels.forEach(label => {
-        let lifeCycleOfLabel = lifeCycle[label];
+        lifeCycleOfLabel = lifeCycle[label];
         gradient[label] = [];
         gradient[label].push("to right");
 
@@ -394,31 +401,6 @@
       });
 
       return gradient;
-    }
-
-    function transformLifeCycleToRadius(lifeCycle) {
-      let labels = Object.keys(lifeCycle);
-
-      let radius = {};
-
-      labels.forEach(label => {
-        let lifeCycleOfLabel = lifeCycle[label];
-        let accumulator = 0;
-
-        for (let i = 0, len = lifeCycleOfLabel.length; i < len; i += 1) {
-          if (lifeCycleOfLabel[i][1]) {
-            if (i + 1 < len) {
-              accumulator += (+lifeCycleOfLabel[i + 1][0]) - (+lifeCycleOfLabel[i][0]);
-            } else {
-              accumulator += (+endDate) - (+lifeCycleOfLabel[i][0]);
-            }
-          }
-        }
-
-        radius[label] = accumulator;
-      });
-
-      return radius;
     }
 
     function renderDownsideWithLifeCycle(lifeCycleGradient) {
@@ -438,8 +420,7 @@
           if (!isVisible(d)) {
             return 2;
           } else {
-            // return r(d.trend);
-            return r(lifeCycleRadius[d.label.slice(1)]);
+            return r(d.trend);
           }
         })
         .style("fill", function(d) { return color(d.trend); })
@@ -455,22 +436,31 @@
     function textDateLabelPosition(textDateLabel) {
       textDateLabel
         .attr("transform", d => `translate(${x(d.forward + 1) + margin.left}, ${(() => {
-          let radius = (!isVisible(d)) ? 2 : r(lifeCycleRadius[d.label.slice(1)]);
+          let radius = (!isVisible(d)) ? 2 : r(d.trend);
           return y(d.freq + 1)+margin.top - radius;
         })()})`)
-        .text(d => d3.timeFormat("%Y.%m.%d")(d.time));
+        .text(d => {
+          let time;
+          if (d.time <= limitDate) {
+            time = d3.timeFormat("%Y.%m")(d.time);
+          } else {
+            time = d3.timeFormat("%Y.%m")(limitDate);
+          }
+
+          return time;
+        });
     }
 
     function horCursorPosition(line) {
       line.attr("x1", margin.left)
         .attr("y1", d => y(d.freq + 1) + margin.top)
-        .attr("x2", d => x(d.forward + 1) + margin.left - r(lifeCycleRadius[d.label.slice(1)]))
+        .attr("x2", d => x(d.forward + 1) + margin.left - r(d.trend))
         .attr("y2", d => y(d.freq + 1) + margin.top)
     }
 
     function verCursorPosition(line) {
       line.attr("x1", d => x(d.forward + 1) + margin.left)
-        .attr("y1", d => y(d.freq + 1) + margin.top + r(lifeCycleRadius[d.label.slice(1)]))
+        .attr("y1", d => y(d.freq + 1) + margin.top + r(d.trend))
         .attr("x2", d => x(d.forward + 1) + margin.left)
         .attr("y2", y.range()[0] + margin.top)
     }
@@ -501,11 +491,40 @@
 
         d3.select(".header")
           .style("border-color", "#909099")
-          .html(`${twitterEnglish[label]}, ${en2ch[label]}`);
+          .html(`${twitterChinese[label]}(#${twitterEnglish[label]}): ${en2ch[label]}`);
+
+        if (selectedLabel.length === labelSet.length) {
+          d3.select("input#input-all")
+            .property("checked", true);
+        }
       } else {
         d3.select(`#lifeCycleRow-${label}`)
           .style("display", "none");
       }
+    }
+
+    function checkedAllHandler() {
+      let checkbox = d3.select("#input-all");
+
+      if (checkbox.property("checked")) {
+        d3.selectAll("div.labelRow input")
+          .property("checked", true);
+
+        d3.selectAll("div.lifeCycleRow")
+          .style("display", "block");
+      } else {
+        d3.selectAll("div.labelRow input")
+          .property("checked", false);
+        
+        d3.selectAll("div.lifeCycleRow")
+          .style("display", "none");
+      }
+
+      let currentTime = getTime();
+      let currentDate = dateScale.invert(currentTime);
+      let selectedLabel = getSelectedLabel();
+      updateMask(selectedLabel);
+      labelSet.forEach(label => updatePast(d3.select(`#input-${label}`), currentDate));
     }
 
     function buttonClickedHandler() {
@@ -515,54 +534,72 @@
         stopTime();
         enableCursor();
       } else {
-        let timeTodo = totalTime - getTime();
-        startTime(easeFunc, totalTime, timeTodo, dateScale);
-        disableCursor();
+        if (isAnimationFinished) {
+          resetTime();
+          startTime(easeFunc, totalTime, totalTime, dateScale);
+          disableCursor();
+          isAnimationFinished = false;
+        } else {
+          let timeTodo = totalTime - getTime();
+          startTime(easeFunc, totalTime, timeTodo, dateScale);
+          disableCursor();
+        }
       }
     }
 
-    function sliderClickedHandler() {
-      if (buttonPlay) {
-        buttonPlay = false;
-        button.attr("xlink:href", d => `public/data/bubble/${buttonPlay ? 'play' : 'pause'}.svg`);
-        stopTime();
-        return;
+    function keyDownHandler(event) {
+      if (event.keyCode === 32) {
+        event.preventDefault();
+        if (isKeyUp) {
+          isKeyUp = false;
+          buttonClickedHandler();
+        }
       }
+    }
 
-      let anchorScale = d3.scaleLinear()
-        .domain([0, width])
-        .range([0, totalTime]);
+    function keyUpHandler(event) {
+      if (event.keyCode === 32) {
+        event.preventDefault();
+        isKeyUp = true;
+      }
+    }
+
+    function sliderClickedHandler(event) {
+      // if (buttonPlay) {
+      //   buttonPlay = false;
+      //   button.attr("xlink:href", `public/data/bubble/pause.svg`);
+      //   stopTime();
+      //   return;
+      // }
+      let hyperParam = 0;
+      stopTime();
 
       let offset = parseFloat(d3.select(".video-slider").attr("x"));
       let minCXPos = offset + anchorScale.domain()[0];
       let maxCXPos = offset + anchorScale.domain()[1];
-      let currentCXPos = Math.max(minCXPos, d3.event.x);
+      let currentCXPos = Math.max(minCXPos, d3.event.x + hyperParam);
       currentCXPos = Math.min(maxCXPos, currentCXPos);
 
-      d3.select(".video-anchor")
-        .attr("cx", currentCXPos);
+      let anchor = d3.select(".video-anchor");
+      anchor.attr("cx", currentCXPos);
 
       let currentTime = anchorScale(currentCXPos - offset);
       setTime(currentTime);
 
       startTime(easeFunc, totalTime, totalTime - currentTime, dateScale);
       buttonPlay = true;
-      button.attr("xlink:href", d => `public/data/bubble/${buttonPlay ? 'play' : 'pause'}.svg`);
+      button.attr("xlink:href", `public/data/bubble/play.svg`);
     }
 
     function dragStartedHandler() {
       button.on("click", null);
 
       buttonPlay = false;
-      button.attr("xlink:href", d => `public/data/bubble/${buttonPlay ? 'play' : 'pause'}.svg`);
+      button.attr("xlink:href", `public/data/bubble/pause.svg`);
       stopTime();
     }
 
     function draggedHandler() {
-      let anchorScale = d3.scaleLinear()
-        .domain([0, width])
-        .range([0, totalTime]);
-
       let offset = parseFloat(d3.select(".video-slider").attr("x"));
       let minCXPos = offset + anchorScale.domain()[0];
       let maxCXPos = offset + anchorScale.domain()[1];
@@ -580,7 +617,7 @@
       let currentTime = getTime();
 
       buttonPlay = true;
-      button.attr("xlink:href", d => `public/data/bubble/${buttonPlay ? 'play' : 'pause'}.svg`);
+      button.attr("xlink:href", `public/data/bubble/play.svg`);
       let timeTodo = totalTime - currentTime;
       startTime(easeFunc, totalTime, timeTodo, dateScale);
 
@@ -600,7 +637,7 @@
       if (selectedLabel.length === 0) {
         d3.select(".header")
           .style("border-color", "#909099")
-          .html(`${label}, ${en2ch[label]}`);
+          .html(`${twitterChinese[label]}(#${twitterEnglish[label]}): ${en2ch[label]}`);
       }
 
       if (!buttonPlay) {
@@ -660,21 +697,23 @@
         .attr("T", totalTime);
 
       svg.transition()
-      .duration(timeTodo)
-      .ease(easeFunc)
-      .tween('time', () => {
-        return function(t) {
-          var month = d3.interpolateDate(dateScale.invert(totalTime - timeTodo), endDate);
-          tweenYear(month(t));
-        }
-      });
+        .duration(timeTodo)
+        .ease(easeFunc)
+        .tween('time', () => {
+          return function(t) {
+            var month = d3.interpolateDate(dateScale.invert(totalTime - timeTodo), endDate);
+            tweenYear(month(t));
+          }
+        });
     }
 
     function stopTime() {
-      timer.transition()
-        .duration(0);
-      svg.transition()
-        .duration(0);
+      // timer.transition()
+      //   .duration(0);
+      // svg.transition()
+      //   .duration(0);
+      timer.interrupt();
+      svg.interrupt();
     }
 
     function getTime() {
@@ -703,6 +742,11 @@
 
       if (year <= limitDate) {
         monthText.text(year.getFullYear()+'/'+(year.getMonth()+1));
+      } else {
+        isAnimationFinished = true;
+        buttonPlay = false;
+        button.attr("xlink:href", `public/data/bubble/pause.svg`);
+        enableCursor();
       }
       let tmpYear = new Date(year);
       updateVideoAnchor(tmpYear);
@@ -747,24 +791,14 @@
     function computeCoord(x1, y1, r1, x2, y2, r2) {
       x1 = parseFloat(x1); y1 = parseFloat(y1); r1 = parseFloat(r1);
       x2 = parseFloat(x2); y2 = parseFloat(y2); r2 = parseFloat(r2);
-      let dist = Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2);
+      // let dist = Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2);
 
-      let lineCoord;
-      if (dist === 0) {
-        lineCoord = {
-          x1,
-          y1,
-          x2,
-          y2,
-        }
-      } else {
-        lineCoord = {
-          x1: x1 + (x2 - x1) * r1 / dist,
-          y1: y1 + (y2 - y1) * r1 / dist,
-          x2: x2 + (x1 - x2) * r2 / dist,
-          y2: y2 + (y1 - y2) * r2 / dist,
-        };
-      }
+      let lineCoord = {
+        x1,
+        y1,
+        x2,
+        y2,
+      };
 
       return lineCoord;
     }
@@ -785,7 +819,7 @@
         d.width = this.getBBox().width;
         d.x = x(d.forward + 1)+margin.left;
         d.y = y(d.freq + 1)+margin.top;
-        d.r = r(lifeCycleRadius[d.label.slice(1)]);
+        d.r = r(d.trend);
         d.height = this.getBBox().height;
       })
 
@@ -809,30 +843,48 @@
     }
 
     function createHeaderPanel() {
-      let headerHeight = 50;
+      // let headerHeight = 50;
 
-      let slider = d3.select(".video-slider");
+      // let slider = d3.select(".video-slider");
 
-      d3.select(".header")
-        .style("margin-left", `${margin.left}px`)
-        .style("width", `${slider.attr("width")}px`)
-        .style("min-width", `${slider.attr("width")}px`)
-        .style("max-width", `${slider.attr("width")}px`)
-        .style("height", `${headerHeight}px`)
-        .style("min-height", `${headerHeight}px`)
-        .style("max-height", `${headerHeight}px`);
+      // d3.select(".header")
+      //   .style("margin-left", `${margin.left}px`)
+        // .style("width", `${slider.attr("width")}px`)
+        // .style("min-width", `${slider.attr("width")}px`)
+        // .style("max-width", `${slider.attr("width")}px`)
+        // .style("height", `${headerHeight}px`)
+        // .style("min-height", `${headerHeight}px`)
+        // .style("max-height", `${headerHeight}px`);
     }
 
     function createAsidePanel(labelSet) {
       let asideWidth = 220;
+      let lineHeight = 24; // 和css联动
       let aside = d3.select(".container")
         .append("div")
-        .attr("class", "aside")
-      document.querySelector("div.aside").style.width = `${asideWidth}px`;
-      document.querySelector("div.aside").style.height = `${anchor.attr("cy")}px`;
-      document.querySelector("div.aside").style.margin = `${margin.top}px 0 ${svgHeight - anchor.attr("cy")}px 0`;
+        .attr("id", "aside")
+      document.querySelector("div#aside").style.width = `${asideWidth}px`;
+      // document.querySelector("div#aside").style.height = `${anchor.attr("cy")}px`;
+      // document.querySelector("div#aside").style.margin = `${margin.top}px 0 ${svgHeight - anchor.attr("cy")}px 0`;
 
-      let rows = aside.selectAll(".labelRow")
+      let eleOfAllNnone = aside.append("div")
+        .attr("id", "eleOfAllNnone");
+      let eleOfLabelRow = aside.append("div")
+        .attr("id", "eleOfLabelRow")
+        .style("max-height", `${2 * anchor.attr("cy") - lineHeight - svgHeight}px`);
+
+      let eleOfAll = eleOfAllNnone.append("div")
+        .attr("class", "allNnone");
+      eleOfAll.append("input")
+        .attr("type", "checkbox")
+        .attr("name", "all")
+        .attr("id", 'input-all');
+      eleOfAll.append("label")
+        .attr("id", "label-all")
+        .attr("for", "all")
+        .html(lang === "ch" ? "全选" : "all");
+
+      let rows = eleOfLabelRow.selectAll(".labelRow")
         .data(labelSet)
         .enter()
         .append("div")
@@ -849,22 +901,36 @@
         .attr("for", d => d)
         .html(d => `${twitterText[d]}`);
 
-      document.querySelector("div.aside").style.overflow = "auto";
+      document.querySelector("div#eleOfLabelRow").style.overflow = "auto";
     }
 
     function createDownsidePanel(labelSet) {
-      let downsideHeight = 170;
+      let downsideBlockHeight = 135;
+      let downsideTitleHeight = 30;
+      let downsideHeight = downsideBlockHeight + downsideTitleHeight;
 
       let downside = d3.select(".container")
         .append("div")
         .attr("class", "downside");
+
+      downside.append("div")
+        .attr("id", "downside-title")
+        .style("width", `${svgWidth}px`)
+        .style("height", `${downsideTitleHeight}px`)
+        .text("话题寿命")
+        .style("text-align", "center");
 
       let slider = d3.select(".video-slider");     
 
       document.querySelector("div.downside").style.width = `${svgWidth}px`;
       document.querySelector("div.downside").style.height = `${downsideHeight}px`;
 
-      let rows = downside.selectAll(".lifeCycleRow")
+      let downsideBlock = downside.append("div")
+        .attr("id", "downside-block");
+
+      document.querySelector("div#downside-block").style.height = `${downsideBlockHeight}px`;
+
+      let rows = downsideBlock.selectAll(".lifeCycleRow")
         .data(labelSet)
         .enter()
         .append("div")
@@ -995,7 +1061,7 @@
     }
 
     function getSelectedLabel() {
-      let selection = d3.selectAll("input[type='checkbox']:checked");
+      let selection = d3.selectAll("div.labelRow input[type='checkbox']:checked");
 
       let selectedLabel = [];
       selection.each(d => selectedLabel.push(d));
@@ -1043,7 +1109,6 @@
       let formatter = d3.timeFormat("%Y-%m-%d-%H-%M-%S");
       let parser = d3.timeParse("%Y-%m-%d-%H-%M-%S");
       let dateArray = tweenValue.map(t => parser(formatter(dateInterpolator(t))));
-
       labelSet.forEach((label, index) => {
         calcLabelPast(label, index, timeline.slice(), dateArray);
       });
@@ -1052,13 +1117,17 @@
     function calcLabelPast(label, index, timeline, dateArray) {
       let targetPastCircle = pastCircle[label];
       let targetPastLine = pastLine[label];
-
+      // console.log(dateArray);
       dateArray.forEach(currentDate => {
+        // let dateIndex = dateArray.indexOf(currentDate);
+        // if (!(dateIndex < dateArray.length - 1 && currentDate.getMonth() !== dateArray[dateIndex + 1].getMonth())) {
+        //   return;
+        // }
         if (currentDate >= timeline[0]) {
           let data = getDataByMonth(dataArray, currentDate)[index]; 
           let cx = x(data.forward + 1) + margin.left;
           let cy = y(data.freq + 1) + margin.top;
-          let radius = (!isVisible(data)) ? 2 : r(lifeCycleRadius[data.label.slice(1)]);
+          let radius = (!isVisible(data)) ? 2 : r(data.trend);
           let fill = color(data.trend);
           let date = d3.timeFormat("%Y%m%d%H")(currentDate);
 
@@ -1069,7 +1138,15 @@
             .attr("x", cx)
             .attr("y", cy - radius)
             .text(() => {
-              let text = d3.timeFormat("%Y.%m.%d")(currentDate);
+              let year = currentDate.getFullYear();
+              let month = currentDate.getMonth();
+              if (month === 0) {
+                month = 11;
+                year -= 1;
+              } else {
+                month -= 1;
+              }
+              let text = d3.timeFormat("%Y.%m.%d")(new Date(year, month));
               return text.slice(0, 7);
             })
             .style("display", "none");
@@ -1152,15 +1229,15 @@
         return;
       }
       // else we filter elements by currentDate
-      targetPastCircle["ele"].selectAll("circle")
-        .filter(function() {
-          return d3.select(this).attr("id").split("-")[2] < date;
-        })
-        .classed("disabled", false);
+      // targetPastCircle["ele"].selectAll("circle")
+      //   .filter(function() {
+      //     return d3.select(this).attr("id").split("-")[2] < date;
+      //   })
+      //   .classed("disabled", false);
 
       targetPastCircle["ele"].selectAll("circle")
         .filter(function() {
-          return d3.select(this).attr("id").split("-")[2] >= date;
+          return true;
         })
         .classed("disabled", true);
 
