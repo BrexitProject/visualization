@@ -127,26 +127,48 @@
     })
   }
   function findFreqByMonth(data,time){
+    // let index = bisect.left(data,time);
+    // let now = data[index];
+    // if (index > 0) {
+    //   let last = data[index-1];
+    //   let timeScale = d3.scaleLinear()
+    //         .domain([last[0], now[0]])
+    //         .range([last[1],now[1]]);
+    //   return timeScale(time);
+    // }
+    // return now[1];
+
     let index = bisect.left(data,time);
     let now = data[index];
     if (index > 0) {
       let last = data[index-1];
       let timeScale = d3.scaleLinear()
             .domain([last[0], now[0]])
-            .range([last[1],now[1]]);
-      return timeScale(time);
+            .range([x(last[1]),x(now[1])]);
+      return x.invert(timeScale(time));
     }
     return now[1];
   }
   function findForwardByMonth(data,time){
+    // let index = bisect.left(data,time);
+    // let now = data[index];
+    // if (index > 0) {
+    //   let last = data[index-1];
+    //   let timeScale = d3.scaleLinear()
+    //         .domain([last[0], now[0]])
+    //         .range([last[2],now[2]]);
+    //   return timeScale(time);
+    // }
+    // return now[2];
+
     let index = bisect.left(data,time);
     let now = data[index];
     if (index > 0) {
       let last = data[index-1];
       let timeScale = d3.scaleLinear()
             .domain([last[0], now[0]])
-            .range([last[2],now[2]]);
-      return timeScale(time);
+            .range([y(last[2]),y(now[2])]);
+      return y.invert(timeScale(time));
     }
     return now[2];
   }
