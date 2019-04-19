@@ -5,7 +5,7 @@ function wordCloud(word,range){
         //   .timeInterval(20)
           .words(word)
           .fontSize(function(d) { return xScale(+d.probability); })
-          .text(function(d) { return d.word; })
+          .text(function(d) { return d.meaning; })
           .rotate(function() { return 0; })
         //   .font("Impact")
         //   .spiral("archimedean") // "archimedean" or "rectangular"
@@ -30,7 +30,7 @@ cloud.attr('class',function(d){return d.category + " " + d.kind})
       .style("font-size", function(d) { 
         return xScale(d.probability) + "px"; 
       })
-      .style("font-family", "Impact")
+    //   .style("font-family", "Impact")
       .style("fill", (d)=>color(d.group))
       .attr("text-anchor", "middle")
       .on("mouseover", function(d){
@@ -54,7 +54,7 @@ cloud.attr('class',function(d){return d.category + " " + d.kind})
           .style("font-size", ()=>{ return xScale(d.probability) + "px"});
           return tooltip.style("visibility", "hidden");
           })
-      .text(function(d) { return d.word; });
+      .text(function(d) { return d.meaning; });
 cloud.attr("transform", function(d,i) {
     return direction(i%4);
       })
