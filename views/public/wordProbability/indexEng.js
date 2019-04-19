@@ -25,6 +25,6 @@ d3.csv('public/data/word_probability.csv').then(function(data) {
     })
     xScale.domain([min.probability,1])
     let b=deepClone(data);
-    let totalWord = wordCloud(b,[width,height]);
-    drawWord(totalWord,"translate("+[width/2,height/2]+")");
+    let totalWord = wordCloud(b,[width,height],'english');
+    drawWord(totalWord,"translate("+[width/2,height/2]+")",'english');
 });

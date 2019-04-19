@@ -34,6 +34,9 @@ app.get('/block', function(req, res) {
 app.get('/wordProbability', function(req, res) {
   res.sendFile(path.join(__dirname + '/views/wordProbability.html'));
 });
+app.get('/wordProbabilityEng', function(req, res) {
+  res.sendFile(path.join(__dirname + '/views/wordProbabilityEng.html'));
+});
 
 app.use('/public',express.static(__dirname+'/views/public'));
 

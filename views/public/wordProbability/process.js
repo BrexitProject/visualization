@@ -1,20 +1,20 @@
 let tooltip = d3.select(".tooltip");
-function wordCloud(word,range){
+function wordCloud(word,range,type){
     let result;
     d3.layout.cloud().size(range)
         //   .timeInterval(20)
           .words(word)
           .fontSize(function(d) { return xScale(+d.probability); })
-          .text(function(d) { return d.meaning; })
+          .text(function(d) { return type==='english'?d.word:d.meaning; })
           .rotate(function() { return 0; })
         //   .font("Impact")
-        //   .spiral("archimedean") // "archimedean" or "rectangular"
+          .spiral("rectangular") // "archimedean" or "rectangular"
           .on("end", (d)=>{result = d})
           .start();
     d3.layout.cloud().stop();
     return result;
 }
-function drawWord(word,flag){
+function drawWord(word,flag,type){
     d3.selectAll(".word").attr("opacity",0);
     let direction = d3.scaleOrdinal()
                      .domain([0,1,2,3])
@@ -54,7 +54,7 @@ cloud.attr('class',function(d){return d.category + " " + d.kind})
           .style("font-size", ()=>{ return xScale(d.probability) + "px"});
           return tooltip.style("visibility", "hidden");
           })
-      .text(function(d) { return d.meaning; });
+      .text(function(d) { return type==='english'?d.word:d.meaning; });
 cloud.attr("transform", function(d,i) {
     return direction(i%4);
       })
