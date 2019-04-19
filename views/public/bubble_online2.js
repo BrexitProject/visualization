@@ -31,7 +31,8 @@
   var r = d3.scaleLinear()
             // .domain([0, 0.365010869, (0.365010869 + 2 / 3) / 2, 2 / 3, 1])
             .domain([0, 0.401394874683146, 0.50448195659342, 0.592832046557058, 1])
-            .range([25, 7, 25, 7, 25]);
+            // .range([25, 7, 25, 7, 25]);
+            .range([25, 15, 15, 15, 25]);
   var color = d3.scaleQuantile()
                 // .domain([0, 0.365010869, (0.365010869 + 2 / 3) / 2, 2 / 3, 1])
                 .domain([0, 0.401394874683146, 0.50448195659342, 0.592832046557058, 1])
@@ -173,7 +174,7 @@
   }
 
   var dataArray=[];
-  d3.csv('public/data/hashtag_bubble_deleted0401.csv').then(function(data) {
+  d3.csv('public/data/hashtag_bubble_deleted0414.csv').then(function(data) {
 
     data.forEach(d => {
       let tmp={};
