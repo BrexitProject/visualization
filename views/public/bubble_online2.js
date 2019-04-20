@@ -244,7 +244,7 @@
           .attr("class", "dot")
           .attr("data-label", d => d.label.slice(1));
 
-    let cursorLines = svg.append("g")
+    let cursorLines = svgChart.append("g")
       .attr("class", "cursor")
     let horizontalCursor = cursorLines.selectAll(".horizontal")
       .data(dataset)
