@@ -518,7 +518,7 @@
           .style("display", "block");
 
         d3.select(".header")
-          .style("border-color", "#909099")
+          .style("outline-color", "#909099")
           .html(`${twitterChinese[label]}(#${twitterEnglish[label]}): ${en2ch[label]}`);
 
         if (selectedLabel.length === labelSet.length) {
@@ -664,7 +664,7 @@
 
       if (selectedLabel.length === 0) {
         d3.select(".header")
-          .style("border-color", "#909099")
+          .style("outline-color", "#909099")
           .html(`${twitterChinese[label]}(#${twitterEnglish[label]}): ${en2ch[label]}`);
       }
 
