@@ -9,13 +9,38 @@
     <style>
       @import url(https://fonts.googleapis.com/earlyaccess/notosanstc.css);
 
-      body {
-        padding-top: 10px;
-        overflow: auto;
+      :root {
+          font-size: 10px;
       }
 
+      html{
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+      }
+
+      body {
+        overflow: hidden;
+        margin: 0;
+        padding-top:0;
+        overflow: auto;
+        padding:0;
+      }
+
+      #main{
+        padding:10px 20px;
+        width: 1400px;
+        height: 1000px;
+      }
+
+      /* @media only screen and (max-width: 1200){
+        body{
+          padding:10px 4%;
+        }
+      } */
+
       .textLabel{
-        font-size: 14px;
+        font-size: 1vw;
         font-weight: 700;
         /* font-family: 'Georgia'; */
         font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
@@ -42,18 +67,18 @@
       .axis text {
         fill: #9090a0;
         font-weight: bold;
-        font-size: 18px;
+        font-size: 1vw;
       }
 
       .xLabel{
-        font-size: 50px;
+        font-size: 2vw;
         fill:#9090a0;
         font-weight: 700;
       }
 
       .monthText{
         font-family: 'Helvetica Neue';
-        font-size: 160px;
+        font-size: 6vw;
         fill:#909099;
         font-weight: 700;
         fill-opacity: 0.9;
@@ -89,40 +114,44 @@
       }
 
       .cursor-text {
-        font-size: 25px;
+        font-size: 1vw;
         fill: #9090a0;
         font-weight: bold;
       }
 
       .container {
+        display: grid;
         box-sizing: border-box;
-        width: 1430px;
-        height: 900px;
+        /* width: 1430px;
+        height: 900px; */
         padding: 0;
         border: 0;
         vertical-align: top;
-        position: relative;
+        /* position: relative; */
+        grid-template-columns: 1050px 1fr;
+      }
+
+      #rightAside{
+        display: grid;
+        grid-template-rows: repeat(3);
+        max-width: 300px;
       }
 
       svg {
         display: inline-block;
       }
 
-      #aside {
+      .aside {
         /* border: 1px solid black; */
         display: inline-block;
-        height: 700px;
-        width: 220px;
-        position: relative;
-        top: -24px;
         font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
         /* overflow-y: auto; */
         /* line-height: 24px; */
       }
 
-      /* #eleOfLabelRow {
-
-      } */
+      .eleOfLabelRow {
+        overflow: auto;
+      }
 
       div.labelRow {
         /* margin: 5px 3px, 5px, 4px; */
@@ -130,8 +159,9 @@
         /* color: #1DA1F2; */
         font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
         display: flex;
+        height: 26px;
         align-items: center;
-        font-size: 16px;
+        font-size: 1.2rem;
       }
 
       input[type=checkbox] {
@@ -143,12 +173,20 @@
         cursor: pointer;
       }
 
+      .typeName{
+        float: right;
+        padding: 4px 10px;
+        font-size: 1.8rem;
+        font-weight: 600;
+        font-family: 'FangSong'
+      }
+
       label {
-        color: #1DA1F2;
+        color: #232323;
       }
 
       .pastTime, .textDateLabel {
-        font-size: 14px;
+        font-size: 1vw;
         font-weight: 700;
         font-family: 'Helvetica Neue';
         fill: #909099;
@@ -211,32 +249,32 @@
         margin: 0;
         margin-bottom: 20px;
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        font-size: 40px;
+        font-size: 2vw;
         text-align: center;
-        width: 1470px;
+        /* width: 1470px; */
         height: 50px;
       }
 
       .heading {
+        /* display: grid; */
+        /* grid-template-columns: 4fr 1fr; */
         box-sizing: border-box;
-        height: 50px;
-        width: 1470px;
       }
 
       .aside-title {
         display: inline-block;
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
          /* margin: auto; */
+        width: 300px;
         text-align: center;
         vertical-align: middle;
-        width: 220px;
         border-bottom: 3px solid lightgray;
       }
 
       .header {
         display: inline-block;
         box-sizing: border-box;
-        width: 990px;
+        width: 900px;
         height: 50px;
         min-height: 50px;
         max-height: 50px;
@@ -246,7 +284,7 @@
         outline: 1px solid white;
         vertical-align: middle;
         margin-right: 30px;
-        margin-left: 150px;
+        margin-left: 120px;
         padding: 0 20px;
         font-family: 'Noto Sans TC';
       }
@@ -277,29 +315,55 @@
         background-color:rgba(144, 144, 153, 1);
       } 
 
-      #eleOfLabelRow::-webkit-scrollbar {
+      .eleOfLabelRow::-webkit-scrollbar {
         width: 8px;
       }
 
-      #eleOfLabelRow::-webkit-scrollbar-button {
+      .eleOfLabelRow::-webkit-scrollbar-button {
         width: 8px;
         height:5px;
       }
 
-      #eleOfLabelRow::-webkit-scrollbar-track {
+      .eleOfLabelRow::-webkit-scrollbar-track {
         background:#eee;
         border: thin solid lightgray;
         box-shadow: 0px 0px 3px #dfdfdf inset;
         border-radius:10px;
       }
 
-      #eleOfLabelRow::-webkit-scrollbar-thumb {
+      .eleOfLabelRow::-webkit-scrollbar-thumb {
         background-color: rgba(144, 144, 153, 0.5);
         border: thin solid rgba(144, 144, 153, 0.5);
         border-radius:10px;
       }
 
-      #eleOfLabelRow::-webkit-scrollbar-thumb:hover {
+      .eleOfLabelRow::-webkit-scrollbar-thumb:hover {
+        background-color:rgba(144, 144, 153, 1);
+      } 
+
+      #downside-block::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      #downside-block::-webkit-scrollbar-button {
+        width: 8px;
+        height:5px;
+      }
+
+      #downside-block::-webkit-scrollbar-track {
+        background:#eee;
+        border: thin solid lightgray;
+        box-shadow: 0px 0px 3px #dfdfdf inset;
+        border-radius:10px;
+      }
+
+      #downside-block::-webkit-scrollbar-thumb {
+        background-color: rgba(144, 144, 153, 0.5);
+        border: thin solid rgba(144, 144, 153, 0.5);
+        border-radius:10px;
+      }
+
+      #downside-block::-webkit-scrollbar-thumb:hover {
         background-color:rgba(144, 144, 153, 1);
       } 
 
@@ -332,13 +396,17 @@
   </head>
 
   <body>
+    <div id='main'>
     <div class = "title">英国人是怎么讨论脱欧的</div>
     <div class = "heading">
       <div class = "header"></div>
       <div class = "aside-title">社交网站最热门<br/>脱欧话题</div>
     </div>
-    <div class="container"></div>
-
+    <div class="container">
+      <div id="chartAside"></div>
+      <div id="rightAside"></div>
+    </div>
+    </div>
     <script src="public/d3.min.js"></script>
     <script src="public/labeler.js"></script>
     <script src="public/bubble_online2.js"></script>
