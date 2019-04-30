@@ -969,7 +969,6 @@
       rows.append("div")
         .attr("class", 'trendBar')
         .style('width', d=>{
-          console.log(trendScale(trendMap.get(d)));
           return trendScale(trendMap.get(d))+'px';
         })
 
