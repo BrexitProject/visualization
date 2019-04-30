@@ -6,7 +6,7 @@
   var margin = {top: 10, bottom: 80, left: 120, right: 30};
   // var svgWidth = document.getElementById('chartAside').clientWidth;
   // var svgHeight = svgWidth*0.6>700? 700: svgWidth*0.6;
-  var svgWidth = 1000;
+  var svgWidth = 950;
   var svgHeight = 550;
 
   var width=svgWidth - margin.left - margin.right;
@@ -40,12 +40,15 @@
                 // .domain([0, 0.365010869, (0.365010869 + 2 / 3) / 2, 2 / 3, 1])
                 .domain([0, 0.401394874683146, 0.50448195659342, 0.592832046557058, 1])
                 // .range(["#1B6AA5", "#748C9D", "#9D7A7F", "#E8110F" ]);
-                .range(["#1B6AA5", "7F7F7F", "7F7F7F", "#E8110F"]);
+                .range(["#1B6AA5", "#7F7F7F", "#7F7F7F", "#E8110F"]);
 
   var category = d3.scaleQuantile()
                    .domain([0, 0.401394874683146, 0.50448195659342, 0.592832046557058, 1])
                    .range(["0", "1", "1", "2"]);
 
+  var trendScale = d3.scaleLinear()
+                     .domain([0,1])
+                     .range([10,200]);
   // axises
   var xAxis = d3.axisBottom(x)
                 .tickSize(-height)
@@ -98,7 +101,7 @@
     .style("text-anchor", "middle");
   svg.append("text")             
       .attr("transform",
-            "translate(" + (width-140) + " ," + 
+            "translate(" + (width-40) + " ," + 
                           (height + margin.top-10) + ")")
       .style("text-anchor", "start")
       .text(lang === "en" ? "Tweet" : "新推特量")
@@ -108,7 +111,7 @@
     .attr('class','axis')
     .call(yAxis);
   svg.append('g')
-      .attr("transform",`translate(${margin.left+42},${margin.top+8})`)
+      .attr("transform",`translate(${margin.left+36},${margin.top+8})`)
       .append("text")             
       .attr("transform",
             "rotate(270)")
@@ -184,12 +187,14 @@
   }
 
   var dataArray=[];
+  var trendMap = new Map();
   d3.csv('public/data/hashtag_bubble_deleted0414.csv').then(function(data) {
 
     data.forEach(d => {
       let tmp={};
       tmp.label=d.hashtag.trim();
       tmp.trend=d.trend.trim();
+      trendMap.set(tmp.label.slice(1),parseFloat(tmp.trend))
       tmp.value=[];
       for(let label in d){
         if(label!=='hashtag'&&label!=='trend'&&label.substr(0,2)!=='re'){
@@ -218,7 +223,7 @@
     var monthText = svg.append('g')
                   .append('text')
                   .attr('x',margin.left+60)
-                  .attr('y',margin.top+160)
+                  .attr('y',margin.top+120)
                   .attr('class','monthText');
     // Add a dot per state. Initialize the data at 1950, and set the colors.
     let startDate = new Date(2016, 0);
@@ -931,7 +936,7 @@
         .style("max-height", `${2 * anchor.attr("cy") - lineHeight - svgHeight}px`);
 
       let eleOfAll = eleOfAllNnone.append("div")
-        .attr("class", "allNnone");
+        .attr("class", "allNnone")
       eleOfAll.append("input")
         .attr("type", "checkbox")
         .attr("name", "all")
@@ -939,7 +944,7 @@
         .attr('id',idName+'all');
       eleOfAll.append("label")
         .attr("class", "label-all")
-        .attr("for", "all")
+        .attr("for", idName+'all')
         .html(lang === "ch" ? "全选" : "all");
       eleOfAll.append('span')
         .attr('class','typeName')
@@ -958,24 +963,37 @@
         .data(labelSet)
         .enter()
         .append("div")
-        .attr("class", "labelRow")
+        .attr("class", `labelRow ${idName}Row`)
         .attr("id", d => `row-${d}`);
+        
+      rows.append("div")
+        .attr("class", 'trendBar')
+        .style('width', d=>{
+          console.log(trendScale(trendMap.get(d)));
+          return trendScale(trendMap.get(d))+'px';
+        })
 
-      rows.append("input")
+      let rowslabel = rows.append('div')
+                          .attr('class','textLabelRow')
+      rowslabel.append("input")
         .attr("type", "checkbox")
+        .attr('class',"squared")
         .attr("name", d => d)
         .attr("id", d => `input-${d}`);
 
-      rows.append("label")
+      rowslabel.append("label")
         .attr("id", d => `label-${d}`)
-        .attr("for", d => d)
+        .attr("for", d => `input-${d}`)
         .html(d => `${twitterText[d]}`);
+    
+
+
 
       // document.querySelector("div#eleOfLabelRow").style.height = svgHeight/3 - 20 + 'px';
     }
 
     function createDownsidePanel(labelSet) {
-      let downsideBlockHeight = 135;
+      let downsideBlockHeight = 130;
       let downsideTitleHeight = 30;
       let downsideHeight = downsideBlockHeight + downsideTitleHeight;
 

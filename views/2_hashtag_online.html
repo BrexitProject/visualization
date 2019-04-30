@@ -29,7 +29,7 @@
 
       #main{
         padding:10px 20px;
-        width: 1400px;
+        width: 1250px;
         height: 1000px;
       }
 
@@ -43,7 +43,7 @@
         font-size: 1vw;
         font-weight: 700;
         /* font-family: 'Georgia'; */
-        font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+        font-family: Helvetica,"Helvetica Neue",Arial,sans-serif;
         dominant-baseline: middle;
       }
       circle{
@@ -66,19 +66,21 @@
 
       .axis text {
         fill: #9090a0;
-        font-weight: bold;
-        font-size: 1vw;
+        font-weight: 600;
+        font-size: 1.5rem;
+        font-family: 'Helvetica';
       }
 
       .xLabel{
-        font-size: 2vw;
+        font-family: 'SimSun','STSong';
+        font-size: 3.4rem;
         fill:#9090a0;
         font-weight: 700;
       }
 
       .monthText{
-        font-family: 'Helvetica Neue';
-        font-size: 6vw;
+        font-family: 'Helvetica';
+        font-size: 12.5rem;
         fill:#909099;
         font-weight: 700;
         fill-opacity: 0.9;
@@ -128,13 +130,13 @@
         border: 0;
         vertical-align: top;
         /* position: relative; */
-        grid-template-columns: 1050px 1fr;
+        grid-template-columns: 950px 1fr;
       }
 
       #rightAside{
         display: grid;
         grid-template-rows: repeat(3);
-        max-width: 300px;
+        max-width: 250px;
       }
 
       svg {
@@ -144,24 +146,204 @@
       .aside {
         /* border: 1px solid black; */
         display: inline-block;
-        font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+        font-family: Helvetica,"Helvetica Neue",Arial,sans-serif;
         /* overflow-y: auto; */
         /* line-height: 24px; */
       }
 
       .eleOfLabelRow {
         overflow: auto;
+        padding-top: 2px;
+        margin-bottom: 10px;
+      }
+
+      div.allNnone{
+        border-bottom: 1px solid #acacac;
       }
 
       div.labelRow {
         /* margin: 5px 3px, 5px, 4px; */
         /* background-color: rgba(144, 144, 153, 0); */
         /* color: #1DA1F2; */
-        font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-        display: flex;
-        height: 26px;
+        font-family: Helvetica,"Helvetica Neue",Arial,sans-serif;
+        /* display: flex; */
+        height: 14.5px;
         align-items: center;
         font-size: 1.2rem;
+      }
+
+      .label-all{
+        font-weight: 600;
+      }
+
+      input[type="checkbox"].input-all{
+        height: 26px;
+        width: 8px;
+        margin: auto;
+        opacity: 0; 
+      }
+      input[type="checkbox"].input-all+ label{
+        padding-left: 20px;
+        line-height: 26px;
+      }
+      input[type="checkbox"].input-all+label:before{
+        content: "";
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        font-size: 16px;
+        font-family: 'Arial Unicode MS';
+        /* background-color: white; */
+        border: 1px solid grey;
+        color: #000;
+        text-align: center;
+        cursor: pointer;
+        border-radius: 2px;
+        left:1px;
+      }
+      input[type="checkbox"].input-all+label:after{
+        content: "";
+        display: inline-block;
+        width: 2px;
+        height: 2px;
+        box-shadow: 
+          2px 0 0 #343434,
+          4px 0 0 #343434,
+          4px -2px 0 #343434,
+          4px -4px 0 #343434,
+          4px -6px 0 #343434,
+          4px -8px 0 #343434;
+        transform: rotate(45deg);
+        left: 2px;
+        top: 6px;
+      }
+
+      input[type="checkbox"].input-all+label{
+          position: relative;
+      }
+      input[type="checkbox"].input-all+label:before,
+      input[type="checkbox"].input-all+label:after {
+          position: absolute;
+      }
+      /*Outer-box*/
+      input[type="checkbox"].input-all+label:before {
+          top: 0px;
+      }
+
+      .allNnone .typeName::before{
+        content: '';
+        width: 10px;
+        height: 10px;
+        border-radius: 8px;
+        display: inline-block;
+        border-style: solid;
+        border-width: 1px;
+        margin-right: 4px;
+      }
+
+      #labelSet0all+label+span::before{
+        background-color: rgba(27, 106, 166, 0.6);
+        border-color: rgba(27, 106, 166, 0.8);
+      }
+      #labelSet1all+label+span::before{
+        background-color: rgba(127, 127, 127,0.6);
+        border-color: rgba(127, 127, 127,0.8);
+      }
+      #labelSet2all+label+span::before{
+        background-color: rgba(232, 17, 15,0.6);
+        border-color: rgba(232, 17, 15,0.8);
+      }
+
+      
+      /* #labelSet0all+label:before{
+        background-color: linear-gradient(top, #222 0%, #45484d 100%);
+        border-radius: 4px;
+        box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,.4);
+        background-color: #1B6AA5
+      }
+      #labelSet1all+label:before{
+        background-color: #7F7F7F
+      }
+      #labelSet2all+label:before{
+        background-color: #E8110F
+      } */
+      input[type="checkbox"].input-all + label:after {
+          content: none;
+      }
+      /*Unhide the checkmark on the checked state*/
+      input[type="checkbox"].input-all:checked + label:after {
+          content: "";
+      }
+
+      input[type="checkbox"].squared{
+        width: 8px;
+        margin: auto;
+        opacity: 0; 
+      }
+      input[type="checkbox"].squared+ label{
+        vertical-align: -webkit-baseline-middle;
+        padding-left: 20px;
+      }
+      input[type="checkbox"].squared+label:before{
+        content: "";
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        font-size: 16px;
+        font-family: 'Arial Unicode MS';
+        background-color: white;
+        border: 1px solid grey;
+        color: #000;
+        text-align: center;
+        cursor: pointer;
+        border-radius: 2px;
+        left:1px;
+      }
+      input[type="checkbox"].squared+label:after{
+        content: "";
+        display: inline-block;
+        width: 2px;
+        height: 2px;
+        box-shadow: 
+          2px 0 0 #343434,
+          4px 0 0 #343434,
+          4px -2px 0 #343434,
+          4px -4px 0 #343434,
+          4px -6px 0 #343434,
+          4px -8px 0 #343434;
+        transform: rotate(45deg);
+        left: 2px;
+        top: 6px;
+      }
+
+      input[type="checkbox"].squared+label{
+          position: relative;
+      }
+      input[type="checkbox"].squared+label:before,
+      input[type="checkbox"].squared+label:after {
+          position: absolute;
+      }
+      /*Outer-box*/
+      input[type="checkbox"].squared+label:before {
+          top: 0px;
+      }
+
+      /* 
+      .labelSet0Row input[type="checkbox"].squared+label:before{
+        background-color: #1B6AA5
+      }
+      .labelSet1Row input[type="checkbox"].squared+label:before{
+        background-color: #7F7F7F
+      }
+      .labelSet2Row input[type="checkbox"].squared+label:before{
+        background-color: #E8110F
+      } */
+      input[type="checkbox"].squared + label:after {
+          content: none;
+      }
+      /*Unhide the checkmark on the checked state*/
+      input[type="checkbox"].squared:checked + label:after {
+          content: "";
       }
 
       input[type=checkbox] {
@@ -176,9 +358,18 @@
       .typeName{
         float: right;
         padding: 4px 10px;
-        font-size: 1.8rem;
+        font-size: 1.6rem;
         font-weight: 600;
-        font-family: 'FangSong'
+        /* font-family: 'FangSong'; */
+        margin-top: 7px;
+      }
+
+      #downside-title{
+        letter-spacing: 0.2rem;
+        font-weight: 700;
+        font-size: 2rem;
+        color:#565656;
+        font-family: 'SimSun','STSong',Helvetica,"Helvetica Neue",Arial,sans-serif;
       }
 
       label {
@@ -246,10 +437,11 @@
 
       .title {
         box-sizing: border-box;
-        margin: 0;
-        margin-bottom: 20px;
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        margin-top: 10px;
+        margin-bottom: 6px;
+        font-family: 'SimSun','STSong', "Helvetica Neue", Helvetica, Arial, sans-serif;
         font-size: 2vw;
+        font-weight: 700;
         text-align: center;
         /* width: 1470px; */
         height: 50px;
@@ -261,41 +453,72 @@
         box-sizing: border-box;
       }
 
+      .trendBar{
+        height: 15px;
+        background: #cdcdcd;
+        position: relative;
+        margin-left: 28px;
+        margin-top: 7px;
+      }
+
+      .textLabelRow{
+        top: -20px;
+        position: relative;
+      }
+
       .aside-title {
         display: inline-block;
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 1.8rem;
+        line-height: 2rem;
+        font-weight: 600;
+        font-family: 'KaiTi','BiauKai', "Helvetica Neue", Helvetica, Arial, sans-serif;
          /* margin: auto; */
-        width: 300px;
+        width: 250px;
         text-align: center;
         vertical-align: middle;
-        border-bottom: 3px solid lightgray;
+        /* border-bottom: 3px solid lightgray; */
+        letter-spacing: 0.1rem;
+      }
+
+      .aside-title::after {
+        content : url('/public/images/divline2.png');
+        /* position: absolute; */
+        /* left    : 0; */
+        /* bottom  : 0; */
+        /* height  : 10px; */
+        width   : 250px;  /* or 100px */
       }
 
       .header {
         display: inline-block;
         box-sizing: border-box;
-        width: 900px;
-        height: 50px;
+        width: 800px;
+        height: 52px;
         min-height: 50px;
-        max-height: 50px;
+        max-height: 52px;
         overflow-y: auto;
+        text-align: justify;
         /* border: 1px solid white;
         border-radius: 15px; */
-        outline: 1px solid white;
+        /* outline: 1px solid white; */
+        background-color: #efefef;
         vertical-align: middle;
         margin-right: 30px;
         margin-left: 120px;
-        padding: 0 20px;
-        font-family: 'Noto Sans TC';
+        padding: 6px 14px;
+        font-weight: 500;
+        font-size: 1.4rem;
+        line-height: 1.7rem;
+        font-family: 'KaiTi','BiauKai', "Helvetica Neue", Helvetica, Arial, sans-serif;
       }
 
       .header::-webkit-scrollbar {
-        width: 8px;
+        width: 4px;
       }
 
       .header::-webkit-scrollbar-button {
-        width: 8px;
-        height:5px;
+        width: 4px;
+        height: 2px;
       }
 
       .header::-webkit-scrollbar-track {
@@ -308,7 +531,7 @@
       .header::-webkit-scrollbar-thumb {
         background-color: rgba(144, 144, 153, 0.5);
         border: thin solid rgba(144, 144, 153, 0.5);
-        border-radius:10px;
+        border-radius:2px;
       }
 
       .header::-webkit-scrollbar-thumb:hover {
@@ -316,11 +539,11 @@
       } 
 
       .eleOfLabelRow::-webkit-scrollbar {
-        width: 8px;
+        width: 6px;
       }
 
       .eleOfLabelRow::-webkit-scrollbar-button {
-        width: 8px;
+        width: 6px;
         height:5px;
       }
 
@@ -342,7 +565,7 @@
       } 
 
       #downside-block::-webkit-scrollbar {
-        width: 8px;
+        width: 7px;
       }
 
       #downside-block::-webkit-scrollbar-button {
@@ -389,9 +612,6 @@
         font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
       }
 
-      #downside-title {
-        font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-      }
     </style>
   </head>
 
