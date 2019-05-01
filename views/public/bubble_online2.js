@@ -101,10 +101,10 @@
     .style("text-anchor", "middle");
   svg.append("text")             
       .attr("transform",
-            "translate(" + (width-40) + " ," + 
+            "translate(" + (width-60) + " ," + 
                           (height + margin.top-10) + ")")
       .style("text-anchor", "start")
-      .text(lang === "en" ? "Tweet" : "新推特量")
+      .text(lang === "en" ? "Tweet" : "原创话题量")
       .attr('class','xLabel');
   svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`)
