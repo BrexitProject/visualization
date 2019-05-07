@@ -108,11 +108,11 @@ Promise.all(promises).then(function (results) {
                   return d.id==0?0:~~(Math.random() * 2) * 90; 
                 })
                 .font("Impact")
-                .text(function(d) { return d.word; })
+                .text(function(d) { return d.trans; })
                 .fontSize(function(d) { return xScale(+d.fre); })
                 .on("end", draw)
                 .start();
-    }, 2000*i)
+    }, 10000*i)
   });
 });
 </script>
