@@ -3,21 +3,23 @@
 
   let lang = "ch";
 
-  var margin = {top: 10, bottom: 80, left: 150, right: 30};
-  var svgWidth = 1170;
-  var svgHeight = 740;
-  // var svgHeight = 550;
+  var margin = {top: 10, bottom: 80, left: 120, right: 30};
+  // var svgWidth = document.getElementById('chartAside').clientWidth;
+  // var svgHeight = svgWidth*0.6>700? 700: svgWidth*0.6;
+  var svgWidth = 950;
+  var svgHeight = 550;
 
   var width=svgWidth - margin.left - margin.right;
   var height=svgHeight - margin.top - margin.bottom;
 
-  var svg = d3.select('.container')
+  var svg = d3.select('#chartAside')
             .append('svg')
             .attr('width', svgWidth)
             .attr('height', svgHeight);
   // scale
   var y = d3.scaleLinear()
-            .domain([2000, 4000, 8000, 10000, 20000, 40000, 80000, 100000, 200000, 300000, 400000])
+            .domain([2000, 4000, 6000, 8000, 10000, 20000, 40000, 60000, 80000, 200000, 400000])
+            // .domain([2000, 4000, 8000, 10000, 20000, 40000, 80000, 100000, 200000, 300000, 400000])
             // .domain([1000, 2000, 4000, 8000, 10000, 20000, 40000, 80000, 100000, 200000, 300000, 400000])
             // .domain([0, 100, 250, 500, 1000, 4000, 7000, 10000, 50000, 100000, 380000, 400000])
             .range([height,(height-30)*9/10+30,(height-30)*8/10+30,(height-30)*7/10+30,(height-30)*6/10+30,(height-30)*5/10+30,(height-30)*4/10+30,(height-30)*3/10+30,(height-30)*2/10+30,(height-30)/10+30, 30,0]);
@@ -25,29 +27,40 @@
   var x = d3.scaleLinear()
             // .domain([0, 10, 50, 75, 100, 600, 1200, 2400])
             // .domain([60, 200, 400, 800, 1600, 2000, 2400, 2900])
-            .domain([50, 200, 400, 800, 1200, 1600, 2000, 2900])
+            // .domain([50, 200, 400, 800, 1200, 1600, 2000, 2900])
+            .domain([50, 100, 200, 300, 400, 800, 1800, 2900])
             .range([0,(width-30)/7,(width-30)*2/7,(width-30)*3/7,(width-30)*4/7,(width-30)*5/7,(width-30)*6/7,width-30,width])
 
   var r = d3.scaleLinear()
             // .domain([0, 0.365010869, (0.365010869 + 2 / 3) / 2, 2 / 3, 1])
-            .domain([0, 0.401394874683146, 0.50448195659342, 0.592832046557058, 1])
+            .domain([0, 0.155009587221478, 0.401394874683146, 0.50448195659342, 0.592832046557058, 0.9, 1])
             // .range([25, 7, 25, 7, 25]);
-            .range([25, 15, 15, 15, 25]);
+            .range([25, 19, 15, 15, 15, 24, 25]);
   var color = d3.scaleQuantile()
                 // .domain([0, 0.365010869, (0.365010869 + 2 / 3) / 2, 2 / 3, 1])
                 .domain([0, 0.401394874683146, 0.50448195659342, 0.592832046557058, 1])
-                .range(["#1B6AA5", "#748C9D", "#9D7A7F", "#E8110F" ]);
+                // .range(["#1B6AA5", "#748C9D", "#9D7A7F", "#E8110F" ]);
+                .range(["#1B6AA5", "#7F7F7F", "#7F7F7F", "#E8110F"]);
 
+  var category = d3.scaleQuantile()
+                   .domain([0, 0.401394874683146, 0.50448195659342, 0.592832046557058, 1])
+                   .range(["0", "1", "1", "2"]);
+
+  var trendScale = d3.scaleLinear()
+                     .domain([0,1])
+                     .range([10,200]);
   // axises
   var xAxis = d3.axisBottom(x)
                 .tickSize(-height)
-                .tickValues([50, 200, 400, 800, 1200, 1600, 2000, 2900]);
+                .tickValues([50, 100, 200, 300, 400, 800, 1800, 2900]);
+                // .tickValues([50, 200, 400, 800, 1200, 1600, 2000, 2900]);
                 // .tickValues([60, 200, 400, 800, 1600, 2000, 2400, 2900]);
                 // .tickValues([0, 10, 50, 75, 100, 600, 1200, 2400]);
 
   var yAxis = d3.axisLeft(y)
                 .tickSize(-width)
-                .tickValues([2000, 8000, 20000, 80000, 200000, 400000]);
+                .tickValues([2000, 6000, 10000, 40000, 80000, 400000]);
+                // .tickValues([2000, 8000, 20000, 80000, 200000, 400000]);
                 // .tickValues([0, 250, 1000, 7000, 50000, 380000])
 
   let buttonSize = 40;
@@ -88,17 +101,17 @@
     .style("text-anchor", "middle");
   svg.append("text")             
       .attr("transform",
-            "translate(" + (width-140) + " ," + 
+            "translate(" + (width-60) + " ," + 
                           (height + margin.top-10) + ")")
       .style("text-anchor", "start")
-      .text(lang === "en" ? "Tweet" : "新推特量")
+      .text(lang === "en" ? "Tweet" : "原创话题量")
       .attr('class','xLabel');
   svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`)
     .attr('class','axis')
     .call(yAxis);
   svg.append('g')
-      .attr("transform",`translate(${margin.left+42},${margin.top+8})`)
+      .attr("transform",`translate(${margin.left+36},${margin.top+8})`)
       .append("text")             
       .attr("transform",
             "rotate(270)")
@@ -127,59 +140,61 @@
     })
   }
   function findFreqByMonth(data,time){
-    // let index = bisect.left(data,time);
-    // let now = data[index];
-    // if (index > 0) {
-    //   let last = data[index-1];
-    //   let timeScale = d3.scaleLinear()
-    //         .domain([last[0], now[0]])
-    //         .range([last[1],now[1]]);
-    //   return timeScale(time);
-    // }
-    // return now[1];
-
     let index = bisect.left(data,time);
     let now = data[index];
     if (index > 0) {
       let last = data[index-1];
       let timeScale = d3.scaleLinear()
             .domain([last[0], now[0]])
-            .range([x(last[1]),x(now[1])]);
-      return x.invert(timeScale(time));
+            .range([last[1],now[1]]);
+      return timeScale(time);
     }
     return now[1];
-  }
-  function findForwardByMonth(data,time){
+
     // let index = bisect.left(data,time);
     // let now = data[index];
     // if (index > 0) {
     //   let last = data[index-1];
     //   let timeScale = d3.scaleLinear()
     //         .domain([last[0], now[0]])
-    //         .range([last[2],now[2]]);
-    //   return timeScale(time);
+    //         .range([x(last[1]),x(now[1])]);
+    //   return x.invert(timeScale(time));
     // }
-    // return now[2];
-
+    // return now[1];
+  }
+  function findForwardByMonth(data,time){
     let index = bisect.left(data,time);
     let now = data[index];
     if (index > 0) {
       let last = data[index-1];
       let timeScale = d3.scaleLinear()
             .domain([last[0], now[0]])
-            .range([y(last[2]),y(now[2])]);
-      return y.invert(timeScale(time));
+            .range([last[2],now[2]]);
+      return timeScale(time);
     }
     return now[2];
+
+    // let index = bisect.left(data,time);
+    // let now = data[index];
+    // if (index > 0) {
+    //   let last = data[index-1];
+    //   let timeScale = d3.scaleLinear()
+    //         .domain([last[0], now[0]])
+    //         .range([y(last[2]),y(now[2])]);
+    //   return y.invert(timeScale(time));
+    // }
+    // return now[2];
   }
 
   var dataArray=[];
+  var trendMap = new Map();
   d3.csv('public/data/hashtag_bubble_deleted0414.csv').then(function(data) {
 
     data.forEach(d => {
       let tmp={};
       tmp.label=d.hashtag.trim();
       tmp.trend=d.trend.trim();
+      trendMap.set(tmp.label.slice(1),parseFloat(tmp.trend))
       tmp.value=[];
       for(let label in d){
         if(label!=='hashtag'&&label!=='trend'&&label.substr(0,2)!=='re'){
@@ -190,19 +205,25 @@
       dataArray.push(tmp);
     });
 
-
-    let labelSet = dataArray.map(d => d.label.slice(1)).sort();
     let twitterEnglish = getTwitterEnglish();
     let twitterChinese = getTwitterChinese();
     let twitterText = lang === "ch" ? twitterChinese : twitterEnglish;
+
+    let labelSet = dataArray.map(d=>d.label.slice(1));
+    let labelSet0 = dataArray.filter(d => category(d.trend)==='0').sort((a,b)=>a.trend-b.trend).map(d=>d.label.slice(1));
+    let labelSet1 = dataArray.filter(d => category(d.trend)==='1').sort((a,b)=>a.trend-b.trend).map(d=>d.label.slice(1));
+    let labelSet2 = dataArray.filter(d => category(d.trend)==='2').sort((a,b)=>b.trend-a.trend).map(d=>d.label.slice(1));
+
     createHeaderPanel();
-    createAsidePanel(labelSet);
-    createDownsidePanel(labelSet);
+    createAsidePanel(labelSet0,'labelSet0');
+    createAsidePanel(labelSet1,'labelSet1');
+    createAsidePanel(labelSet2,'labelSet2');
+    createDownsidePanel(labelSet0.concat(labelSet1,labelSet2));
 
     var monthText = svg.append('g')
                   .append('text')
                   .attr('x',margin.left+60)
-                  .attr('y',margin.top+160)
+                  .attr('y',margin.top+120)
                   .attr('class','monthText');
     // Add a dot per state. Initialize the data at 1950, and set the colors.
     let startDate = new Date(2016, 0);
@@ -239,7 +260,7 @@
           .attr("class", "dot")
           .attr("data-label", d => d.label.slice(1));
 
-    let cursorLines = svg.append("g")
+    let cursorLines = svgChart.append("g")
       .attr("class", "cursor")
     let horizontalCursor = cursorLines.selectAll(".horizontal")
       .data(dataset)
@@ -339,8 +360,9 @@
     disableCursor();
 
     let checkboxs = d3.selectAll("div.labelRow input");
-    let checkAll = d3.select("input#input-all");
+    let checkAll = d3.selectAll("input.input-all");
 
+    // 绑定监听
     checkboxs.on("change", checkedHandler);
     checkAll.on("change", checkedAllHandler);
     button.on("click", buttonClickedHandler);
@@ -513,11 +535,11 @@
           .style("display", "block");
 
         d3.select(".header")
-          .style("border-color", "#909099")
+          .style("outline-color", "#909099")
           .html(`${twitterChinese[label]}(#${twitterEnglish[label]}): ${en2ch[label]}`);
 
         if (selectedLabel.length === labelSet.length) {
-          d3.select("input#input-all")
+          d3.select("input.input-all")
             .property("checked", true);
         }
       } else {
@@ -527,21 +549,35 @@
     }
 
     function checkedAllHandler() {
-      let checkbox = d3.select("#input-all");
+      let checkboxs = d3.selectAll("div input.input-all");
 
-      if (checkbox.property("checked")) {
-        d3.selectAll("div.labelRow input")
-          .property("checked", true);
-
-        d3.selectAll("div.lifeCycleRow")
-          .style("display", "block");
-      } else {
-        d3.selectAll("div.labelRow input")
-          .property("checked", false);
-        
-        d3.selectAll("div.lifeCycleRow")
-          .style("display", "none");
-      }
+      checkboxs.each(()=>{
+        let checkbox = d3.select(this);
+        let idName = checkbox.attr('id').substr(0,9);
+        if (checkbox.property("checked")) {
+          let boxs=d3.selectAll('#'+idName+"Rows div.labelRow input")
+                     .property("checked", true);
+          boxs.each(function(){
+            let label = d3.select(this).attr('name');
+            d3.select(`#lifeCycleRow-${label}`)
+            .style("display", "block");
+          })
+            // .on('change')();
+          // d3.selectAll("div.lifeCycleRow")
+          //   .style("display", "block");
+        } else {
+          let boxs = d3.selectAll('#'+idName+"Rows div.labelRow input")
+                       .property("checked", false);
+          boxs.each(function(){
+            let label = d3.select(this).attr('name');
+            d3.select(`#lifeCycleRow-${label}`)
+            .style("display", "none");
+          })
+            // .on('change')();
+          // d3.selectAll("div.lifeCycleRow")
+          //   .style("display", "none");
+        }
+      })
 
       let currentTime = getTime();
       let currentDate = dateScale.invert(currentTime);
@@ -659,7 +695,7 @@
 
       if (selectedLabel.length === 0) {
         d3.select(".header")
-          .style("border-color", "#909099")
+          .style("outline-color", "#909099")
           .html(`${twitterChinese[label]}(#${twitterEnglish[label]}): ${en2ch[label]}`);
       }
 
@@ -880,55 +916,83 @@
         // .style("max-height", `${headerHeight}px`);
     }
 
-    function createAsidePanel(labelSet) {
+    function createAsidePanel(labelSet,idName) {
       let asideWidth = 220;
       let lineHeight = 24; // 和css联动
-      let aside = d3.select(".container")
+      let aside = d3.select("#rightAside")
         .append("div")
-        .attr("id", "aside")
-      document.querySelector("div#aside").style.width = `${asideWidth}px`;
+        .attr("class", "aside")
+        .style('height',svgHeight/3+'px')
+      // document.querySelector("div#aside").style.width = `${asideWidth}px`;
       // document.querySelector("div#aside").style.height = `${anchor.attr("cy")}px`;
       // document.querySelector("div#aside").style.margin = `${margin.top}px 0 ${svgHeight - anchor.attr("cy")}px 0`;
 
       let eleOfAllNnone = aside.append("div")
-        .attr("id", "eleOfAllNnone");
+        .attr("class", "eleOfAllNnone");
       let eleOfLabelRow = aside.append("div")
-        .attr("id", "eleOfLabelRow")
+        .attr("class", "eleOfLabelRow")
+        .attr('id',idName+'Rows')
+        .style('height',svgHeight/3-30+'px')
         .style("max-height", `${2 * anchor.attr("cy") - lineHeight - svgHeight}px`);
 
       let eleOfAll = eleOfAllNnone.append("div")
-        .attr("class", "allNnone");
+        .attr("class", "allNnone")
       eleOfAll.append("input")
         .attr("type", "checkbox")
         .attr("name", "all")
-        .attr("id", 'input-all');
+        .attr("class", 'input-all')
+        .attr('id',idName+'all');
       eleOfAll.append("label")
-        .attr("id", "label-all")
-        .attr("for", "all")
+        .attr("class", "label-all")
+        .attr("for", idName+'all')
         .html(lang === "ch" ? "全选" : "all");
+      eleOfAll.append('span')
+        .attr('class','typeName')
+        .text(()=>{
+          let type = idName.substr(idName.length-1,1);
+          if(type==='0'){
+            return '留欧';
+          }else if(type==='1'){
+            return '中立';
+          }else{
+            return '脱欧';
+          }
+        })
 
       let rows = eleOfLabelRow.selectAll(".labelRow")
         .data(labelSet)
         .enter()
         .append("div")
-        .attr("class", "labelRow")
+        .attr("class", `labelRow ${idName}Row`)
         .attr("id", d => `row-${d}`);
+        
+      rows.append("div")
+        .attr("class", 'trendBar')
+        .style('width', d=>{
+          return trendScale(trendMap.get(d))+'px';
+        })
 
-      rows.append("input")
+      let rowslabel = rows.append('div')
+                          .attr('class','textLabelRow')
+      rowslabel.append("input")
         .attr("type", "checkbox")
+        .attr('class',"squared")
         .attr("name", d => d)
         .attr("id", d => `input-${d}`);
 
-      rows.append("label")
+      rowslabel.append("label")
         .attr("id", d => `label-${d}`)
-        .attr("for", d => d)
+        .attr("for", d => `input-${d}`)
         .html(d => `${twitterText[d]}`);
+    
 
-      document.querySelector("div#eleOfLabelRow").style.overflow = "auto";
+
+
+      // document.querySelector("div#eleOfLabelRow").style.height = svgHeight/3 - 20 + 'px';
     }
 
     function createDownsidePanel(labelSet) {
-      let downsideBlockHeight = 135;
+      let downsideBlockHeight = 130;
       let downsideTitleHeight = 30;
       let downsideHeight = downsideBlockHeight + downsideTitleHeight;
 

@@ -130,7 +130,7 @@
 
   // scale
   var x = d3.scaleTime()
-    .domain([new Date(2016, 0), new Date(2018, 11)])
+    .domain([new Date(2016, 0), new Date(2019, 02)])
     .range([0, width + width / 11 * 24]);
 
   var y = d3.scaleLinear()
@@ -311,7 +311,7 @@
       "苏格兰": "苏格兰(Scotland)",
       "贸易": "贸易(Trade)",
       "移民": "移民(Immigration)",
-      "爱尔兰": "爱尔兰(Ireland)"
+      "北爱尔兰": "北爱尔兰(N.Ireland)"
     };
     svg2.selectAll(".label")
       .data(textData)

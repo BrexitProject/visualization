@@ -9,16 +9,41 @@
     <style>
       @import url(https://fonts.googleapis.com/earlyaccess/notosanstc.css);
 
-      body {
-        padding-top: 10px;
-        overflow: auto;
+      :root {
+          font-size: 10px;
       }
 
+      html{
+        /* width: 1920px; */
+        /* height: 1080px; */
+        /* overflow: hidden; */
+      }
+
+      body {
+        overflow: hidden;
+        margin: 0;
+        padding-top:0;
+        overflow: auto;
+        padding:0;
+      }
+
+      #main{
+        padding:10px 20px;
+        width: 1250px;
+        height: 1000px;
+      }
+
+      /* @media only screen and (max-width: 1200){
+        body{
+          padding:10px 4%;
+        }
+      } */
+
       .textLabel{
-        font-size: 14px;
+        font-size: 1vw;
         font-weight: 700;
         /* font-family: 'Georgia'; */
-        font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+        font-family: Helvetica,"Helvetica Neue",Arial,sans-serif;
         dominant-baseline: middle;
       }
       circle{
@@ -41,19 +66,21 @@
 
       .axis text {
         fill: #9090a0;
-        font-weight: bold;
-        font-size: 18px;
+        font-weight: 600;
+        font-size: 1.5rem;
+        font-family: 'Helvetica';
       }
 
       .xLabel{
-        font-size: 50px;
+        font-family: 'SimSun','STSong';
+        font-size: 3.4rem;
         fill:#9090a0;
         font-weight: 700;
       }
 
       .monthText{
-        font-family: 'Helvetica Neue';
-        font-size: 160px;
+        font-family: 'Helvetica';
+        font-size: 12.5rem;
         fill:#909099;
         font-weight: 700;
         fill-opacity: 0.9;
@@ -89,48 +116,235 @@
       }
 
       .cursor-text {
-        font-size: 25px;
+        font-size: 1vw;
         fill: #9090a0;
         font-weight: bold;
       }
 
       .container {
+        display: grid;
         box-sizing: border-box;
-        width: 1430px;
-        height: 900px;
+        /* width: 1430px;
+        height: 900px; */
         padding: 0;
         border: 0;
         vertical-align: top;
-        position: relative;
+        /* position: relative; */
+        grid-template-columns: 950px 1fr;
+      }
+
+      #rightAside{
+        display: grid;
+        grid-template-rows: repeat(3);
+        max-width: 250px;
       }
 
       svg {
         display: inline-block;
       }
 
-      #aside {
+      .aside {
         /* border: 1px solid black; */
         display: inline-block;
-        height: 700px;
-        width: 220px;
-        position: relative;
-        top: -24px;
+        font-family: Helvetica,"Helvetica Neue",Arial,sans-serif;
         /* overflow-y: auto; */
         /* line-height: 24px; */
       }
 
-      /* #eleOfLabelRow {
+      .eleOfLabelRow {
+        overflow: auto;
+        padding-top: 2px;
+        margin-bottom: 10px;
+        width: 100%;
+      }
 
-      } */
+      div.allNnone{
+        border-bottom: 1px solid #acacac;
+      }
 
       div.labelRow {
         /* margin: 5px 3px, 5px, 4px; */
         /* background-color: rgba(144, 144, 153, 0); */
         /* color: #1DA1F2; */
-        font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-        display: flex;
+        font-family: Helvetica,"Helvetica Neue",Arial,sans-serif;
+        /* display: flex; */
+        height: 14.5px;
         align-items: center;
+        font-size: 1.2rem;
+      }
+
+      .label-all{
+        font-weight: 600;
+      }
+
+      input[type="checkbox"].input-all{
+        height: 26px;
+        width: 8px;
+        margin: auto;
+        opacity: 0; 
+      }
+      input[type="checkbox"].input-all+ label{
+        padding-left: 20px;
+        line-height: 26px;
+      }
+      input[type="checkbox"].input-all+label:before{
+        content: "";
+        display: inline-block;
+        width: 12px;
+        height: 12px;
         font-size: 16px;
+        font-family: 'Arial Unicode MS';
+        /* background-color: white; */
+        border: 1px solid grey;
+        color: #000;
+        text-align: center;
+        cursor: pointer;
+        border-radius: 2px;
+        left:1px;
+      }
+      input[type="checkbox"].input-all+label:after{
+        content: "";
+        display: inline-block;
+        width: 2px;
+        height: 2px;
+        box-shadow: 
+          2px 0 0 #343434,
+          4px 0 0 #343434,
+          4px -2px 0 #343434,
+          4px -4px 0 #343434,
+          4px -6px 0 #343434,
+          4px -8px 0 #343434;
+        transform: rotate(45deg);
+        left: 2px;
+        top: 6px;
+      }
+
+      input[type="checkbox"].input-all+label{
+          position: relative;
+      }
+      input[type="checkbox"].input-all+label:before,
+      input[type="checkbox"].input-all+label:after {
+          position: absolute;
+      }
+      /*Outer-box*/
+      input[type="checkbox"].input-all+label:before {
+          top: 0px;
+      }
+
+      .allNnone .typeName::before{
+        content: '';
+        width: 10px;
+        height: 10px;
+        border-radius: 8px;
+        display: inline-block;
+        border-style: solid;
+        border-width: 1px;
+        margin-right: 4px;
+      }
+
+      #labelSet0all+label+span::before{
+        background-color: rgba(27, 106, 166, 0.6);
+        border-color: rgba(27, 106, 166, 0.8);
+      }
+      #labelSet1all+label+span::before{
+        background-color: rgba(127, 127, 127,0.6);
+        border-color: rgba(127, 127, 127,0.8);
+      }
+      #labelSet2all+label+span::before{
+        background-color: rgba(232, 17, 15,0.6);
+        border-color: rgba(232, 17, 15,0.8);
+      }
+
+      
+      /* #labelSet0all+label:before{
+        background-color: linear-gradient(top, #222 0%, #45484d 100%);
+        border-radius: 4px;
+        box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,.4);
+        background-color: #1B6AA5
+      }
+      #labelSet1all+label:before{
+        background-color: #7F7F7F
+      }
+      #labelSet2all+label:before{
+        background-color: #E8110F
+      } */
+      input[type="checkbox"].input-all + label:after {
+          content: none;
+      }
+      /*Unhide the checkmark on the checked state*/
+      input[type="checkbox"].input-all:checked + label:after {
+          content: "";
+      }
+
+      input[type="checkbox"].squared{
+        width: 8px;
+        margin: auto;
+        opacity: 0; 
+      }
+      input[type="checkbox"].squared+ label{
+        vertical-align: -webkit-baseline-middle;
+        padding-left: 20px;
+      }
+      input[type="checkbox"].squared+label:before{
+        content: "";
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        font-size: 16px;
+        font-family: 'Arial Unicode MS';
+        background-color: white;
+        border: 1px solid grey;
+        color: #000;
+        text-align: center;
+        cursor: pointer;
+        border-radius: 2px;
+        left:1px;
+      }
+      input[type="checkbox"].squared+label:after{
+        content: "";
+        display: inline-block;
+        width: 2px;
+        height: 2px;
+        box-shadow: 
+          2px 0 0 #343434,
+          4px 0 0 #343434,
+          4px -2px 0 #343434,
+          4px -4px 0 #343434,
+          4px -6px 0 #343434,
+          4px -8px 0 #343434;
+        transform: rotate(45deg);
+        left: 2px;
+        top: 6px;
+      }
+
+      input[type="checkbox"].squared+label{
+          position: relative;
+      }
+      input[type="checkbox"].squared+label:before,
+      input[type="checkbox"].squared+label:after {
+          position: absolute;
+      }
+      /*Outer-box*/
+      input[type="checkbox"].squared+label:before {
+          top: 0px;
+      }
+
+      /* 
+      .labelSet0Row input[type="checkbox"].squared+label:before{
+        background-color: #1B6AA5
+      }
+      .labelSet1Row input[type="checkbox"].squared+label:before{
+        background-color: #7F7F7F
+      }
+      .labelSet2Row input[type="checkbox"].squared+label:before{
+        background-color: #E8110F
+      } */
+      input[type="checkbox"].squared + label:after {
+          content: none;
+      }
+      /*Unhide the checkmark on the checked state*/
+      input[type="checkbox"].squared:checked + label:after {
+          content: "";
       }
 
       input[type=checkbox] {
@@ -142,12 +356,29 @@
         cursor: pointer;
       }
 
+      .typeName{
+        float: right;
+        padding: 4px 10px;
+        font-size: 1.6rem;
+        font-weight: 600;
+        /* font-family: 'FangSong'; */
+        margin-top: 7px;
+      }
+
+      #downside-title{
+        letter-spacing: 0.2rem;
+        font-weight: 700;
+        font-size: 2rem;
+        color:#565656;
+        font-family: 'SimSun','STSong',Helvetica,"Helvetica Neue",Arial,sans-serif;
+      }
+
       label {
-        color: #1DA1F2;
+        color: #232323;
       }
 
       .pastTime, .textDateLabel {
-        font-size: 14px;
+        font-size: 1vw;
         font-weight: 700;
         font-family: 'Helvetica Neue';
         fill: #909099;
@@ -207,75 +438,151 @@
 
       .title {
         box-sizing: border-box;
-        margin: 0;
-        margin-bottom: 20px;
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        font-size: 40px;
+        margin-top: 10px;
+        margin-bottom: 6px;
+        font-family: 'SimSun','STSong', "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 2vw;
+        font-weight: 700;
         text-align: center;
-        width: 1470px;
+        /* width: 1470px; */
         height: 50px;
       }
 
       .heading {
+        /* display: grid; */
+        /* grid-template-columns: 4fr 1fr; */
         box-sizing: border-box;
-        height: 50px;
-        width: 1470px;
+      }
+
+      .trendBar{
+        height: 15px;
+        background: #cdcdcd;
+        position: relative;
+        margin-left: 28px;
+        margin-top: 7px;
+      }
+
+      .textLabelRow{
+        top: -20px;
+        position: relative;
       }
 
       .aside-title {
         display: inline-block;
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 1.8rem;
+        line-height: 2rem;
+        font-weight: 600;
+        font-family: 'KaiTi','BiauKai', "Helvetica Neue", Helvetica, Arial, sans-serif;
          /* margin: auto; */
+        width: 250px;
         text-align: center;
         vertical-align: middle;
-        width: 220px;
-        border-bottom: 3px solid lightgray;
+        /* border-bottom: 3px solid lightgray; */
+        letter-spacing: 0.1rem;
       }
+
+      /* .aside-title::after {
+        content : url('/public/data/bubble/divline2.png')
+      } */
 
       .header {
         display: inline-block;
         box-sizing: border-box;
-        width: 990px;
-        height: 50px;
+        width: 800px;
+        height: 52px;
         min-height: 50px;
-        max-height: 50px;
+        max-height: 52px;
         overflow-y: auto;
-        border: 1px solid white;
-        border-radius: 15px;
+        text-align: justify;
+        /* border: 1px solid white;
+        border-radius: 15px; */
+        /* outline: 1px solid white; */
+        background-color: #efefef;
         vertical-align: middle;
         margin-right: 30px;
-        margin-left: 150px;
-        padding: 0 20px;
-        font-family: 'Noto Sans TC';
+        margin-left: 120px;
+        padding: 6px 14px;
+        font-weight: 500;
+        font-size: 1.4rem;
+        line-height: 1.7rem;
+        font-family: 'KaiTi','BiauKai', "Helvetica Neue", Helvetica, Arial, sans-serif;
       }
 
       .header::-webkit-scrollbar {
-        width: 0px;
+        width: 4px;
       }
 
-      #eleOfLabelRow::-webkit-scrollbar {
-        width: 8px;
+      .header::-webkit-scrollbar-button {
+        width: 4px;
+        height: 2px;
       }
 
-      #eleOfLabelRow::-webkit-scrollbar-button {
-        width: 8px;
-        height:5px;
-      }
-
-      #eleOfLabelRow::-webkit-scrollbar-track {
+      .header::-webkit-scrollbar-track {
         background:#eee;
         border: thin solid lightgray;
         box-shadow: 0px 0px 3px #dfdfdf inset;
         border-radius:10px;
       }
 
-      #eleOfLabelRow::-webkit-scrollbar-thumb {
+      .header::-webkit-scrollbar-thumb {
+        background-color: rgba(144, 144, 153, 0.5);
+        border: thin solid rgba(144, 144, 153, 0.5);
+        border-radius:2px;
+      }
+
+      .header::-webkit-scrollbar-thumb:hover {
+        background-color:rgba(144, 144, 153, 1);
+      } 
+
+      .eleOfLabelRow::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .eleOfLabelRow::-webkit-scrollbar-button {
+        width: 6px;
+        height:5px;
+      }
+
+      .eleOfLabelRow::-webkit-scrollbar-track {
+        background:#eee;
+        border: thin solid lightgray;
+        box-shadow: 0px 0px 3px #dfdfdf inset;
+        border-radius:10px;
+      }
+
+      .eleOfLabelRow::-webkit-scrollbar-thumb {
         background-color: rgba(144, 144, 153, 0.5);
         border: thin solid rgba(144, 144, 153, 0.5);
         border-radius:10px;
       }
 
-      #eleOfLabelRow::-webkit-scrollbar-thumb:hover {
+      .eleOfLabelRow::-webkit-scrollbar-thumb:hover {
+        background-color:rgba(144, 144, 153, 1);
+      } 
+
+      #downside-block::-webkit-scrollbar {
+        width: 7px;
+      }
+
+      #downside-block::-webkit-scrollbar-button {
+        width: 8px;
+        height:5px;
+      }
+
+      #downside-block::-webkit-scrollbar-track {
+        background:#eee;
+        border: thin solid lightgray;
+        box-shadow: 0px 0px 3px #dfdfdf inset;
+        border-radius:10px;
+      }
+
+      #downside-block::-webkit-scrollbar-thumb {
+        background-color: rgba(144, 144, 153, 0.5);
+        border: thin solid rgba(144, 144, 153, 0.5);
+        border-radius:10px;
+      }
+
+      #downside-block::-webkit-scrollbar-thumb:hover {
         background-color:rgba(144, 144, 153, 1);
       } 
 
@@ -301,20 +608,22 @@
         font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
       }
 
-      #downside-title {
-        font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-      }
     </style>
   </head>
 
   <body>
+    <div id='main'>
     <div class = "title">英国人是怎么讨论脱欧的</div>
     <div class = "heading">
       <div class = "header"></div>
-      <div class = "aside-title">社交网站最热门<br/>脱欧话题</div>
+      <div class = "aside-title">社交网站（推特）最热门<br/>脱欧话题</div>
+      
     </div>
-    <div class="container"></div>
-
+    <div class="container">
+      <div id="chartAside"></div>
+      <div id="rightAside"></div>
+    </div>
+    </div>
     <script src="public/d3.min.js"></script>
     <script src="public/labeler.js"></script>
     <script src="public/bubble_online2.js"></script>
