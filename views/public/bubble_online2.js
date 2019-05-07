@@ -971,6 +971,10 @@
         .style('width', d=>{
           return trendScale(trendMap.get(d))+'px';
         })
+        .append("span")
+        .text(d => d3.format('.3f')(trendMap.get(d)))
+        .style("display", "inline-block")
+        .style("transform", d=>`translate(${trendScale(trendMap.get(d))}px)`)
 
       let rowslabel = rows.append('div')
                           .attr('class','textLabelRow')
