@@ -215,9 +215,10 @@
     let labelSet2 = dataArray.filter(d => category(d.trend)==='2').sort((a,b)=>b.trend-a.trend).map(d=>d.label.slice(1));
 
     createHeaderPanel();
-    createAsidePanel(labelSet0,'labelSet0');
-    createAsidePanel(labelSet1,'labelSet1');
-    createAsidePanel(labelSet2,'labelSet2');
+    createAsidePanel(labelSet2, 'labelSet2');
+    createAsidePanel(labelSet1, 'labelSet1');
+    createAsidePanel(labelSet0, 'labelSet0');
+    
     createDownsidePanel(labelSet0.concat(labelSet1,labelSet2));
 
     var monthText = svg.append('g')
@@ -917,7 +918,7 @@
     }
 
     function createAsidePanel(labelSet,idName) {
-      let asideWidth = 220;
+      let asideWidth = 190;
       let lineHeight = 24; // 和css联动
       let aside = d3.select("#rightAside")
         .append("div")
@@ -946,6 +947,16 @@
         .attr("class", "label-all")
         .attr("for", idName+'all')
         .html(lang === "ch" ? "全选" : "all");
+      
+      // 加灰条的表格头, 只加在最上面
+      if (idName.substr(idName.length - 1, 1) === '2') {
+        eleOfAll.append('span')
+          .text('趋势')
+          .attr("class", "label-all")
+          .style("display", "inline-block")
+          .style("transform", 'translate(100px)')
+      }
+      
       eleOfAll.append('span')
         .attr('class','typeName')
         .text(()=>{
