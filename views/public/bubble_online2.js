@@ -48,11 +48,11 @@
 
   var trendScale = d3.scaleLinear()
                      .domain([0,1])
-                     .range([10,200]);
+                     .range([10,100]);
   // axises
   var xAxis = d3.axisBottom(x)
                 .tickSize(-height)
-                .tickValues([50, 100, 200, 300, 400, 800, 1800, 2900]);
+                .tickValues([50, 100, 200, 300, 400, 800, 1800, 3400]);
                 // .tickValues([50, 200, 400, 800, 1200, 1600, 2000, 2900]);
                 // .tickValues([60, 200, 400, 800, 1600, 2000, 2400, 2900]);
                 // .tickValues([0, 10, 50, 75, 100, 600, 1200, 2400]);
@@ -123,7 +123,7 @@
   
   function parseDate(str){
     var y = str.substr(0,4),
-        m = str.substr(4,2)-1,
+        m = str.substr(4,2),
         d = str.substr(6,2);
     if(d) return new Date(y,m,d);
     return new Date(y,m,1);
@@ -196,6 +196,7 @@
       tmp.trend=d.trend.trim();
       trendMap.set(tmp.label.slice(1),parseFloat(tmp.trend))
       tmp.value=[];
+      tmp.value.push([new Date(2015,12),0,0]);
       for(let label in d){
         if(label!=='hashtag'&&label!=='trend'&&label.substr(0,2)!=='re'){
           tmp.value.push([parseDate(label),parseInt(d[label]),parseInt(d['re'+label])]);
@@ -228,7 +229,7 @@
                   .attr('class','monthText');
     // Add a dot per state. Initialize the data at 1950, and set the colors.
     let startDate = new Date(2016, 0);
-    let limitDate = new Date(2019, 2, 31, 23, 59, 59);
+    let limitDate = new Date(2019, 3, 31, 23, 59, 59);
     let endDate = new Date(2019, 3);
     let dataset = getDataByMonth(dataArray, startDate);
 
