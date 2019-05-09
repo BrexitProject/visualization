@@ -229,8 +229,8 @@
                   .attr('class','monthText');
     // Add a dot per state. Initialize the data at 1950, and set the colors.
     let startDate = new Date(2016, 0);
-    let limitDate = new Date(2019, 3, 31, 23, 59, 59);
-    let endDate = new Date(2019, 3);
+    let limitDate = new Date(2019, 3, 30, 23, 59, 59);
+    let endDate = new Date(2019, 4);
     let dataset = getDataByMonth(dataArray, startDate);
 
     let clipPath = svg.append("clipPath")
