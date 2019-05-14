@@ -13,7 +13,7 @@
     }
     .chart{
       width:500px;
-      height: 500px;
+      height: 600px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -38,49 +38,50 @@
 function draw(words){
   var cloud = g.selectAll("text")
                  .data(words)
-        //Entering words
-        cloud.enter()
-            .append("text")
-            .style("font-family", "Impact")
-            .style("fill", function(d, i) {
-                return d.id==0?'black':color(d.category); 
-            })
-            .attr("text-anchor", "middle")
-            .style('font-size', 1)
-            .attr("transform", function(d) {
-                    return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-                })
-            .transition()
-            .duration(1000)
-            .style("font-size", function(d) { return d.size + "px"; })
-            .style("fill-opacity", 1)
-            .text(function(d) { return d.text; });
-        //Entering and existing words
-        cloud.attr("transform", function(d) {
-                    return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-                })
-                // .style("font-size", 1)
-                .transition()
-                .duration(1000)
-                .style("font-size", function(d) { return d.size + "px"; })
-                .style("fill", function(d, i) { 
-                  return d.id==0?'black':color(d.category);  
-                })
-                .style("fill-opacity", 1)
-                .text(function(d) { return d.text; });
-        //Exiting words
-        cloud.exit()
-            .transition()
-                .duration(600)
-                .style('fill-opacity', 1e-6)
-                .attr('font-size', 1)
-                .remove();
+      //Entering words
+      cloud.enter()
+          .append("text")
+          .style("font-family", "Impact")
+          .style("fill", function(d, i) {
+              return d.id==0?'black':color(d.category); 
+          })
+          .attr("text-anchor", "middle")
+          .style('font-size', 1)
+          .attr("transform", function(d) {
+                  return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+              })
+          .transition()
+          .duration(1000)
+          .style("font-size", function(d) { return d.size + "px"; })
+          .style("fill-opacity", 1)
+          .text(function(d) { return d.text; });
+      //Entering and existing words
+      cloud.attr("transform", function(d) {
+                  return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+              })
+              // .style("font-size", 1)
+              .transition()
+              .duration(1000)
+              .style("font-size", function(d) { return d.size + "px"; })
+              .style("fill", function(d, i) { 
+                return d.id==0?'black':color(d.category);  
+              })
+              .style("fill-opacity", 1)
+              .text(function(d) { return d.text; });
+      //Exiting words
+      cloud.exit()
+           .transition()
+           .duration(600)
+           .style('fill-opacity', 1e-6)
+           .attr('font-size', 1)
+           .remove();
 }
 let xScale = d3.scaleLinear()
            .range([10,60]);
 let categorys =  ['express','dailymail','dailystar','sun','inews','guardian','ft','economist'];
 let color = d3.scaleOrdinal().domain(categorys).range(['#67000d', '#a50f15','#cb181d','rgb(238, 136, 136)','#6baed6','#2171b5','#08519c','#08306b'])
 let g = d3.select('#newspaper').append('g').attr("transform", "translate(250,250)");
+let nameg = d3.select('#newspaper').append('g').attr("transform", "translate(250,500)");
 let promises = categorys.map(function (id) {
   return  new Promise(function (resolve, reject) {
       d3.csv(`public/data/newspaper/new_${(id)}.csv`).then(function(data) {
@@ -112,6 +113,10 @@ Promise.all(promises).then(function (results) {
                 .fontSize(function(d) { return xScale(+d.fre); })
                 .on("end", draw)
                 .start();
+      let label = nameg.selectAll('text')
+                       .data([result.category]);
+      label.text(d=>d);
+      label.enter().append('text').text(d=>d);
     }, 10000*i)
   });
 });

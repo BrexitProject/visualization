@@ -28,22 +28,22 @@
             // .domain([0, 10, 50, 75, 100, 600, 1200, 2400])
             // .domain([60, 200, 400, 800, 1600, 2000, 2400, 2900])
             // .domain([50, 200, 400, 800, 1200, 1600, 2000, 2900])
-            .domain([50, 100, 200, 300, 400, 800, 1800, 3400])
+            .domain([50, 100, 200, 300, 400, 800, 1800, 2900])
             .range([0,(width-30)/7,(width-30)*2/7,(width-30)*3/7,(width-30)*4/7,(width-30)*5/7,(width-30)*6/7,width-30,width])
 
   var r = d3.scaleLinear()
             // .domain([0, 0.365010869, (0.365010869 + 2 / 3) / 2, 2 / 3, 1])
-            .domain([0, 0.155009587221478, 0.401394874683146, 0.50448195659342, 0.592832046557058, 0.9, 1])
+            .domain([0, 0.05, 0.2, 0.50448195659342, 0.7, 0.9, 1])
             // .range([25, 7, 25, 7, 25]);
-            .range([25, 19, 15, 15, 15, 24, 25]);
+            .range([25, 19, 15, 15, 15, 20, 25]);
   var color = d3.scaleQuantile()
                 // .domain([0, 0.365010869, (0.365010869 + 2 / 3) / 2, 2 / 3, 1])
-                .domain([0, 0.401394874683146, 0.50448195659342, 0.592832046557058, 1])
+                .domain([0, 0.2, 0.50448195659342, 0.7, 1])
                 // .range(["#1B6AA5", "#748C9D", "#9D7A7F", "#E8110F" ]);
                 .range(["#1B6AA5", "#7F7F7F", "#7F7F7F", "#E8110F"]);
 
   var category = d3.scaleQuantile()
-                   .domain([0, 0.401394874683146, 0.50448195659342, 0.592832046557058, 1])
+                   .domain([0, 0.2, 0.50448195659342, 0.7, 1])
                    .range(["0", "1", "1", "2"]);
 
   var trendScale = d3.scaleLinear()
@@ -52,7 +52,7 @@
   // axises
   var xAxis = d3.axisBottom(x)
                 .tickSize(-height)
-                .tickValues([50, 100, 200, 300, 400, 800, 1800, 3400]);
+                .tickValues([50, 100, 200, 300, 400, 800, 1800, 2900]);
                 // .tickValues([50, 200, 400, 800, 1200, 1600, 2000, 2900]);
                 // .tickValues([60, 200, 400, 800, 1600, 2000, 2400, 2900]);
                 // .tickValues([0, 10, 50, 75, 100, 600, 1200, 2400]);
@@ -101,10 +101,10 @@
     .style("text-anchor", "middle");
   svg.append("text")             
       .attr("transform",
-            "translate(" + (width-60) + " ," + 
+            "translate(" + (width-16) + " ," + 
                           (height + margin.top-10) + ")")
       .style("text-anchor", "start")
-      .text(lang === "en" ? "Tweet" : "原创话题量")
+      .text(lang === "en" ? "Tweet" : "讨论度")
       .attr('class','xLabel');
   svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`)
@@ -239,7 +239,7 @@
       .attr("x", margin.left)
       .attr("y", margin.top)
       .attr("height", height)
-      .attr("width", width);
+      .attr("width", width+margin.right);
     let svgChart = svg.append("g")
       .attr("id", "chart")
       .attr("clip-path", "url(#chart-area)");
