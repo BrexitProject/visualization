@@ -473,7 +473,7 @@
         .style("fill", function(d) { return color(d.trend); })
         .style("stroke",function(d) { return color(d.trend); })
         .style('opacity',function(d){
-          if(d.forward>50&&d.freq>2000){
+          if(d.forward>50&&d.freq>1400){
             return 1;
           }else{
             return 0.1;
@@ -493,13 +493,13 @@
           let radius = (!isVisible(d)) ? 2 : r(d.trend);
           return y(d.freq + 1)+margin.top - radius;
         })()})`)
-        .style('opacity',function(d){
-          if(d.forward>50&&d.freq>2000){
-            return 1;
-          }else{
-            return 0.1;
-          }
-        })
+        // .style('opacity',function(d){
+        //   if(d.forward>50&&d.freq>1400){
+        //     return 1;
+        //   }else{
+        //     return 0.1;
+        //   }
+        // })
         .text(d => {
           let time;
           if (d.time <= limitDate) {
@@ -765,7 +765,7 @@
       timer.attr("T", 0);
     }
 
-    function startTime(ease, totalTime, timeTodo, dateScale) {
+    function startTime(ease, totalTime, timeTodo, dateScale){
       timer.transition()
         .duration(timeTodo)
         .ease(easeFunc)
@@ -845,11 +845,18 @@
         showupText.data(dataset)
           .attr("transform", d => `translate(${x(d.forward + 1)+margin.left}, ${y(d.freq + 1)+margin.top})`)
           // .filter(d => trueText.findIndex(text => text === d.label.slice(1)) >= 0 || (d.forward + 1 >= 800 || d.freq + 1 >= 50000))
+          .style('opacity',function(d){
+            if(d.forward>50&&d.freq>1400){
+              return 1;
+            }else{
+              return 0;
+            }
+          })
           .filter(isVisible)
           .style("fill-opacity", 1)
           .transition()
           .duration(1000)
-          .style("fill-opacity", 0);
+          .style("fill-opacity", 0.1);
       }
     }
 
@@ -914,20 +921,20 @@
         })
         .style("text-anchor", "middle")
         .style("fill", function(d) { return "#242424"; })
-        .attr('opacity',function(d){
-          if(d.forward>50&&d.freq>2000){
-            return 1;
-          }else{
-            return 0.1;
-          }
-        })
-        .style('opacity',function(d){
-          if(d.forward>50&&d.freq>2000){
-            return 1;
-          }else{
-            return 0.1;
-          }
-        })
+        // .attr('fill-opacity',function(d){
+        //   if(d.forward>50&&d.freq>1400){
+        //     return 1;
+        //   }else{
+        //     return 0.1;
+        //   }
+        // })
+        // .style('opacity',function(d){
+        //   if(d.forward>50&&d.freq>1400){
+        //     return 1;
+        //   }else{
+        //     return 0.1;
+        //   }
+        // })
         .style("display",function(d) {
           if(!isVisible(d)){
             return 'none';}});
