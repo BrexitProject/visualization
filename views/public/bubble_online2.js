@@ -892,6 +892,8 @@
     function textPosition(textData){
       text.data(textData).each(function(d) {
         d.width = this.getBBox().width;
+        d.forward = d.forward;
+        d.freq = d.freq;
         d.x = x(d.forward + 1)+margin.left;
         d.y = y(d.freq + 1)+margin.top;
         d.r = r(d.trend);
@@ -903,7 +905,7 @@
               .anchor(textData)
               .width(width)
             .height(height)
-            .start(0);;
+            .start(0);
 
       text.attr("x", function(d) {
           return d.x;
@@ -912,6 +914,13 @@
         })
         .style("text-anchor", "middle")
         .style("fill", function(d) { return "#242424"; })
+        .attr('opacity',function(d){
+          if(d.forward>50&&d.freq>2000){
+            return 1;
+          }else{
+            return 0.1;
+          }
+        })
         .style('opacity',function(d){
           if(d.forward>50&&d.freq>2000){
             return 1;
