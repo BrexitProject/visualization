@@ -104,7 +104,7 @@
             "translate(" + (width-16) + " ," + 
                           (height + margin.top-10) + ")")
       .style("text-anchor", "start")
-      .text(lang === "en" ? "Tweet" : "讨论度")
+      .text(lang === "en" ? "Tweet" : "讨论量")
       .attr('class','xLabel');
   svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`)
@@ -242,7 +242,7 @@
       .attr("width", width+margin.right);
     let svgChart = svg.append("g")
       .attr("id", "chart")
-      .attr("clip-path", "url(#chart-area)");
+      // .attr("clip-path", "url(#chart-area)");
 
     let showupText = svgChart.append("g")
       .selectAll(".showupText")
@@ -472,6 +472,13 @@
         })
         .style("fill", function(d) { return color(d.trend); })
         .style("stroke",function(d) { return color(d.trend); })
+        .style('opacity',function(d){
+          if(d.forward>50&&d.freq>2000){
+            return 1;
+          }else{
+            return 0.1;
+          }
+        })
         .style("display", function(d) {
           let selectedLabel = getSelectedLabel();
           if ((!isVisible(d)) && selectedLabel.findIndex(label => label === d.label.slice(1)) === -1) {
@@ -486,6 +493,13 @@
           let radius = (!isVisible(d)) ? 2 : r(d.trend);
           return y(d.freq + 1)+margin.top - radius;
         })()})`)
+        .style('opacity',function(d){
+          if(d.forward>50&&d.freq>2000){
+            return 1;
+          }else{
+            return 0.1;
+          }
+        })
         .text(d => {
           let time;
           if (d.time <= limitDate) {
@@ -898,6 +912,13 @@
         })
         .style("text-anchor", "middle")
         .style("fill", function(d) { return "#242424"; })
+        .style('opacity',function(d){
+          if(d.forward>50&&d.freq>2000){
+            return 1;
+          }else{
+            return 0.1;
+          }
+        })
         .style("display",function(d) {
           if(!isVisible(d)){
             return 'none';}});
