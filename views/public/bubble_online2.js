@@ -46,9 +46,18 @@
                    .domain([0, 0.2, 0.50448195659342, 0.7, 1])
                    .range(["0", "1", "1", "2"]);
 
+  // 设定bar的最长长度为多少
   var trendScale = d3.scaleLinear()
-                     .domain([0,1])
-                     .range([10,100]);
+                     .domain([-1,0,1])
+                    //  .domain([0,1])
+                     .range([100,10,100]);
+
+
+  var trendTransform = d3.scaleLinear()
+                     .domain([0, 1])
+                     .range([-1, 1]);
+
+    
   // axises
   var xAxis = d3.axisBottom(x)
                 .tickSize(-height)
@@ -1018,12 +1027,22 @@
       rows.append("div")
         .attr("class", 'trendBar')
         .style('width', d=>{
-          return trendScale(trendMap.get(d))+'px';
+          return trendScale(trendTransform(trendMap.get(d)))+'px';
         })
-        .append("span")
-        .text(d => d3.format('.3f')(trendMap.get(d)))
-        .style("display", "inline-block")
-        .style("transform", d=>`translate(${trendScale(trendMap.get(d))}px)`)
+        .style('margin-left', d=>{
+            if(trendTransform(trendMap.get(d))>=0)   return '243px';
+            else return 243-trendScale(trendTransform(trendMap.get(d)))+'px';
+        })
+        .style('background', d=>{
+            if(category(trendMap.get(d)) === '2')    return '#f1706f';
+            if(category(trendMap.get(d)) === '1')    return '#b2b2b2';
+            if(category(trendMap.get(d)) === '0')    return '#76a6ca';
+        })
+        // 提示趋势程度的数字
+        // .append("span")
+        // .text(d => d3.format('.3f')(trendTransform(trendMap.get(d))))
+        // .style("display", "inline-block")
+        // .style("transform", d=>`translate(${trendScale(trendTransform(trendMap.get(d)))}px)`)
 
       let rowslabel = rows.append('div')
                           .attr('class','textLabelRow')
