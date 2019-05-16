@@ -47,10 +47,16 @@
                    .range(["0", "1", "1", "2"]);
 
   // 设定bar的最长长度为多少
+  let trendBarLength = 150;
+  // 设定pivots
+  let rightAsidePivotFromLeft = 293;
+  let bluePivot = rightAsidePivotFromLeft - trendBarLength;
+  let redPivot = rightAsidePivotFromLeft + trendBarLength;
+  // 设定trendbar长度范围
   var trendScale = d3.scaleLinear()
                      .domain([-1,0,1])
                     //  .domain([0,1])
-                     .range([100,10,100]);
+                     .range([trendBarLength,10,trendBarLength]);
 
 
   var trendTransform = d3.scaleLinear()
@@ -224,7 +230,122 @@
     let labelSet1 = dataArray.filter(d => category(d.trend)==='1').sort((a,b)=>a.trend-b.trend).map(d=>d.label.slice(1));
     let labelSet2 = dataArray.filter(d => category(d.trend)==='2').sort((a,b)=>b.trend-a.trend).map(d=>d.label.slice(1));
 
-    createHeaderPanel();
+    let rightAsideSvg = d3.select("#rightAside").append('svg')
+        .attr("class", "aside")
+        .style("position", "absolute")
+        .style('height', '595')
+        .style('width', '590')
+    let pivotLines = rightAsideSvg.append("g")
+
+    pivotLines.append('line')
+        .attr('x1', bluePivot)
+        .attr('y1', '35')
+        .attr('x2', bluePivot)
+        .attr('y2', '570')
+        .style("stroke-dasharray", "5,5")//dashed array for line 
+      .style("stroke", "#3179AE"); 
+    pivotLines.append('line')
+        .attr('x1', rightAsidePivotFromLeft)
+        .attr('y1', '35')
+        .attr('x2', rightAsidePivotFromLeft)
+        .attr('y2', '570')
+        .style("stroke-dasharray", "5,5")//dashed array for line 
+        .style("stroke", "#222"); 
+    pivotLines.append('line')
+        .attr('x1', redPivot)
+        .attr('y1', '35')
+        .attr('x2', redPivot)
+        .attr('y2', '570')
+        .style("stroke-dasharray", "5,5")//dashed array for line 
+      .style("stroke", "#EE504E"); 
+
+    // 制作箭头
+    var defs = rightAsideSvg.append("defs");
+
+    var arrowMarker = defs.append("marker")
+			.attr("id","arrow")
+			.attr("markerUnits","strokeWidth")
+			.attr("markerWidth","12")
+      .attr("markerHeight","12")
+      .attr("viewBox","0 0 12 12") 
+      .attr("refX","6")
+      .attr("refY","6")
+      .attr("orient","auto");
+
+    var arrow_path = "M2,2 L10,6 L2,10 L6,6 L2,2";
+						
+    arrowMarker.append("path")
+			.attr("d",arrow_path)
+      .attr("fill","#DCDCDC");
+    
+    // 绘制线段加箭头的函数
+    function drawLegend(svg, height){
+      let trendLegend = svg.append("g");
+
+      trendLegend.append("line")
+			  .attr("x1", rightAsidePivotFromLeft)
+			  .attr("y1",height)
+			  .attr("x2", redPivot - 11)
+			  .attr("y2",height)
+			  .attr("stroke","#DCDCDC")
+			  .attr("stroke-width",2)
+        .attr("marker-end","url(#arrow)");
+      trendLegend.append("line")
+			  .attr("x1", rightAsidePivotFromLeft)
+			  .attr("y1",height)
+			  .attr("x2", bluePivot + 11)
+			  .attr("y2",height)
+			  .attr("stroke","#DCDCDC")
+			  .attr("stroke-width",2)
+        .attr("marker-end","url(#arrow)");
+
+      trendLegend.append("circle")
+        .attr("cx", rightAsidePivotFromLeft)
+        .attr("cy",height)
+        .attr("r",8)
+        .attr("fill","#b2b2b2")
+        .style("fill-opacity", 1.0)
+      trendLegend.append("circle")
+        .attr("cx",bluePivot)
+        .attr("cy",height)
+        .attr("r",8)
+        .attr("fill","#76a6ca")
+        .style("fill-opacity", 1.0)
+      trendLegend.append("circle")
+        .attr("cx",redPivot)
+        .attr("cy",height)
+        .attr("r",8)
+        .attr("fill","#f1706f")  
+        .style("fill-opacity", 1.0)
+    }
+
+    function drawLegendText(svg, height){
+      let trendLegendText = svg.append("g");
+      trendLegendText.append("text")
+        .attr("x",rightAsidePivotFromLeft)
+        .attr("y",height)
+        .text("中立")
+        .attr("class", "label-legend")
+        // .attr("text-anchor","middle")
+        .attr("fill","#000")
+      trendLegendText.append("text")
+        .attr("x",bluePivot)
+        .attr("y",height)
+        .text("更倾向留欧")
+        .attr("class", "label-legend")
+        .attr("fill","#000")
+      trendLegendText.append("text")
+        .attr("x",redPivot)
+        .attr("y",height)
+        .text("更倾向脱欧")
+        .attr("class", "label-legend")
+        .attr("fill","#000")
+    }
+
+    drawLegend(rightAsideSvg, 25);
+    drawLegendText(rightAsideSvg, 10);
+    drawLegend(rightAsideSvg, 570);
+    drawLegendText(rightAsideSvg, 592);
     createAsidePanel(labelSet2, 'labelSet2');
     createAsidePanel(labelSet1, 'labelSet1');
     createAsidePanel(labelSet0, 'labelSet0');
@@ -949,21 +1070,6 @@
             return 'none';}});
     }
 
-    function createHeaderPanel() {
-      // let headerHeight = 50;
-
-      // let slider = d3.select(".video-slider");
-
-      // d3.select(".header")
-      //   .style("margin-left", `${margin.left}px`)
-        // .style("width", `${slider.attr("width")}px`)
-        // .style("min-width", `${slider.attr("width")}px`)
-        // .style("max-width", `${slider.attr("width")}px`)
-        // .style("height", `${headerHeight}px`)
-        // .style("min-height", `${headerHeight}px`)
-        // .style("max-height", `${headerHeight}px`);
-    }
-
     function createAsidePanel(labelSet,idName) {
       let asideWidth = 190;
       let lineHeight = 24; // 和css联动
@@ -996,26 +1102,26 @@
         .html(lang === "ch" ? "全选" : "all");
       
       // 加灰条的表格头, 只加在最上面
-      if (idName.substr(idName.length - 1, 1) === '2') {
-        eleOfAll.append('span')
-          .text('趋势')
-          .attr("class", "label-all")
-          .style("display", "inline-block")
-          .style("transform", 'translate(100px)')
-      }
+      // if (idName.substr(idName.length - 1, 1) === '2') {
+      //   eleOfAll.append('span')
+      //     .text('趋势')
+      //     .attr("class", "label-all")
+      //     .style("display", "inline-block")
+      //     .style("transform", 'translate(100px)')
+      // }
       
-      eleOfAll.append('span')
-        .attr('class','typeName')
-        .text(()=>{
-          let type = idName.substr(idName.length-1,1);
-          if(type==='0'){
-            return '留欧';
-          }else if(type==='1'){
-            return '中立';
-          }else{
-            return '脱欧';
-          }
-        })
+      // eleOfAll.append('span')
+      //   .attr('class','typeName')
+      //   .text(()=>{
+      //     let type = idName.substr(idName.length-1,1);
+      //     if(type==='0'){
+      //       return '留欧';
+      //     }else if(type==='1'){
+      //       return '中立';
+      //     }else{
+      //       return '脱欧';
+      //     }
+      //   })
 
       let rows = eleOfLabelRow.selectAll(".labelRow")
         .data(labelSet)
@@ -1030,8 +1136,20 @@
           return trendScale(trendTransform(trendMap.get(d)))+'px';
         })
         .style('margin-left', d=>{
-            if(trendTransform(trendMap.get(d))>=0)   return '243px';
-            else return 243-trendScale(trendTransform(trendMap.get(d)))+'px';
+            if(trendTransform(trendMap.get(d))>=0)   return rightAsidePivotFromLeft+'px';
+            else return rightAsidePivotFromLeft-trendScale(trendTransform(trendMap.get(d)))+'px';
+        })
+        .style('border-top-right-radius', d => {
+          if (trendTransform(trendMap.get(d)) >= 0) return '8px';
+        })
+        .style('border-bottom-right-radius', d => {
+          if (trendTransform(trendMap.get(d)) >= 0) return '8px';
+        })
+        .style('border-top-left-radius', d => {
+          if (trendTransform(trendMap.get(d)) <= 0) return '8px';
+        })
+        .style('border-bottom-left-radius', d => {
+          if (trendTransform(trendMap.get(d)) <= 0) return '8px';
         })
         .style('background', d=>{
             if(category(trendMap.get(d)) === '2')    return '#f1706f';

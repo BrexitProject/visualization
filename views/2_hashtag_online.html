@@ -29,7 +29,7 @@
 
       #main{
         padding:10px 20px;
-        width: 1340px;
+        width: 1540px;
         height: 1000px;
       }
 
@@ -51,6 +51,7 @@
         stroke-width: 2px;
         stroke-opacity: 0.8;
       }
+
       .axis path {
         display: none;
         stroke-width: 2px;
@@ -143,6 +144,10 @@
         display: inline-block;
       }
 
+      .trendLegend.circle{
+        fill-opacity: 1.0;
+      }
+
       .aside {
         /* border: 1px solid black; */
         display: inline-block;
@@ -159,7 +164,7 @@
       }
 
       div.allNnone{
-        border-bottom: 1px solid #acacac;
+        border-bottom: 1px solid #D0D0D0;
       }
 
       div.labelRow {
@@ -175,6 +180,12 @@
 
       .label-all{
         font-weight: 600;
+      }
+
+      .label-legend{
+        font-family: Helvetica,"Helvetica Neue",Arial,sans-serif;
+        font-size: 1.2rem;
+        text-anchor: middle;
       }
 
       input[type="checkbox"].input-all{
@@ -475,7 +486,7 @@
         font-weight: 600;
         font-family: 'KaiTi','BiauKai', "Helvetica Neue", Helvetica, Arial, sans-serif;
          /* margin: auto; */
-        width: 300px;
+        width: 580px;
         text-align: center;
         vertical-align: middle;
         /* border-bottom: 3px solid lightgray; */
