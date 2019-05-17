@@ -6,7 +6,7 @@
   var margin = {top: 10, bottom: 80, left: 120, right: 30};
   // var svgWidth = document.getElementById('chartAside').clientWidth;
   // var svgHeight = svgWidth*0.6>700? 700: svgWidth*0.6;
-  var svgWidth = 950;
+  var svgWidth = 850;
   var svgHeight = 550;
 
   var width=svgWidth - margin.left - margin.right;
@@ -47,16 +47,17 @@
                    .range(["0", "1", "1", "2"]);
 
   // 设定bar的最长长度为多少
-  let trendBarLength = 150;
+  let tendBarLengthMin = 3;
+  let trendBarLength = 117;
   // 设定pivots
-  let rightAsidePivotFromLeft = 293;
+  let rightAsidePivotFromLeft = 136 + trendBarLength;
   let bluePivot = rightAsidePivotFromLeft - trendBarLength;
   let redPivot = rightAsidePivotFromLeft + trendBarLength;
   // 设定trendbar长度范围
   var trendScale = d3.scaleLinear()
                      .domain([-1,0,1])
                     //  .domain([0,1])
-                     .range([trendBarLength,10,trendBarLength]);
+    .range([trendBarLength, tendBarLengthMin,trendBarLength]);
 
 
   var trendTransform = d3.scaleLinear()
@@ -226,15 +227,17 @@
     let twitterText = lang === "ch" ? twitterChinese : twitterEnglish;
 
     let labelSet = dataArray.map(d=>d.label.slice(1));
-    let labelSet0 = dataArray.filter(d => category(d.trend)==='0').sort((a,b)=>a.trend-b.trend).map(d=>d.label.slice(1));
-    let labelSet1 = dataArray.filter(d => category(d.trend)==='1').sort((a,b)=>a.trend-b.trend).map(d=>d.label.slice(1));
+    let labelSet0 = dataArray.filter(d => category(d.trend)==='0').sort((a,b)=>b.trend-a.trend).map(d=>d.label.slice(1));
+    let labelSet1 = dataArray.filter(d => category(d.trend)==='1').sort((a,b)=>b.trend-a.trend).map(d=>d.label.slice(1));
     let labelSet2 = dataArray.filter(d => category(d.trend)==='2').sort((a,b)=>b.trend-a.trend).map(d=>d.label.slice(1));
 
+    // let rightSvgWidth = document.getElementsByClassName('aside')[1].offsetWidth;
     let rightAsideSvg = d3.select("#rightAside").append('svg')
         .attr("class", "aside")
         .style("position", "absolute")
         .style('height', '595')
-        .style('width', '590')
+      // 与rightAside保持一致吧  
+        .style('width', '410')
     let pivotLines = rightAsideSvg.append("g")
 
     pivotLines.append('line')
