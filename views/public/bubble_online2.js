@@ -238,6 +238,7 @@
         .style('height', '595')
       // 与rightAside保持一致吧  
         .style('width', '410')
+        .style('z-index',-100)
     let pivotLines = rightAsideSvg.append("g")
 
     pivotLines.append('line')
