@@ -366,10 +366,10 @@
     //     .attr("fill","#000")
     // }
 
-    drawLegend(rightAsideSvg, 25);
-    drawLegendText(rightAsideSvg, 10);
-    drawLegend(rightAsideSvg, 570);
-    drawLegendText(rightAsideSvg, 592);
+    // drawLegend(rightAsideSvg, 25);
+    // drawLegendText(rightAsideSvg, 10);
+    // drawLegend(rightAsideSvg, 570);
+    // drawLegendText(rightAsideSvg, 592);
     createAsidePanel(labelSet2, 'labelSet2');
     createAsidePanel(labelSet1, 'labelSet1');
     createAsidePanel(labelSet0, 'labelSet0');
