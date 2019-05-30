@@ -282,88 +282,89 @@
         .style("stroke-dasharray", "5,5")//dashed array for line 
       .style("stroke", "#EE504E"); 
 
-    // 制作箭头
-    var defs = rightAsideSvg.append("defs");
+    // // 制作箭头
+    // var defs = rightAsideSvg.append("defs");
 
-    var arrowMarker = defs.append("marker")
-			.attr("id","arrow")
-			.attr("markerUnits","strokeWidth")
-			.attr("markerWidth","12")
-      .attr("markerHeight","12")
-      .attr("viewBox","0 0 12 12") 
-      .attr("refX","6")
-      .attr("refY","6")
-      .attr("orient","auto");
+    // var arrowMarker = defs.append("marker")
+		// 	.attr("id","arrow")
+		// 	.attr("markerUnits","strokeWidth")
+		// 	.attr("markerWidth","12")
+    //   .attr("markerHeight","12")
+    //   .attr("viewBox","0 0 12 12") 
+    //   .attr("refX","6")
+    //   .attr("refY","6")
+    //   .attr("orient","auto");
 
-    var arrow_path = "M2,2 L10,6 L2,10 L6,6 L2,2";
+    // var arrow_path = "M2,2 L10,6 L2,10 L6,6 L2,2";
 						
-    arrowMarker.append("path")
-			.attr("d",arrow_path)
-      .attr("fill","#DCDCDC");
+    // arrowMarker.append("path")
+		// 	.attr("d",arrow_path)
+    //   .attr("fill","#DCDCDC");
     
-    // 绘制线段加箭头的函数
-    function drawLegend(svg, height){
-      let trendLegend = svg.append("g");
+    // // 绘制线段加箭头的函数
+    // function drawLegend(svg, height){
+    //   let trendLegend = svg.append("g");
 
-      trendLegend.append("line")
-			  .attr("x1", rightAsidePivotFromLeft)
-			  .attr("y1",height)
-			  .attr("x2", redPivot - 11)
-			  .attr("y2",height)
-			  .attr("stroke","#DCDCDC")
-			  .attr("stroke-width",2)
-        .attr("marker-end","url(#arrow)");
-      trendLegend.append("line")
-			  .attr("x1", rightAsidePivotFromLeft)
-			  .attr("y1",height)
-			  .attr("x2", bluePivot + 11)
-			  .attr("y2",height)
-			  .attr("stroke","#DCDCDC")
-			  .attr("stroke-width",2)
-        .attr("marker-end","url(#arrow)");
+    //   trendLegend.append("line")
+		// 	  .attr("x1", rightAsidePivotFromLeft)
+		// 	  .attr("y1",height)
+		// 	  .attr("x2", redPivot - 11)
+		// 	  .attr("y2",height)
+		// 	  .attr("stroke","#DCDCDC")
+		// 	  .attr("stroke-width",2)
+    //     .attr("marker-end","url(#arrow)");
+    //   trendLegend.append("line")
+		// 	  .attr("x1", rightAsidePivotFromLeft)
+		// 	  .attr("y1",height)
+		// 	  .attr("x2", bluePivot + 11)
+		// 	  .attr("y2",height)
+		// 	  .attr("stroke","#DCDCDC")
+		// 	  .attr("stroke-width",2)
+    //     .attr("marker-end","url(#arrow)");
 
-      trendLegend.append("circle")
-        .attr("cx", rightAsidePivotFromLeft)
-        .attr("cy",height)
-        .attr("r",8)
-        .attr("fill","#b2b2b2")
-        .style("fill-opacity", 1.0)
-      trendLegend.append("circle")
-        .attr("cx",bluePivot)
-        .attr("cy",height)
-        .attr("r",8)
-        .attr("fill","#76a6ca")
-        .style("fill-opacity", 1.0)
-      trendLegend.append("circle")
-        .attr("cx",redPivot)
-        .attr("cy",height)
-        .attr("r",8)
-        .attr("fill","#f1706f")  
-        .style("fill-opacity", 1.0)
-    }
+    //   trendLegend.append("circle")
+    //     .attr("cx", rightAsidePivotFromLeft)
+    //     .attr("cy",height)
+    //     .attr("r",8)
+    //     .attr("fill","#b2b2b2")
+    //     .style("fill-opacity", 1.0)
+    //   trendLegend.append("circle")
+    //     .attr("cx",bluePivot)
+    //     .attr("cy",height)
+    //     .attr("r",8)
+    //     .attr("fill","#76a6ca")
+    //     .style("fill-opacity", 1.0)
+    //   trendLegend.append("circle")
+    //     .attr("cx",redPivot)
+    //     .attr("cy",height)
+    //     .attr("r",8)
+    //     .attr("fill","#f1706f")  
+    //     .style("fill-opacity", 1.0)
+    // }
 
-    function drawLegendText(svg, height){
-      let trendLegendText = svg.append("g");
-      trendLegendText.append("text")
-        .attr("x",rightAsidePivotFromLeft)
-        .attr("y",height)
-        .text("中立")
-        .attr("class", "label-legend")
-        // .attr("text-anchor","middle")
-        .attr("fill","#000")
-      trendLegendText.append("text")
-        .attr("x",bluePivot)
-        .attr("y",height)
-        .text("更倾向留欧")
-        .attr("class", "label-legend")
-        .attr("fill","#000")
-      trendLegendText.append("text")
-        .attr("x",redPivot)
-        .attr("y",height)
-        .text("更倾向脱欧")
-        .attr("class", "label-legend")
-        .attr("fill","#000")
-    }
+    // 原本箭头上的文字
+    // function drawLegendText(svg, height){
+    //   let trendLegendText = svg.append("g");
+    //   trendLegendText.append("text")
+    //     .attr("x",rightAsidePivotFromLeft)
+    //     .attr("y",height)
+    //     .text("中立")
+    //     .attr("class", "label-legend")
+    //     // .attr("text-anchor","middle")
+    //     .attr("fill","#000")
+    //   trendLegendText.append("text")
+    //     .attr("x",bluePivot)
+    //     .attr("y",height)
+    //     .text("更倾向留欧")
+    //     .attr("class", "label-legend")
+    //     .attr("fill","#000")
+    //   trendLegendText.append("text")
+    //     .attr("x",redPivot)
+    //     .attr("y",height)
+    //     .text("更倾向脱欧")
+    //     .attr("class", "label-legend")
+    //     .attr("fill","#000")
+    // }
 
     drawLegend(rightAsideSvg, 25);
     drawLegendText(rightAsideSvg, 10);
