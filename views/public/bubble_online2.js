@@ -16,6 +16,7 @@
             .append('svg')
             .attr('width', svgWidth)
             .attr('height', svgHeight);
+
   // scale
   var y = d3.scaleLinear()
             .domain([2000, 4000, 6000, 8000, 10000, 20000, 40000, 60000, 80000, 200000, 400000])
@@ -83,6 +84,24 @@
   let buttonPlay = true;
   let videoYOffset = 30;
   let buttonXOffset = -15;
+  function createMaskSvg(){
+    let mask = svg.append('defs')
+                .append('mask')
+                .attr('id','mainMask')
+    mask.append('rect')
+        .attr('x',0)
+        .attr('y',0)
+        .attr('width',svgWidth)
+        .attr('height', svgHeight)
+        .attr('fill','#333333')
+    mask.append('rect')
+        .attr('width', width+margin.right)
+        .attr('height', height)
+        .attr('x',margin.left)
+        .attr('y',margin.top)
+        .attr('fill','#ffffff')
+  }
+  createMaskSvg();
   let button = svg.append("image")
     .attr("class", "video-button")                              
     .attr('width', buttonSize)                     
@@ -363,8 +382,8 @@
                   .attr('class','monthText');
     // Add a dot per state. Initialize the data at 1950, and set the colors.
     let startDate = new Date(2016, 0);
-    let limitDate = new Date(2019, 2, 30, 23, 59, 59);
-    let endDate = new Date(2019, 3);
+    let limitDate = new Date(2019, 3, 30, 23, 59, 59);
+    let endDate = new Date(2019, 4);
     let dataset = getDataByMonth(dataArray, startDate);
 
     let clipPath = svg.append("clipPath")
@@ -394,6 +413,7 @@
           .data(dataset)
           .enter().append("circle")
           .attr("class", "dot")
+          .attr('mask','url(#mainMask)')
           .attr("data-label", d => d.label.slice(1));
 
     let cursorLines = svgChart.append("g")
@@ -606,13 +626,7 @@
         })
         .style("fill", function(d) { return color(d.trend); })
         .style("stroke",function(d) { return color(d.trend); })
-        .style('opacity',function(d){
-          if(d.forward>50&&d.freq>1400){
-            return 1;
-          }else{
-            return 0.1;
-          }
-        })
+        .style('opacity',1)
         .style("display", function(d) {
           let selectedLabel = getSelectedLabel();
           if ((!isVisible(d)) && selectedLabel.findIndex(label => label === d.label.slice(1)) === -1) {
@@ -839,7 +853,7 @@
 
       mouseoverDot = label;
 
-      d3.select(`#textDateLabel-${label}`).style("display", "block");
+      // d3.select(`#textDateLabel-${label}`).style("display", "block");
 
       updateMask(selectedLabel);
 
@@ -1469,7 +1483,8 @@
             .attr("y1", cy + radius)
             .attr("x2", cx + radius)
             .attr("y2", cy + radius)
-            .style("stroke", fill);
+            .style("stroke", fill)
+            .attr('mask','url(#mainMask)');
           targetPastLine["eleMotion"].append("line")
             .attr("class", "pastLineMotion")
             .classed("disabled", true)
@@ -1478,7 +1493,8 @@
             .attr("y1", cy + radius)
             .attr("x2", cx + radius)
             .attr("y2", cy + radius)
-            .style("stroke", fill);
+            .style("stroke", fill)
+            .attr('mask','url(#mainMask)');
 
           targetPastCircle["data"].push({
             cx, cy, r: radius, fill, date,
