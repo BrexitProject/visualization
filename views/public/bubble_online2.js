@@ -17,6 +17,14 @@
             .attr('width', svgWidth)
             .attr('height', svgHeight);
 
+  // 左边圆大小的编码
+  svg.append('image')
+    .attr('xlink:href','public/left_legend.svg')
+    .attr('x', 640)
+    .attr('y',0)
+    .attr('width', 180)
+    .attr('height', 180)
+
   // scale
   var y = d3.scaleLinear()
             .domain([2000, 4000, 6000, 8000, 10000, 20000, 40000, 60000, 80000, 200000, 400000])
@@ -264,21 +272,21 @@
         .attr('x1', bluePivot)
         .attr('y1', '35')
         .attr('x2', bluePivot)
-        .attr('y2', '570')
+        .attr('y2', '565')
         .style("stroke-dasharray", "5,5")//dashed array for line 
       .style("stroke", "#3179AE"); 
     pivotLines.append('line')
         .attr('x1', rightAsidePivotFromLeft)
         .attr('y1', '35')
         .attr('x2', rightAsidePivotFromLeft)
-        .attr('y2', '570')
+        .attr('y2', '565')
         .style("stroke-dasharray", "5,5")//dashed array for line 
         .style("stroke", "#222"); 
     pivotLines.append('line')
         .attr('x1', redPivot)
         .attr('y1', '35')
         .attr('x2', redPivot)
-        .attr('y2', '570')
+        .attr('y2', '565')
         .style("stroke-dasharray", "5,5")//dashed array for line 
       .style("stroke", "#EE504E"); 
 
@@ -301,26 +309,87 @@
 		// 	.attr("d",arrow_path)
     //   .attr("fill","#DCDCDC");
     
+    let legendGray = 35;
+    let legendRed = 78;
+    let legendBlue =78;
+    let legendHeight = 20;
+
+    function drawRightLeg(svg, height){
+      let trendLegend = svg.append("g");
+
+      // gray
+      trendLegend.append("rect")
+        .attr("x", rightAsidePivotFromLeft - legendGray) 
+        .attr("y", height)
+        .attr("width", 2 * legendGray)
+        .attr("height",legendHeight)
+        .attr("fill","#b2b2b2");
+
+      // red
+      trendLegend.append("rect")
+        .attr("x", rightAsidePivotFromLeft + legendGray) 
+        .attr("y", height)
+        .attr("width", legendRed)
+        .attr("height",legendHeight)
+        .attr("fill","#f1706f");
+      // red triangle
+      trendLegend.append("polygon")
+        .attr("points", `${rightAsidePivotFromLeft + legendGray + legendRed},${height} ${rightAsidePivotFromLeft + legendGray + legendRed},${height+legendHeight} ${rightAsidePivotFromLeft + legendGray + legendRed+10},${height+10}`)
+        .attr("fill", '#f1706f')
+
+      // blue
+      trendLegend.append("rect")
+        .attr("x", rightAsidePivotFromLeft - legendGray - legendBlue) 
+        .attr("y", height)
+        .attr("width", legendBlue)
+        .attr("height", legendHeight)
+        .attr("fill","#76a6ca");
+      // blue triangle
+      trendLegend.append("polygon")
+        .attr("points", `${rightAsidePivotFromLeft - legendGray - legendBlue - legendHeight/2},${height+legendHeight/2} ${rightAsidePivotFromLeft - legendGray - legendBlue},${height} ${rightAsidePivotFromLeft - legendGray - legendBlue},${height+legendHeight}`)
+        .attr("fill", '#76a6ca')
+
+      // 文字
+      trendLegend.append("text")
+        .attr("x",rightAsidePivotFromLeft)
+        .attr("y",height + legendHeight/2 + 5)
+        .text("中立")
+        .attr("class", "label-legend")
+        // .attr("text-anchor","middle")
+        .attr("fill","#fff")
+      trendLegend.append("text")
+        .attr("x", rightAsidePivotFromLeft - legendGray - legendBlue + 30)
+        .attr("y",height + legendHeight/2 + 5)
+        .text("更倾向留欧")
+        .attr("class", "label-legend")
+        .attr("fill","#fff")
+      trendLegend.append("text")
+        .attr("x",rightAsidePivotFromLeft + legendGray + legendRed - 30)
+        .attr("y",height + legendHeight/2 + 5)
+        .text("更倾向脱欧")
+        .attr("class", "label-legend")
+        .attr("fill","#fff")
+    }
     // // 绘制线段加箭头的函数
     // function drawLegend(svg, height){
     //   let trendLegend = svg.append("g");
 
-    //   trendLegend.append("line")
-		// 	  .attr("x1", rightAsidePivotFromLeft)
-		// 	  .attr("y1",height)
-		// 	  .attr("x2", redPivot - 11)
-		// 	  .attr("y2",height)
-		// 	  .attr("stroke","#DCDCDC")
-		// 	  .attr("stroke-width",2)
-    //     .attr("marker-end","url(#arrow)");
-    //   trendLegend.append("line")
-		// 	  .attr("x1", rightAsidePivotFromLeft)
-		// 	  .attr("y1",height)
-		// 	  .attr("x2", bluePivot + 11)
-		// 	  .attr("y2",height)
-		// 	  .attr("stroke","#DCDCDC")
-		// 	  .attr("stroke-width",2)
-    //     .attr("marker-end","url(#arrow)");
+      // trendLegend.append("line")
+			//   .attr("x1", rightAsidePivotFromLeft)
+			//   .attr("y1",height)
+			//   .attr("x2", redPivot - 11)
+			//   .attr("y2",height)
+			//   .attr("stroke","#DCDCDC")
+			//   .attr("stroke-width",2)
+      //   .attr("marker-end","url(#arrow)");
+      // trendLegend.append("line")
+			//   .attr("x1", rightAsidePivotFromLeft)
+			//   .attr("y1",height)
+			//   .attr("x2", bluePivot + 11)
+			//   .attr("y2",height)
+			//   .attr("stroke","#DCDCDC")
+			//   .attr("stroke-width",2)
+      //   .attr("marker-end","url(#arrow)");
 
     //   trendLegend.append("circle")
     //     .attr("cx", rightAsidePivotFromLeft)
@@ -370,6 +439,8 @@
     // drawLegendText(rightAsideSvg, 10);
     // drawLegend(rightAsideSvg, 570);
     // drawLegendText(rightAsideSvg, 592);
+    drawRightLeg(rightAsideSvg, 12);
+    drawRightLeg(rightAsideSvg, 565);
     createAsidePanel(labelSet2, 'labelSet2');
     createAsidePanel(labelSet1, 'labelSet1');
     createAsidePanel(labelSet0, 'labelSet0');
@@ -518,9 +589,12 @@
 
     let checkboxs = d3.selectAll("div.labelRow input");
     let checkAll = d3.selectAll("input.input-all");
+    let checkboxLabels = d3.selectAll("div.labelRow label");
 
     // 绑定监听
     checkboxs.on("change", checkedHandler);
+    // 监听checkbox后面的label
+    checkboxLabels.on("mouseover", labelHoverHandler);
     checkAll.on("change", checkedAllHandler);
     button.on("click", buttonClickedHandler);
     slider.on("click", sliderClickedHandler);
@@ -683,6 +757,16 @@
     function verTextPosition(text) {
       text.attr("transform", d => `translate(${x(d.forward + 1) + margin.left}, ${y.range()[0] + margin.top})`)
         .text(d => parseInt(d.forward) + 1);
+    }
+
+    function labelHoverHandler(){
+      let hoveredLabel = d3.select(this).attr("id");
+      let realLabel = hoveredLabel.replace("label-","");
+      let selectedLabel = getSelectedLabel();
+
+      if(selectedLabel.indexOf(realLabel)!==-1){
+        console.log("success");
+      }
     }
 
     function checkedHandler() {
