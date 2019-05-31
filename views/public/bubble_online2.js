@@ -7,7 +7,7 @@
   // var svgWidth = document.getElementById('chartAside').clientWidth;
   // var svgHeight = svgWidth*0.6>700? 700: svgWidth*0.6;
   var svgWidth = 850;
-  var svgHeight = 750;
+  var svgHeight = 690;
 
   var width=svgWidth - margin.left - margin.right;
   var height=svgHeight - margin.top - margin.bottom;
@@ -69,7 +69,7 @@
     
   // axises
   var xAxis = d3.axisBottom(x)
-                .tickSize(-height-100)
+                .tickSize(-height + 5)
                 .tickValues([50, 100, 200, 300, 400, 800, 1800, 2900]);
                 // .tickValues([50, 200, 400, 800, 1200, 1600, 2000, 2900]);
                 // .tickValues([60, 200, 400, 800, 1600, 2000, 2400, 2900]);
@@ -255,7 +255,7 @@
     let rightAsideSvg = d3.select("#rightAside").append('svg')
         .attr("class", "aside")
         .style("position", "absolute")
-        .style('height', height)
+        .style('height', svgHeight)
       // 与rightAside保持一致吧  
         .style('width', '410')
         .style('z-index',-100)
@@ -265,21 +265,21 @@
         .attr('x1', bluePivot)
         .attr('y1', '35')
         .attr('x2', bluePivot)
-        .attr('y2', height)
+        .attr('y2', svgHeight -50)
         .style("stroke-dasharray", "5,5")//dashed array for line 
       .style("stroke", "#3179AE"); 
     pivotLines.append('line')
         .attr('x1', rightAsidePivotFromLeft)
         .attr('y1', '35')
         .attr('x2', rightAsidePivotFromLeft)
-      .attr('y2', height)
+      .attr('y2', svgHeight - 50)
         .style("stroke-dasharray", "5,5")//dashed array for line 
         .style("stroke", "#222"); 
     pivotLines.append('line')
         .attr('x1', redPivot)
         .attr('y1', '35')
         .attr('x2', redPivot)
-      .attr('y2', height)
+      .attr('y2', svgHeight - 50)
         .style("stroke-dasharray", "5,5")//dashed array for line 
       .style("stroke", "#EE504E"); 
 
@@ -433,7 +433,7 @@
     // drawLegend(rightAsideSvg, 570);
     // drawLegendText(rightAsideSvg, 592);
     drawRightLeg(rightAsideSvg, 12);
-    drawRightLeg(rightAsideSvg, 635);
+    drawRightLeg(rightAsideSvg, svgHeight - 40);
     createAsidePanel(labelSet2, 'labelSet2');
     createAsidePanel(labelSet1, 'labelSet1');
     createAsidePanel(labelSet0, 'labelSet0');
@@ -770,9 +770,9 @@
         d3.select(`#lifeCycleRow-${label}`)
           .style("display", "block");
 
-        d3.select(".header")
-          .style("outline-color", "#909099")
-          .html(`${twitterChinese[label]}(#${twitterEnglish[label]}): ${en2ch[label]}`);
+        // d3.select(".header")
+        //   .style("outline-color", "#909099")
+        //   .html(`${twitterChinese[label]}(#${twitterEnglish[label]}): ${en2ch[label]}`);
 
         if (selectedLabel.length === labelSet.length) {
           d3.select("input.input-all")
@@ -929,11 +929,11 @@
 
       updateMask(selectedLabel);
 
-      if (selectedLabel.length === 0) {
-        d3.select(".header")
-          .style("outline-color", "#909099")
-          .html(`${twitterChinese[label]}(#${twitterEnglish[label]}): ${en2ch[label]}`);
-      }
+      // if (selectedLabel.length === 0) {
+      //   d3.select(".header")
+      //     .style("outline-color", "#909099")
+      //     .html(`${twitterChinese[label]}(#${twitterEnglish[label]}): ${en2ch[label]}`);
+      // }
 
       if (!buttonPlay) {
         d3.selectAll(".cursor")
@@ -1166,7 +1166,8 @@
       let aside = d3.select("#rightAside")
         .append("div")
         .attr("class", "aside")
-        .style('height',svgHeight/3 +'px')
+        .style('height', height / 3)
+      // 这句下面还有一句
       // document.querySelector("div#aside").style.width = `${asideWidth}px`;
       // document.querySelector("div#aside").style.height = `${anchor.attr("cy")}px`;
       // document.querySelector("div#aside").style.margin = `${margin.top}px 0 ${svgHeight - anchor.attr("cy")}px 0`;
@@ -1176,7 +1177,7 @@
       let eleOfLabelRow = aside.append("div")
         .attr("class", "eleOfLabelRow")
         .attr('id',idName+'Rows')
-        .style('height',svgHeight/3-30+'px')
+        .style('height', height/3 - 25 + 'px')
         .style("max-height", `${2 * anchor.attr("cy") - lineHeight - svgHeight}px`);
 
       let eleOfAll = eleOfAllNnone.append("div")
@@ -1523,7 +1524,8 @@
             .attr("id", `pastCircle-${label}-${date}`)
             .attr("cx", cx)
             .attr("cy", cy)
-            .attr("r", radius)
+            .attr("r", 2)
+            .attr("mask", 'url(#mainMask)')
             .style("fill", fill)
             .style("stroke", fill)
             .classed("disabled", true)
@@ -1581,9 +1583,21 @@
       });
     }
 
-    svg.append('image')
+
+    let headSvg = d3.select(".header")
+      .append('svg')
+      .attr('width',700)
+      .style("position", "absolute")
+    
+    headSvg.append('text') 
+      .attr("transform",
+        "translate(" + 0 + " ," + 40 + ")")
+      .text('脱欧话题动态')
+      .style("font-size", "40px")
+    
+    headSvg.append('image')
       .attr('xlink:href', 'public/left_legend_2.svg')
-      .attr('x', 570)
+      .attr('x', 450)
       .attr('y', 0)
       // .attr('width', 400)
       .attr('height', 60)
@@ -1606,15 +1620,17 @@
         return;
       }
       // else we filter elements by currentDate
-      // targetPastCircle["ele"].selectAll("circle")
-      //   .filter(function() {
-      //     return d3.select(this).attr("id").split("-")[2] < date;
-      //   })
-      //   .classed("disabled", false);
+      // 是展示轨迹点吗?
+      targetPastCircle["ele"].selectAll("circle")
+        .filter(function() {
+          return d3.select(this).attr("id").split("-")[2] < date;
+        })
+        .classed("disabled", false);
 
       targetPastCircle["ele"].selectAll("circle")
         .filter(function() {
-          return true;
+          // return true;
+          return d3.select(this).attr("id").split("-")[2] >= date;
         })
         .classed("disabled", true);
 
