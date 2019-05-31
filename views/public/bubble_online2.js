@@ -444,6 +444,12 @@
     createAsidePanel(labelSet2, 'labelSet2');
     createAsidePanel(labelSet1, 'labelSet1');
     createAsidePanel(labelSet0, 'labelSet0');
+    tippy('.forTooltip',{
+      placement: 'right', 
+      arrow: true,
+      animation: 'shift-toward',
+      theme: 'tomato'
+    });
     
     createDownsidePanel(labelSet0.concat(labelSet1,labelSet2));
 
@@ -1276,10 +1282,10 @@
       rowslabel.append("label")
         .attr("id", d => `label-${d}`)
         .attr("for", d => `input-${d}`)
+        .attr('class', 'forTooltip')
+        .attr('data-tippy-content',d=>`${twitterChinese[d]}(#${twitterEnglish[d]}): ${en2ch[d]}`)
         .html(d => `${twitterText[d]}`);
     
-
-
 
       // document.querySelector("div#eleOfLabelRow").style.height = svgHeight/3 - 20 + 'px';
     }

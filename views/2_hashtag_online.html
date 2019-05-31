@@ -622,6 +622,28 @@
         font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
       }
 
+      .tippy-popper{
+        max-width: 250px;
+      }
+
+      .tippy-tooltip.tomato-theme[x-placement^='right'] .tippy-arrow {
+        border-right-color: rgba(200,200,200,0.6);
+      }
+      .tippy-tooltip.tomato-theme {
+        background-color: rgba(200,200,200,0.6);
+        color: #000000;
+        text-align:justify;
+        font-family: 'KaiTi','BiauKai', "Helvetica Neue", Helvetica, Arial, sans-serif;
+      }
+
+      .tippy-tooltip.tomato-theme[data-animatefill] {
+        background-color: transparent;
+      }
+
+      .tippy-tooltip.tomato-theme .tippy-backdrop {
+        background-color: #efefef;
+      }
+
     </style>
   </head>
 
@@ -640,6 +662,8 @@
     </div>
     <script src="public/d3.min.js"></script>
     <script src="public/labeler.js"></script>
+    <script src="public/popper.min.js"></script>
+    <script src="public/tippy.js"></script>
     <script src="public/bubble_online2.js"></script>
   </body>
 </html>
