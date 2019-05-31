@@ -7,7 +7,7 @@
   // var svgWidth = document.getElementById('chartAside').clientWidth;
   // var svgHeight = svgWidth*0.6>700? 700: svgWidth*0.6;
   var svgWidth = 850;
-  var svgHeight = 550;
+  var svgHeight = 750;
 
   var width=svgWidth - margin.left - margin.right;
   var height=svgHeight - margin.top - margin.bottom;
@@ -17,13 +17,6 @@
             .attr('width', svgWidth)
             .attr('height', svgHeight);
 
-  // 左边圆大小的编码
-  svg.append('image')
-    .attr('xlink:href','public/left_legend_2.svg')
-    .attr('x', 570)
-    .attr('y',0)
-    // .attr('width', 400)
-    .attr('height', 60)
 
   // scale
   var y = d3.scaleLinear()
@@ -76,7 +69,7 @@
     
   // axises
   var xAxis = d3.axisBottom(x)
-                .tickSize(-height)
+                .tickSize(-height-100)
                 .tickValues([50, 100, 200, 300, 400, 800, 1800, 2900]);
                 // .tickValues([50, 200, 400, 800, 1200, 1600, 2000, 2900]);
                 // .tickValues([60, 200, 400, 800, 1600, 2000, 2400, 2900]);
@@ -262,7 +255,7 @@
     let rightAsideSvg = d3.select("#rightAside").append('svg')
         .attr("class", "aside")
         .style("position", "absolute")
-        .style('height', '595')
+        .style('height', height)
       // 与rightAside保持一致吧  
         .style('width', '410')
         .style('z-index',-100)
@@ -272,21 +265,21 @@
         .attr('x1', bluePivot)
         .attr('y1', '35')
         .attr('x2', bluePivot)
-        .attr('y2', '565')
+        .attr('y2', height)
         .style("stroke-dasharray", "5,5")//dashed array for line 
       .style("stroke", "#3179AE"); 
     pivotLines.append('line')
         .attr('x1', rightAsidePivotFromLeft)
         .attr('y1', '35')
         .attr('x2', rightAsidePivotFromLeft)
-        .attr('y2', '565')
+      .attr('y2', height)
         .style("stroke-dasharray", "5,5")//dashed array for line 
         .style("stroke", "#222"); 
     pivotLines.append('line')
         .attr('x1', redPivot)
         .attr('y1', '35')
         .attr('x2', redPivot)
-        .attr('y2', '565')
+      .attr('y2', height)
         .style("stroke-dasharray", "5,5")//dashed array for line 
       .style("stroke", "#EE504E"); 
 
@@ -440,7 +433,7 @@
     // drawLegend(rightAsideSvg, 570);
     // drawLegendText(rightAsideSvg, 592);
     drawRightLeg(rightAsideSvg, 12);
-    drawRightLeg(rightAsideSvg, 565);
+    drawRightLeg(rightAsideSvg, 635);
     createAsidePanel(labelSet2, 'labelSet2');
     createAsidePanel(labelSet1, 'labelSet1');
     createAsidePanel(labelSet0, 'labelSet0');
@@ -1173,7 +1166,7 @@
       let aside = d3.select("#rightAside")
         .append("div")
         .attr("class", "aside")
-        .style('height',svgHeight/3+'px')
+        .style('height',svgHeight/3 +'px')
       // document.querySelector("div#aside").style.width = `${asideWidth}px`;
       // document.querySelector("div#aside").style.height = `${anchor.attr("cy")}px`;
       // document.querySelector("div#aside").style.margin = `${margin.top}px 0 ${svgHeight - anchor.attr("cy")}px 0`;
@@ -1278,6 +1271,7 @@
       // document.querySelector("div#eleOfLabelRow").style.height = svgHeight/3 - 20 + 'px';
     }
 
+    // 左边圆大小的编码
     function createDownsidePanel(labelSet) {
       let downsideBlockHeight = 130;
       let downsideTitleHeight = 30;
@@ -1586,6 +1580,13 @@
         }
       });
     }
+
+    svg.append('image')
+      .attr('xlink:href', 'public/left_legend_2.svg')
+      .attr('x', 570)
+      .attr('y', 0)
+      // .attr('width', 400)
+      .attr('height', 60)
 
     function updatePast(selector, currentDate, reRenderLine = false) {
       let label = selector.attr("name");
