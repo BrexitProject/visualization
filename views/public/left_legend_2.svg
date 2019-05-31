@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 19.2.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="图层_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 354.3 88.7" style="enable-background:new 0 0 354.3 88.7;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-miterlimit:8;}
+	.st1{font-family:'KaiTi';}
+	.st2{font-size:17px;}
+	.st3{fill:#739FC2;}
+	.st4{font-size:18px;}
+	.st5{fill:#E46E6C;}
+	.st6{fill:#B2B2B2;}
+	.st7{fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:8;}
+</style>
+<g>
+	<circle class="st0" cx="42.1" cy="42.6" r="12.8"/>
+	<circle class="st0" cx="154.5" cy="30.7" r="24.6"/>
+	<line class="st0" x1="42.1" y1="55.4" x2="155.5" y2="55.4"/>
+	<line class="st0" x1="40.7" y1="29.8" x2="149.1" y2="6.6"/>
+</g>
+<text transform="matrix(1 0 0 1 4.6668 80.7766)" class="st1 st2">倾向性低</text>
+<text transform="matrix(1 0 0 1 124.6668 80.7766)" class="st1 st2">倾向性高</text>
+<g>
+	<circle class="st3" cx="224.9" cy="38.5" r="17.1"/>
+	<text transform="matrix(1 0 0 1 208.3408 81.2174)" class="st1 st4">留欧</text>
+</g>
+<g>
+	<circle class="st5" cx="326.6" cy="38.5" r="17.1"/>
+	<text transform="matrix(1 0 0 1 310.1427 80.8792)" class="st1 st2">脱欧</text>
+</g>
+<g>
+	<circle class="st6" cx="276" cy="38.5" r="17.1"/>
+	<text transform="matrix(1 0 0 1 259.9923 80.8792)" class="st1 st2">中立</text>
+</g>
+<path class="st7" d="M345.3,85.3H8.7c-3.5,0-6.3-2.8-6.3-6.3V8.3C2.3,4.8,5.2,2,8.7,2h336.7c3.5,0,6.3,2.8,6.3,6.3V79
+	C351.7,82.5,348.8,85.3,345.3,85.3z"/>
+</svg>
