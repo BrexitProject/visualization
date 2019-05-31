@@ -19,11 +19,11 @@
 
   // 左边圆大小的编码
   svg.append('image')
-    .attr('xlink:href','public/left_legend.svg')
-    .attr('x', 640)
+    .attr('xlink:href','public/left_legend_2.svg')
+    .attr('x', 570)
     .attr('y',0)
-    .attr('width', 180)
-    .attr('height', 180)
+    // .attr('width', 400)
+    .attr('height', 60)
 
   // scale
   var y = d3.scaleLinear()
@@ -599,8 +599,6 @@
 
     // 绑定监听
     checkboxs.on("change", checkedHandler);
-    // 监听checkbox后面的label
-    checkboxLabels.on("mouseover", labelHoverHandler);
     checkAll.on("change", checkedAllHandler);
     button.on("click", buttonClickedHandler);
     slider.on("click", sliderClickedHandler);
@@ -763,16 +761,6 @@
     function verTextPosition(text) {
       text.attr("transform", d => `translate(${x(d.forward + 1) + margin.left}, ${y.range()[0] + margin.top})`)
         .text(d => parseInt(d.forward) + 1);
-    }
-
-    function labelHoverHandler(){
-      let hoveredLabel = d3.select(this).attr("id");
-      let realLabel = hoveredLabel.replace("label-","");
-      let selectedLabel = getSelectedLabel();
-
-      if(selectedLabel.indexOf(realLabel)!==-1){
-        console.log("success");
-      }
     }
 
     function checkedHandler() {
