@@ -1048,36 +1048,36 @@
     }
 
     function updateShowupText(year, dataset, showupText, showupLifeCycle) {
-      if (getSelectedLabel().length === 0) {
-        // let formatter = d3.timeFormat("%Y-%m-%d");
-        // let trueText = Object.keys(showupLifeCycle).filter(key => {
-        //   let cycle = showupLifeCycle[key];
-        //   for (let timestamp of cycle) {
-        //     if (formatter(timestamp[0]) === formatter(year)) {
-        //       return true;
-        //     }
-        //   }
-        //   return false;
-        // });
+      // if (getSelectedLabel().length === 0) {
+      //   // let formatter = d3.timeFormat("%Y-%m-%d");
+      //   // let trueText = Object.keys(showupLifeCycle).filter(key => {
+      //   //   let cycle = showupLifeCycle[key];
+      //   //   for (let timestamp of cycle) {
+      //   //     if (formatter(timestamp[0]) === formatter(year)) {
+      //   //       return true;
+      //   //     }
+      //   //   }
+      //   //   return false;
+      //   // });
 
-        // console.log(trueText);
+      //   // console.log(trueText);
 
-        showupText.data(dataset)
-          .attr("transform", d => `translate(${x(d.forward + 1)+margin.left}, ${y(d.freq + 1)+margin.top})`)
-          // .filter(d => trueText.findIndex(text => text === d.label.slice(1)) >= 0 || (d.forward + 1 >= 800 || d.freq + 1 >= 50000))
-          .style('opacity',function(d){
-            if(d.forward>50&&d.freq>1400){
-              return 1;
-            }else{
-              return 0;
-            }
-          })
-          .filter(isVisible)
-          .style("fill-opacity", 1)
-          .transition()
-          .duration(1000)
-          .style("fill-opacity", 0.1);
-      }
+      //   showupText.data(dataset)
+      //     .attr("transform", d => `translate(${x(d.forward + 1)+margin.left}, ${y(d.freq + 1)+margin.top})`)
+      //     // .filter(d => trueText.findIndex(text => text === d.label.slice(1)) >= 0 || (d.forward + 1 >= 800 || d.freq + 1 >= 50000))
+      //     .style('opacity',function(d){
+      //       if(d.forward>50&&d.freq>1400){
+      //         return 1;
+      //       }else{
+      //         return 0;
+      //       }
+      //     })
+      //     .filter(isVisible)
+      //     .style("fill-opacity", 1)
+      //     .transition()
+      //     .duration(1000)
+      //     .style("fill-opacity", 0.1);
+      // }
     }
 
     function updateTraj(currentDate) {
@@ -1504,8 +1504,8 @@
             .attr("class", "pastTime")
             .classed(`pastTime-${label}`, true)
             .attr("id", `pastTime-${label}-${date}`)
-            .attr("x", cx)
-            .attr("y", cy - radius)
+            .attr("x", ()=>{return cx>=30?cx-10:cx+5})
+            .attr("y", cy - 6)
             .text(() => {
               let year = currentDate.getFullYear();
               let month = currentDate.getMonth();
@@ -1587,6 +1587,7 @@
     let headSvg = d3.select(".header")
       .append('svg')
       .attr('width',700)
+      .attr('height',60)
       .style("position", "absolute")
     
     headSvg.append('text') 
