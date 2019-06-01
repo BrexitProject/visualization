@@ -1504,7 +1504,7 @@
             .attr("class", "pastTime")
             .classed(`pastTime-${label}`, true)
             .attr("id", `pastTime-${label}-${date}`)
-            .attr("x", ()=>{return cx>=30?cx-10:cx+10})
+            .attr("x", ()=>{return cx>=30?cx-10:cx+16})
             .attr("y", cy - 6)
             .text(() => {
               let year = currentDate.getFullYear();
