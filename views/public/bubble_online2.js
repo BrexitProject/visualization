@@ -85,6 +85,27 @@
   let buttonPlay = true;
   let videoYOffset = 30;
   let buttonXOffset = -15;
+
+  function createGlow(){
+    let glow = svg.append('defs')
+                .append('filter')
+                .attr('id','glow');
+    glow.append('feGaussianBlur')
+      .attr('class','blur')
+      .attr('result','coloredBlur')
+      .attr('stdDeviation','4');
+    let femerge = glow.append('feMerge');
+    femerge.append('feMergeNode')
+      .attr('in','coloredBlur');
+    femerge.append('feMergeNode')
+      .attr('in','coloredBlur');
+    femerge.append('feMergeNode')
+      .attr('in','coloredBlur');
+    femerge.append('feMergeNode')
+      .attr('in','SourceGraphic');
+  }
+  createGlow();
+
   function createMaskSvg(){
     let mask = svg.append('defs')
                 .append('mask')
@@ -1504,7 +1525,9 @@
             .attr("class", "pastTime")
             .classed(`pastTime-${label}`, true)
             .attr("id", `pastTime-${label}-${date}`)
-            .attr("x", ()=>{return cx>=30?cx-10:cx+25})
+            .attr("x", ()=>{
+              return cx>=30?cx-10:cx+25
+            })
             .attr("y", cy - 6)
             .text(() => {
               let year = currentDate.getFullYear();
@@ -1559,7 +1582,11 @@
             .attr("x2", cx + radius)
             .attr("y2", cy + radius)
             .style("stroke", fill)
-            .attr('mask','url(#mainMask)');
+            // .style("fill-opacity",0)
+            // .style("stroke-width", )
+            .attr('mask','url(#mainMask)')
+            .style('filter','url(#glow)');
+
           targetPastLine["eleMotion"].append("line")
             .attr("class", "pastLineMotion")
             .classed("disabled", true)
@@ -1569,6 +1596,7 @@
             .attr("x2", cx + radius)
             .attr("y2", cy + radius)
             .style("stroke", fill)
+            .style('filter','url(#glow)')
             .attr('mask','url(#mainMask)');
 
           targetPastCircle["data"].push({
