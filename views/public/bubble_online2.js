@@ -708,10 +708,11 @@
     let timeline = generateTimeline(dataArray);
 
     // let pastTimeline = initSelectionTimeline(labelSet);
-    let pastCircle = initSelectionPastCircle(labelSet);
+        
+    // 交换顺序
     let pastLine = initSelectionPastLine(labelSet);
+    let pastCircle = initSelectionPastCircle(labelSet);
 
-    // pre-calculate path of all hashtag
     preCalcSelectionPast(labelSet, timeline);
 
     let timer = svg
@@ -1768,72 +1769,6 @@
           let fill = color(data.trend);
           let date = d3.timeFormat("%Y%m%d%H")(currentDate);
 
-          targetPastCircle["ele"]
-            .append("text")
-            .attr("class", "pastTime")
-            .classed(`pastTime-${label}`, true)
-            .attr("id", `pastTime-${label}-${date}`)
-            .attr("x", () => {
-              return cx >= 30 ? cx - 10 : cx + 25;
-            })
-            .attr("y", cy - 6)
-            .text(() => {
-              let year = currentDate.getFullYear();
-              let month = currentDate.getMonth();
-              if (month === 0) {
-                month = 11;
-                year -= 1;
-              } else {
-                month -= 1;
-              }
-              let text = d3.timeFormat("%Y.%m.%d")(new Date(year, month));
-              return text.slice(0, 7);
-            })
-            .style("display", "none");
-          targetPastCircle["ele"]
-            .append("circle")
-            .attr("class", "pastCircle")
-            .attr("id", `pastCircle-${label}-${date}`)
-            .attr("cx", cx)
-            .attr("cy", cy)
-            .attr("r", 2)
-            .attr("mask", "url(#mainMask)")
-            .style("fill", fill)
-            .style("stroke", fill)
-            .classed("disabled", true)
-            .on("mouseover", function() {
-              d3.select(
-                `#pastTime-${label}-${
-                  d3
-                    .select(this)
-                    .attr("id")
-                    .split("-")[2]
-                }`
-              ).style("display", "block");
-            })
-            .on("mouseout", function() {
-              d3.select(
-                `#pastTime-${label}-${
-                  d3
-                    .select(this)
-                    .attr("id")
-                    .split("-")[2]
-                }`
-              ).style("display", "none");
-            });
-
-          // 测试改成rect的更新
-          // if (targetPastLine["data"].length > 0) {
-          //   let length = targetPastLine["data"].length;
-          //   let prevData = targetPastLine["data"][length - 1];
-          //   let prevDate = prevData["date"];
-          //   let prevLine = targetPastLine["ele"].select(`#pastLine-${label}-${prevData["date"]}`);
-          //   let lineCoord = computeCoord(prevData.cx, prevData.cy, prevData.r, cx, cy, radius);
-          //   prevLine.attr("x1", lineCoord.x1)
-          //       .attr("y1", lineCoord.y1)
-          //       .attr("x2", lineCoord.x2)
-          //       .attr("y2", lineCoord.y2);
-          // }
           if (targetPastLine["data"].length > 0) {
             let length = targetPastLine["data"].length;
             let prevData = targetPastLine["data"][length - 1];
@@ -1849,17 +1784,8 @@
               cy,
               radius
             );
-            // 若用rect的计算角度
-            // let rotateAngle = Math.atan2(lineCoord.x2 - lineCoord.x1, lineCoord.y2 - lineCoord.y1) * (180 / Math.PI);
-            // let lineLen = Math.sqrt((lineCoord.x2 - lineCoord.x1) * (lineCoord.x2 - lineCoord.x1) + (lineCoord.y2 - lineCoord.y1) * (lineCoord.y2 - lineCoord.y1));
-            // const rectHeight = 2
-            // prevLine.attr("x", lineCoord.x1)
-            //   .attr("y", lineCoord.y1 - rectHeight / 2)
-            //   .attr("width", lineLen)
-            //   .attr("height", rectHeight)
-            //   .attr("transform", "rotate(" + (90-rotateAngle) + "," + lineCoord.x1 + "," + lineCoord.y1 + ")")
 
-            // 改成用path的话
+            // 改成用path
             let lineLen = Math.sqrt(
               (lineCoord.x2 - lineCoord.x1) * (lineCoord.x2 - lineCoord.x1) +
                 (lineCoord.y2 - lineCoord.y1) * (lineCoord.y2 - lineCoord.y1)
@@ -1889,39 +1815,6 @@
               });
           }
 
-          // 测试改成rect，本来的line
-          // targetPastLine["ele"].append("line")
-          //   .attr("class", "pastLine")
-          //   .classed("disabled", true)
-          //   .attr("id", `pastLine-${label}-${date}`)
-          //   .attr("x1", cx + radius)
-          //   .attr("y1", cy + radius)
-          //   .attr("x2", cx + radius)
-          //   .attr("y2", cy + radius)
-          //   .style("stroke", fill)
-          //   // .style("fill-opacity",0)
-          //   // .style("stroke-width", 5)
-          //   .attr('mask','url(#mainMask)')
-          //   .style('filter','url(#glow)');
-
-          // 测试的rect
-          // targetPastLine["ele"].append("rect")
-          //   .attr("class", "pastLine")
-          //   .classed("disabled", true)
-          //   .attr("id", `pastLine-${label}-${date}`)
-          //   // .attr("x", cx + radius)
-          //   // .attr("y", cy + radius)
-          //   .attr("x", cx+radius)
-          //   .attr("y", cy+radius)
-          //   .attr("width", 0.1)
-          //   .attr("height", 2)
-          //   .attr('fill', 'orange')
-          //   // .style("fill-opacity",0)
-          //   .style("stroke-width", 0)
-          //   .attr('mask', 'url(#mainMask)')
-          //   .style('filter', 'url(#glow)');
-
-          // 测试改成path
           targetPastLine["ele"]
             .append("path")
             .attr("class", "pastLine")
@@ -1955,6 +1848,79 @@
             .style("stroke", fill)
             .style("filter", "url(#glow)")
             .attr("mask", "url(#mainMask)");
+          
+          targetPastCircle["ele"]
+            .append("text")
+            .attr("class", "pastTime")
+            .classed(`pastTime-${label}`, true)
+            .attr("id", `pastTime-${label}-${date}`)
+            .attr("x", () => {
+              return cx >= 30 ? cx - 10 : cx + 25;
+            })
+            .attr("y", cy - 6)
+            .text(() => {
+              let year = currentDate.getFullYear();
+              let month = currentDate.getMonth();
+              if (month === 0) {
+                month = 11;
+                year -= 1;
+              } else {
+                month -= 1;
+              }
+              let text = d3.timeFormat("%Y.%m.%d")(new Date(year, month));
+              return text.slice(0, 7);
+            })
+            .style("display", "none");
+          
+          targetPastCircle["ele"]
+            .append("circle")
+            .attr("class", "pastCircle")
+            .attr("id", `pastCircle-${label}-${date}`)
+            // .attr("data-tippy-content", 'testtestestesttest')
+            .attr("cx", cx)
+            .attr("cy", cy)
+            .attr("r", 2)
+            .attr("mask", "url(#mainMask)")
+            .style("fill", fill)
+            .style("stroke", fill)
+            .classed("disabled", true)
+            .on("mouseover", function () {
+              let tX = cx >= 30? cx - 10 : cx + 25;
+              let tY = cy - 6;
+              // add background first
+              svgChart.append("rect").attr("id", "tempTimeBack")
+                .attr("width", "72px")
+                .attr("height", "19px")
+                .attr("x", tX - 3)
+                .attr("y", tY - 16)
+                .attr("fill", "black")
+                .attr("opacity","0.5");
+
+              // add text
+              svgChart
+                .append("text")
+                .attr("transform", "translate(" + tX + " ," + tY + ")")
+                .attr("id", "tempTimeText")
+                .attr("fill", "white")
+                .text(() => {
+                  let year = currentDate.getFullYear();
+                  let month = currentDate.getMonth();
+                  if (month === 0) {
+                    month = 11;
+                    year -= 1;
+                  } else {
+                    month -= 1;
+                  }
+                  let text = d3.timeFormat("%Y.%m.%d")(
+                    new Date(year, month)
+                  );
+                  return text.slice(0, 7);
+                })
+                .style("font-size", "18px");
+            })
+            .on("mouseout", function() {
+              d3.selectAll("[id*=tempTime]").remove();
+            });
 
           targetPastCircle["data"].push({
             cx,
