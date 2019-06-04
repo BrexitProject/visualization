@@ -499,75 +499,7 @@
         .attr("class", "label-legend")
         .attr("fill", "#fff");
     }
-    // // 绘制线段加箭头的函数
-    // function drawLegend(svg, height){
-    //   let trendLegend = svg.append("g");
-
-    // trendLegend.append("line")
-    //   .attr("x1", rightAsidePivotFromLeft)
-    //   .attr("y1",height)
-    //   .attr("x2", redPivot - 11)
-    //   .attr("y2",height)
-    //   .attr("stroke","#DCDCDC")
-    //   .attr("stroke-width",2)
-    //   .attr("marker-end","url(#arrow)");
-    // trendLegend.append("line")
-    //   .attr("x1", rightAsidePivotFromLeft)
-    //   .attr("y1",height)
-    //   .attr("x2", bluePivot + 11)
-    //   .attr("y2",height)
-    //   .attr("stroke","#DCDCDC")
-    //   .attr("stroke-width",2)
-    //   .attr("marker-end","url(#arrow)");
-
-    //   trendLegend.append("circle")
-    //     .attr("cx", rightAsidePivotFromLeft)
-    //     .attr("cy",height)
-    //     .attr("r",8)
-    //     .attr("fill","#b2b2b2")
-    //     .style("fill-opacity", 1.0)
-    //   trendLegend.append("circle")
-    //     .attr("cx",bluePivot)
-    //     .attr("cy",height)
-    //     .attr("r",8)
-    //     .attr("fill","#76a6ca")
-    //     .style("fill-opacity", 1.0)
-    //   trendLegend.append("circle")
-    //     .attr("cx",redPivot)
-    //     .attr("cy",height)
-    //     .attr("r",8)
-    //     .attr("fill","#f1706f")
-    //     .style("fill-opacity", 1.0)
-    // }
-
-    // 原本箭头上的文字
-    // function drawLegendText(svg, height){
-    //   let trendLegendText = svg.append("g");
-    //   trendLegendText.append("text")
-    //     .attr("x",rightAsidePivotFromLeft)
-    //     .attr("y",height)
-    //     .text("中立")
-    //     .attr("class", "label-legend")
-    //     // .attr("text-anchor","middle")
-    //     .attr("fill","#000")
-    //   trendLegendText.append("text")
-    //     .attr("x",bluePivot)
-    //     .attr("y",height)
-    //     .text("更倾向留欧")
-    //     .attr("class", "label-legend")
-    //     .attr("fill","#000")
-    //   trendLegendText.append("text")
-    //     .attr("x",redPivot)
-    //     .attr("y",height)
-    //     .text("更倾向脱欧")
-    //     .attr("class", "label-legend")
-    //     .attr("fill","#000")
-    // }
-
-    // drawLegend(rightAsideSvg, 25);
-    // drawLegendText(rightAsideSvg, 10);
-    // drawLegend(rightAsideSvg, 570);
-    // drawLegendText(rightAsideSvg, 592);
+   
     drawRightLeg(rightAsideSvg, 12);
     drawRightLeg(rightAsideSvg, svgHeight - 40);
     createAsidePanel(labelSet2, "labelSet2");
@@ -1415,28 +1347,6 @@
         .attr("for", idName + "all")
         .html(lang === "ch" ? "全选" : "all");
 
-      // 加灰条的表格头, 只加在最上面
-      // if (idName.substr(idName.length - 1, 1) === '2') {
-      //   eleOfAll.append('span')
-      //     .text('趋势')
-      //     .attr("class", "label-all")
-      //     .style("display", "inline-block")
-      //     .style("transform", 'translate(100px)')
-      // }
-
-      // eleOfAll.append('span')
-      //   .attr('class','typeName')
-      //   .text(()=>{
-      //     let type = idName.substr(idName.length-1,1);
-      //     if(type==='0'){
-      //       return '留欧';
-      //     }else if(type==='1'){
-      //       return '中立';
-      //     }else{
-      //       return '脱欧';
-      //     }
-      //   })
-
       let rows = eleOfLabelRow
         .selectAll(".labelRow")
         .data(labelSet)
@@ -1478,11 +1388,6 @@
           if (category(trendMap.get(d)) === "1") return "#b2b2b2";
           if (category(trendMap.get(d)) === "0") return "#76a6ca";
         });
-      // 提示趋势程度的数字
-      // .append("span")
-      // .text(d => d3.format('.3f')(trendTransform(trendMap.get(d))))
-      // .style("display", "inline-block")
-      // .style("transform", d=>`translate(${trendScale(trendTransform(trendMap.get(d)))}px)`)
 
       let rowslabel = rows.append("div").attr("class", "textLabelRow");
       rowslabel
@@ -1849,28 +1754,28 @@
             .style("filter", "url(#glow)")
             .attr("mask", "url(#mainMask)");
           
-          targetPastCircle["ele"]
-            .append("text")
-            .attr("class", "pastTime")
-            .classed(`pastTime-${label}`, true)
-            .attr("id", `pastTime-${label}-${date}`)
-            .attr("x", () => {
-              return cx >= 30 ? cx - 10 : cx + 25;
-            })
-            .attr("y", cy - 6)
-            .text(() => {
-              let year = currentDate.getFullYear();
-              let month = currentDate.getMonth();
-              if (month === 0) {
-                month = 11;
-                year -= 1;
-              } else {
-                month -= 1;
-              }
-              let text = d3.timeFormat("%Y.%m.%d")(new Date(year, month));
-              return text.slice(0, 7);
-            })
-            .style("display", "none");
+          // targetPastCircle["ele"]
+          //   .append("text")
+          //   .attr("class", "pastTime")
+          //   .classed(`pastTime-${label}`, true)
+          //   .attr("id", `pastTime-${label}-${date}`)
+          //   .attr("x", () => {
+          //     return cx >= 30 ? cx - 10 : cx + 25;
+          //   })
+          //   .attr("y", cy - 6)
+          //   .text(() => {
+          //     let year = currentDate.getFullYear();
+          //     let month = currentDate.getMonth();
+          //     if (month === 0) {
+          //       month = 11;
+          //       year -= 1;
+          //     } else {
+          //       month -= 1;
+          //     }
+          //     let text = d3.timeFormat("%Y.%m.%d")(new Date(year, month));
+          //     return text.slice(0, 7);
+          //   })
+          //   .style("display", "none");
           
           targetPastCircle["ele"]
             .append("circle")
@@ -1887,14 +1792,20 @@
             .on("mouseover", function () {
               let tX = cx >= 30? cx - 10 : cx + 25;
               let tY = cy - 6;
+              let backgroundPadding = 5;
+              let fontSize = 13;
               // add background first
-              svgChart.append("rect").attr("id", "tempTimeBack")
-                .attr("width", "72px")
-                .attr("height", "19px")
-                .attr("x", tX - 3)
-                .attr("y", tY - 16)
+              svgChart
+                .append("rect")
+                .attr("id", "tempTimeBack")
+                .attr("width", 50+2*backgroundPadding+"px")
+                .attr("height", fontSize + 2*backgroundPadding + "px")
+                .attr("x", tX - backgroundPadding)
+                .attr("y", tY - backgroundPadding - fontSize + 1.5)
+                .attr("rx", 3)
+                .attr("ry", 3)
                 .attr("fill", "black")
-                .attr("opacity","0.5");
+                .attr("opacity", "0.5");
 
               // add text
               svgChart
@@ -1916,7 +1827,7 @@
                   );
                   return text.slice(0, 7);
                 })
-                .style("font-size", "18px");
+                .style("font-size", fontSize + "px");
             })
             .on("mouseout", function() {
               d3.selectAll("[id*=tempTime]").remove();
