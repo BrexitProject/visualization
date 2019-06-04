@@ -613,7 +613,8 @@
         return d.y;
       })
       .attr("data-label", d => d.label.slice(1))
-      .text("")
+      // 让圆上的主题的文字一直显示
+      .text(d=>twitterText[d.label.slice(1)])
       .style("text-anchor", "middle")
       .style("fill", function(d) {
         return "#242424";
@@ -688,12 +689,12 @@
         .on("drag", draggedHandler)
         .on("end", dragendedHandler)
     );
-    text.on("mouseover", mouseOverHandler);
-    text.on("mouseout", mouseOutHandler);
+    // text.on("mouseover", mouseOverHandler);
+    // text.on("mouseout", mouseOutHandler);
     // showupText.on("mouseover", mouseOverHandler);
     // showupText.on("mouseout", mouseOutHandler);
-    dot.on("mouseover", mouseOverHandler);
-    dot.on("mouseout", mouseOutHandler);
+    // dot.on("mouseover", mouseOverHandler);
+    // dot.on("mouseout", mouseOutHandler);
     document.onkeydown = keyDownHandler;
     document.onkeyup = keyUpHandler;
 
@@ -1781,7 +1782,6 @@
             .append("circle")
             .attr("class", "pastCircle")
             .attr("id", `pastCircle-${label}-${date}`)
-            // .attr("data-tippy-content", 'testtestestesttest')
             .attr("cx", cx)
             .attr("cy", cy)
             .attr("r", 2)
