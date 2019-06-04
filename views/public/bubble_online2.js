@@ -1297,13 +1297,13 @@
         //     return 0.1;
         //   }
         // })
-        // .style('opacity',function(d){
-        //   if(d.forward>50&&d.freq>1400){
-        //     return 1;
-        //   }else{
-        //     return 0.1;
-        //   }
-        // })
+        .style('opacity',function(d){
+          if(d.forward>50&&d.freq>2000){
+            return 1;
+          }else{
+            return 0;
+          }
+        })
         .style("display", function(d) {
           if (!isVisible(d)) {
             return "none";
