@@ -499,7 +499,7 @@
         .attr("class", "label-legend")
         .attr("fill", "#fff");
     }
-   
+
     drawRightLeg(rightAsideSvg, 12);
     drawRightLeg(rightAsideSvg, svgHeight - 40);
     createAsidePanel(labelSet2, "labelSet2");
@@ -614,7 +614,7 @@
       })
       .attr("data-label", d => d.label.slice(1))
       // 让圆上的主题的文字一直显示
-      .text(d=>twitterText[d.label.slice(1)])
+      .text(d => twitterText[d.label.slice(1)])
       .style("text-anchor", "middle")
       .style("fill", function(d) {
         return "#242424";
@@ -641,7 +641,7 @@
     let timeline = generateTimeline(dataArray);
 
     // let pastTimeline = initSelectionTimeline(labelSet);
-        
+
     // 交换顺序
     let pastLine = initSelectionPastLine(labelSet);
     let pastCircle = initSelectionPastCircle(labelSet);
@@ -1297,10 +1297,10 @@
         //     return 0.1;
         //   }
         // })
-        .style('opacity',function(d){
-          if(d.forward>50&&d.freq>2000){
+        .style("opacity", function(d) {
+          if (d.forward > 50 && d.freq > 2000) {
             return 1;
-          }else{
+          } else {
             return 0;
           }
         })
@@ -1502,15 +1502,24 @@
 
         d3.selectAll(".textLabel")
           .filter(function(d, i) {
-            return mouseoverDot === null || d.label.slice(1) !== mouseoverDot;
+            return (
+              mouseoverDot === null || d.label.slice(1) !== mouseoverDot
+            );
           })
-          .text("");
+          .text(d => twitterText[d.label.slice(1)]);
 
         d3.selectAll(".textLabel")
           .filter(function(d, i) {
             return mouseoverDot !== null && d.label.slice(1) === mouseoverDot;
           })
           .text(d => twitterText[d.label.slice(1)]);
+
+        d3.selectAll(".textLabel")
+          .filter(function(d, i) {
+            return mouseoverDot !== null && d.label.slice(1) !== mouseoverDot;
+          })
+          .text("");
+
         return;
       }
 
@@ -1754,7 +1763,7 @@
             .style("stroke", fill)
             .style("filter", "url(#glow)")
             .attr("mask", "url(#mainMask)");
-          
+
           // targetPastCircle["ele"]
           //   .append("text")
           //   .attr("class", "pastTime")
@@ -1777,7 +1786,7 @@
           //     return text.slice(0, 7);
           //   })
           //   .style("display", "none");
-          
+
           targetPastCircle["ele"]
             .append("circle")
             .attr("class", "pastCircle")
@@ -1789,8 +1798,8 @@
             .style("fill", fill)
             .style("stroke", fill)
             .classed("disabled", true)
-            .on("mouseover", function () {
-              let tX = cx >= 30? cx - 10 : cx + 25;
+            .on("mouseover", function() {
+              let tX = cx >= 30 ? cx - 10 : cx + 25;
               let tY = cy - 6;
               let backgroundPadding = 5;
               let fontSize = 13;
@@ -1798,8 +1807,8 @@
               svgChart
                 .append("rect")
                 .attr("id", "tempTimeBack")
-                .attr("width", 50+2*backgroundPadding+"px")
-                .attr("height", fontSize + 2*backgroundPadding + "px")
+                .attr("width", 50 + 2 * backgroundPadding + "px")
+                .attr("height", fontSize + 2 * backgroundPadding + "px")
                 .attr("x", tX - backgroundPadding)
                 .attr("y", tY - backgroundPadding - fontSize + 1.5)
                 .attr("rx", 3)
@@ -1822,9 +1831,7 @@
                   } else {
                     month -= 1;
                   }
-                  let text = d3.timeFormat("%Y.%m.%d")(
-                    new Date(year, month)
-                  );
+                  let text = d3.timeFormat("%Y.%m.%d")(new Date(year, month));
                   return text.slice(0, 7);
                 })
                 .style("font-size", fontSize + "px");
