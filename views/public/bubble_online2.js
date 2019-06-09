@@ -894,7 +894,7 @@
       let currentTime = getTime();
       let currentDate = dateScale.invert(currentTime);
 
-      updateMask(selectedLabel);
+      // updateMask(selectedLabel);
       updatePast(d3.select(this), currentDate);
 
       let checkbox = d3.select(this);
@@ -948,7 +948,7 @@
       let currentTime = getTime();
       let currentDate = dateScale.invert(currentTime);
       let selectedLabel = getSelectedLabel();
-      updateMask(selectedLabel);
+      // updateMask(selectedLabel);
       labelSet.forEach(label =>
         updatePast(d3.select(`#input-${label}`), currentDate)
       );
@@ -1053,63 +1053,63 @@
       button.on("click", buttonClickedHandler);
     }
 
-    function mouseOverHandler() {
-      let label = d3.select(this).attr("data-label");
-      let selectedLabel = getSelectedLabel();
+    // function mouseOverHandler() {
+    //   let label = d3.select(this).attr("data-label");
+    //   let selectedLabel = getSelectedLabel();
 
-      mouseoverDot = label;
+    //   mouseoverDot = label;
 
-      // d3.select(`#textDateLabel-${label}`).style("display", "block");
+    //   // d3.select(`#textDateLabel-${label}`).style("display", "block");
 
-      updateMask(selectedLabel);
+    //   updateMask(selectedLabel);
 
-      // if (selectedLabel.length === 0) {
-      //   d3.select(".header")
-      //     .style("outline-color", "#909099")
-      //     .html(`${twitterChinese[label]}(#${twitterEnglish[label]}): ${en2ch[label]}`);
-      // }
+    //   // if (selectedLabel.length === 0) {
+    //   //   d3.select(".header")
+    //   //     .style("outline-color", "#909099")
+    //   //     .html(`${twitterChinese[label]}(#${twitterEnglish[label]}): ${en2ch[label]}`);
+    //   // }
 
-      if (!buttonPlay) {
-        d3.selectAll(".cursor")
-          .selectAll(`line[data-label = ${label}]`)
-          .attr("stroke-opacity", 1);
+    //   if (!buttonPlay) {
+    //     d3.selectAll(".cursor")
+    //       .selectAll(`line[data-label = ${label}]`)
+    //       .attr("stroke-opacity", 1);
 
-        d3.selectAll(".cursor-text")
-          .selectAll(`text[data-label = ${label}]`)
-          .style("fill-opacity", 1);
+    //     d3.selectAll(".cursor-text")
+    //       .selectAll(`text[data-label = ${label}]`)
+    //       .style("fill-opacity", 1);
 
-        d3.selectAll("g.axis")
-          .selectAll("g.tick")
-          .selectAll("text")
-          .style("display", "none");
-      }
-    }
+    //     d3.selectAll("g.axis")
+    //       .selectAll("g.tick")
+    //       .selectAll("text")
+    //       .style("display", "none");
+    //   }
+    // }
 
-    function mouseOutHandler() {
-      let label = d3.select(this).attr("data-label");
+    // function mouseOutHandler() {
+    //   let label = d3.select(this).attr("data-label");
 
-      d3.select(`#textDateLabel-${label}`).style("display", "none");
+    //   d3.select(`#textDateLabel-${label}`).style("display", "none");
 
-      mouseoverDot = null;
+    //   mouseoverDot = null;
 
-      let selectedLabel = getSelectedLabel();
-      updateMask(selectedLabel);
+    //   let selectedLabel = getSelectedLabel();
+    //   updateMask(selectedLabel);
 
-      if (!buttonPlay) {
-        d3.selectAll(".cursor")
-          .selectAll(`line[data-label = ${label}]`)
-          .attr("stroke-opacity", 0);
+    //   if (!buttonPlay) {
+    //     d3.selectAll(".cursor")
+    //       .selectAll(`line[data-label = ${label}]`)
+    //       .attr("stroke-opacity", 0);
 
-        d3.selectAll(".cursor-text")
-          .selectAll(`text[data-label = ${label}]`)
-          .style("fill-opacity", 0);
+    //     d3.selectAll(".cursor-text")
+    //       .selectAll(`text[data-label = ${label}]`)
+    //       .style("fill-opacity", 0);
 
-        d3.selectAll("g.axis")
-          .selectAll("g.tick")
-          .selectAll("text")
-          .style("display", "block");
-      }
-    }
+    //     d3.selectAll("g.axis")
+    //       .selectAll("g.tick")
+    //       .selectAll("text")
+    //       .style("display", "block");
+    //   }
+    // }
 
     function initTime(totalTime, easeFunc) {
       resetTime();
@@ -1482,91 +1482,91 @@
       // .html("sdfadsf");
     }
 
-    function updateMask(selectedLabel) {
-      if (selectedLabel.length === 0) {
-        d3.selectAll(".dot")
-          .filter(function(d, i) {
-            return mouseoverDot === null || d.label.slice(1) === mouseoverDot;
-          })
-          .transition()
-          .duration(durationTime)
-          .attr("opacity", 1);
+    // function updateMask(selectedLabel) {
+    //   if (selectedLabel.length === 0) {
+    //     d3.selectAll(".dot")
+    //       .filter(function(d, i) {
+    //         return mouseoverDot === null || d.label.slice(1) === mouseoverDot;
+    //       })
+    //       .transition()
+    //       .duration(durationTime)
+    //       .attr("opacity", 1);
 
-        d3.selectAll(".dot")
-          .filter(function(d, i) {
-            return mouseoverDot !== null && d.label.slice(1) !== mouseoverDot;
-          })
-          .transition()
-          .duration(durationTime)
-          .attr("opacity", 0.1);
+    //     d3.selectAll(".dot")
+    //       .filter(function(d, i) {
+    //         return mouseoverDot !== null && d.label.slice(1) !== mouseoverDot;
+    //       })
+    //       .transition()
+    //       .duration(durationTime)
+    //       .attr("opacity", 0.1);
 
-        d3.selectAll(".textLabel")
-          .filter(function(d, i) {
-            return (
-              mouseoverDot === null || d.label.slice(1) !== mouseoverDot
-            );
-          })
-          .text(d => twitterText[d.label.slice(1)]);
+    //     d3.selectAll(".textLabel")
+    //       .filter(function(d, i) {
+    //         return (
+    //           mouseoverDot === null || d.label.slice(1) !== mouseoverDot
+    //         );
+    //       })
+    //       .text(d => twitterText[d.label.slice(1)]);
 
-        d3.selectAll(".textLabel")
-          .filter(function(d, i) {
-            return mouseoverDot !== null && d.label.slice(1) === mouseoverDot;
-          })
-          .text(d => twitterText[d.label.slice(1)]);
+    //     d3.selectAll(".textLabel")
+    //       .filter(function(d, i) {
+    //         return mouseoverDot !== null && d.label.slice(1) === mouseoverDot;
+    //       })
+    //       .text(d => twitterText[d.label.slice(1)]);
 
-        d3.selectAll(".textLabel")
-          .filter(function(d, i) {
-            return mouseoverDot !== null && d.label.slice(1) !== mouseoverDot;
-          })
-          .text("");
+    //     d3.selectAll(".textLabel")
+    //       .filter(function(d, i) {
+    //         return mouseoverDot !== null && d.label.slice(1) !== mouseoverDot;
+    //       })
+    //       .text("");
 
-        return;
-      }
+    //     return;
+    //   }
 
-      d3.selectAll(".dot")
-        .filter(function(d, i) {
-          return (
-            selectedLabel.findIndex(
-              label => label === d3.select(this).attr("data-label")
-            ) < 0 &&
-            (mouseoverDot === null || d.label.slice(1) !== mouseoverDot)
-          );
-        })
-        .attr("opacity", 0.1);
+    //   d3.selectAll(".dot")
+    //     .filter(function(d, i) {
+    //       return (
+    //         selectedLabel.findIndex(
+    //           label => label === d3.select(this).attr("data-label")
+    //         ) < 0 &&
+    //         (mouseoverDot === null || d.label.slice(1) !== mouseoverDot)
+    //       );
+    //     })
+    //     .attr("opacity", 0.1);
 
-      d3.selectAll(".dot")
-        .filter(function(d, i) {
-          return (
-            selectedLabel.findIndex(
-              label => label === d3.select(this).attr("data-label")
-            ) >= 0 ||
-            (mouseoverDot !== null && d.label.slice(1) === mouseoverDot)
-          );
-        })
-        .attr("opacity", 1);
+    //   d3.selectAll(".dot")
+    //     .filter(function(d, i) {
+    //       return (
+    //         selectedLabel.findIndex(
+    //           label => label === d3.select(this).attr("data-label")
+    //         ) >= 0 ||
+    //         (mouseoverDot !== null && d.label.slice(1) === mouseoverDot)
+    //       );
+    //     })
+    //     .attr("opacity", 1);
 
-      d3.selectAll(".textLabel")
-        .filter(function(d, i) {
-          return (
-            selectedLabel.findIndex(
-              label => label === d3.select(this).attr("data-label")
-            ) < 0 &&
-            (mouseoverDot === null || d.label.slice(1) !== mouseoverDot)
-          );
-        })
-        .text("");
+    //   d3.selectAll(".textLabel")
+    //     .filter(function(d, i) {
+    //       return (
+    //         selectedLabel.findIndex(
+    //           label => label === d3.select(this).attr("data-label")
+    //         ) < 0 &&
+    //         (mouseoverDot === null || d.label.slice(1) !== mouseoverDot)
+    //       );
+    //     })
+    //     .text("");
 
-      d3.selectAll(".textLabel")
-        .filter(function(d, i) {
-          return (
-            selectedLabel.findIndex(
-              label => label === d3.select(this).attr("data-label")
-            ) >= 0 ||
-            (mouseoverDot !== null && d.label.slice(1) === mouseoverDot)
-          );
-        })
-        .text(d => twitterText[d.label.slice(1)]);
-    }
+    //   d3.selectAll(".textLabel")
+    //     .filter(function(d, i) {
+    //       return (
+    //         selectedLabel.findIndex(
+    //           label => label === d3.select(this).attr("data-label")
+    //         ) >= 0 ||
+    //         (mouseoverDot !== null && d.label.slice(1) === mouseoverDot)
+    //       );
+    //     })
+    //     .text(d => twitterText[d.label.slice(1)]);
+    // }
 
     function enableCursor() {
       horizontalCursor.style("display", d => {
