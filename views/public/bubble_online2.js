@@ -1800,7 +1800,7 @@
             .classed("disabled", true)
             .on("mouseover", function() {
               let tX = cx >= 30 ? cx - 10 : cx + 25;
-              let tY = cy - 6;
+              let tY = cy - 10;
               let backgroundPadding = 5;
               let fontSize = 13;
               // add background first
