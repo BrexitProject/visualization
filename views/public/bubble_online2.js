@@ -221,7 +221,7 @@
       "translate(" + (width - 16) + " ," + (height + margin.top - 10) + ")"
     )
     .style("text-anchor", "start")
-    .text(lang === "en" ? "Tweet" : "讨论量")
+    .text(lang === "en" ? "Tweet" : "支持量")
     .attr("class", "xLabel");
   svg
     .append("g")
