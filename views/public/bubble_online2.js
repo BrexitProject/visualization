@@ -966,7 +966,7 @@
       let currentTime = getTime();
       let currentDate = dateScale.invert(currentTime);
       let selectedLabel = getSelectedLabel();
-      // updateMask(selectedLabel);
+      updateMask(selectedLabel);
       labelSet.forEach(label =>
         updatePast(d3.select(`#input-${label}`), currentDate)
       );
