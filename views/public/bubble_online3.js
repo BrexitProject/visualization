@@ -1509,6 +1509,7 @@
           })
           .transition()
           .duration(durationTime)
+          .style("display", 'inline')
           .attr("opacity", 1);
 
         d3.selectAll(".dot")
@@ -1517,15 +1518,16 @@
           })
           .transition()
           .duration(durationTime)
+          .style("display", 'inline')
           .attr("opacity", 0.1);
 
-        // d3.selectAll(".textLabel")
-        //   .filter(function(d, i) {
-        //     return (
-        //       mouseoverDot === null || d.label.slice(1) !== mouseoverDot
-        //     );
-        //   })
-        //   .text("");
+        d3.selectAll(".textLabel")
+          // .filter(function(d, i) {
+          //   return (
+          //     mouseoverDot === null || d.label.slice(1) !== mouseoverDot
+          //   );
+          // })
+          .text(d => twitterText[d.label.slice(1)]);
 
         d3.selectAll(".textLabel")
           .filter(function(d, i) {
@@ -1551,7 +1553,7 @@
             (mouseoverDot === null || d.label.slice(1) !== mouseoverDot)
           );
         })
-        .attr("opacity", 0);
+        .style("display", 'none');
 
       d3.selectAll(".dot")
         .filter(function(d, i) {
@@ -1562,6 +1564,7 @@
             (mouseoverDot !== null && d.label.slice(1) === mouseoverDot)
           );
         })
+        .style("display", 'inline')
         .attr("opacity", 1);
 
       d3.selectAll(".textLabel")
