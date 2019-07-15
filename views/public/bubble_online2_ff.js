@@ -1,7 +1,7 @@
 (async function main() {
   let en2ch = await getExplanation();
 
-  let lang = "ch";
+  let lang = "en";
 
   var margin = { top: 10, bottom: 80, left: 120, right: 30 };
   // var svgWidth = document.getElementById('chartAside').clientWidth;
