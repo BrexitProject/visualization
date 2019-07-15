@@ -11,6 +11,10 @@ app.get('/bubble_online', function(req, res) {
   res.sendFile(path.join(__dirname + '/views/2_hashtag_online.html'));
 });
 
+app.get('/bubble_online_ff', function(req, res) {
+  res.sendFile(path.join(__dirname + '/views/2_hashtag_online_ff.html'));
+});
+
 app.get('/bubble_online_single', function(req, res) {
   res.sendFile(path.join(__dirname + '/views/3_hashtag_online.html'));
 });
