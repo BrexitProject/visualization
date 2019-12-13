@@ -230,10 +230,11 @@
     .call(yAxis);
   svg
     .append("g")
-    .attr("transform", `translate(${margin.left + 36},${margin.top + 8})`)
+    .attr("transform", `translate(${margin.left + 26},${margin.top + 8})`)
     .append("text")
-    .attr("transform", "rotate(270)")
-    .style("text-anchor", "end")
+    .attr('writing-mode','vertical-rl')
+  //  .attr("transform", "rotate(270)")
+    //.style("text-anchor", "end")
     .text(lang === "en" ? "Retweet" : "支持量")
     .attr("class", "xLabel");
 
@@ -1425,7 +1426,7 @@
           "data-tippy-content",
           d => `${twitterChinese[d]}(#${twitterEnglish[d]}): ${en2ch[d]}`
         )
-        .html(d => `${twitterText[d]}`);
+        .html(d => `#${twitterText[d]}`);
 
       // document.querySelector("div#eleOfLabelRow").style.height = svgHeight/3 - 20 + 'px';
     }
