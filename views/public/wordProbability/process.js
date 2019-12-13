@@ -58,10 +58,10 @@ cloud.attr('class',function(d){return d.category + " " + d.kind})
 cloud.attr("transform", function(d,i) {
     return direction(i%4);
       })
-      .transition()
-      .duration(function(d,i){
-        return 1000+i*20
-      })
+      // .transition()
+      // .duration(function(d,i){
+      //   return 1000+i*20
+      // })
      .attr("transform", function(d) {
         return  flag?flag+"translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")":scale(d.category)+"translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
       })
