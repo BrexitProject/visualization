@@ -781,7 +781,7 @@
         gradient[label] = [];
         gradient[label].push("to right");
 
-        console.log(lifeCycleOfLabel);
+        // console.log(lifeCycleOfLabel);
 
         for (let i = 1, len = lifeCycleOfLabel.length; i < len; i += 1) {
           let color = "";
