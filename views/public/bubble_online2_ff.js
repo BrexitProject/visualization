@@ -509,7 +509,8 @@
       placement: "right",
       arrow: true,
       animation: "shift-toward",
-      theme: "tomato"
+      theme: "tomato",
+      touch: ["hold", 500]
     });
 
     createDownsidePanel(labelSet0.concat(labelSet1, labelSet2));
