@@ -232,8 +232,9 @@
     .append("g")
     .attr("transform", `translate(${margin.left + 36},${margin.top + 8})`)
     .append("text")
-    .attr("transform", "rotate(270)")
-    .style("text-anchor", "end")
+    .attr('writing-mode','vertical-rl')
+    // .attr("transform", "rotate(270)")
+    // .style("text-anchor", "end")
     .text(lang === "en" ? "Retweet" : "支持量")
     .attr("class", "xLabel");
 
