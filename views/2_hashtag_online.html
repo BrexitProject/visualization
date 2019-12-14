@@ -14,6 +14,11 @@
         src: url('/public/font/KaiTi.ttf');
       }
 
+      *:not(input):not(textarea) {
+        -webkit-user-select: none; /* disable selection/Copy of UIWebView */
+        -webkit-touch-callout: none; /* disable the IOS popup when long-press on a link */
+      }  
+
       :root {
           font-size: 10px;
       }
@@ -644,15 +649,6 @@
 
       .tippy-tooltip.tomato-theme .tippy-backdrop {
         background-color: #efefef;
-      }
-
-      .forTooltip {
-        -webkit-touch-callout:none;  /*系统默认菜单被禁用*/   
-        -webkit-user-select:none; /*webkit浏览器*/   
-        -khtml-user-select:none; /*早期浏览器*/   
-        -moz-user-select:none;/*火狐*/   
-        -ms-user-select:none; /*IE10*/   
-        user-select:none;
       }
 
     </style>
