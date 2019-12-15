@@ -1,11 +1,31 @@
 let margin = {top: 20, bottom: 20, left: 20, right: 20};
-let svgWidth = 1500;
-let svgHeight = 700;
+const svgEle =document.getElementById("svg").getBoundingClientRect();
+
+const ratio = 15 / 8;
+const originalWidth = 1500;
+let fontSizeRange = [5, 35]; // 1500的时候
+const vwWidth = svgEle.width;
+const vwHeight = svgEle.height;
+
+let svgWidth;
+let svgHeight;
+
+if (vwWidth > vwHeight) {
+  svgWidth = svgEle.width;
+  svgHeight = svgWidth / ratio;
+  fontSizeRange = fontSizeRange.map(d => vwWidth / originalWidth * d);
+} else {
+  svgHeight = vwHeight;
+  svgWidth = svgHeight / ratio;
+  fontSizeRange = fontSizeRange.map(d => vwHeight / originalWidth * d);
+}
+margin.left = (vwWidth - svgWidth) / 2;
+margin.right = margin.left;
 
 let width=svgWidth - margin.left - margin.right;
 let height=svgHeight - margin.top - margin.bottom;
 let xScale = d3.scaleLinear()
-           .range([5,35]);
+           .range(fontSizeRange);
 let color = d3.scaleOrdinal().domain(['leave', 'remain']).range(['rgb(205, 23, 30)', 'rgb(31, 119, 180)'])
 // 经济: economic 具体： concrete   政治：political 抽象：abstract
 let svg = d3.select('.wordCloud')
