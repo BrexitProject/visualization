@@ -28,13 +28,12 @@ function drawWord(word,flag,type){
 cloud.attr('class',function(d){return d.category + " " + d.kind})
       .attr('id',(d)=>d.word)
       .style("font-size", function(d) { 
-        return xScale(d.probability)-1 + "px"; 
+        return  type==='english'?xScale(d.probability)-2 + "px":xScale(d.probability) + "px"; 
       })
     //   .style("font-family", "Impact")
       .style("fill", (d)=>color(d.group))
       .attr("text-anchor", "middle")
       .on("touchstart", function(d){
-          console.log('touchstart')
         d3.select(this)
         .transition()
         .ease(d3.easeCubic)
@@ -52,16 +51,28 @@ cloud.attr('class',function(d){return d.category + " " + d.kind})
           .style("font-size", ()=>{ return xScale(d.probability) * 1.5 + "px"});
           return tooltip.style("visibility", "visible");
           })
+        .on("touchmove", function(d){
+            return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px").text(d.probability);
+          })
       .on("mousemove", function(d){
         return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px").text(d.probability);
       })
+      .on("touchend", function(d){
+        d3.select(this)
+        .transition()
+        .ease(d3.easeCubic)
+        .duration(200)
+        .attr("opacity",1)
+          .style("font-size", ()=>{ return  type==='english'?xScale(d.probability)-2 + "px":xScale(d.probability) + "px"; });
+          return tooltip.style("visibility", "hidden");
+          })
       .on("mouseout", function(d){
         d3.select(this)
         .transition()
         .ease(d3.easeCubic)
         .duration(200)
         .attr("opacity",1)
-          .style("font-size", ()=>{ return xScale(d.probability) + "px"});
+          .style("font-size", ()=>{ return  type==='english'?xScale(d.probability)-2 + "px":xScale(d.probability) + "px"; });
           return tooltip.style("visibility", "hidden");
           })
       .text(function(d) { return type==='english'?d.word:d.meaning; });
